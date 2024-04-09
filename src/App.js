@@ -1,65 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import ProductTable from './components/ProductTable';
 import SearchBar from './components/SearchBar';
 import ActionButton from './components/ActionButton';
 import AddProductModal from './components/AddProductModal';
+import db from './firebaseConfig';
+import { getDocs, addDoc, updateDoc, deleteDoc, collection, doc } from 'firebase/firestore';
 
 function App() {
-  const [products, setProducts] = useState(() => {
-    const storedProducts = JSON.parse(localStorage.getItem('productos'));
-    return storedProducts || [];
-  });
+  const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
-  useEffect(() => {
-    localStorage.setItem('productos', JSON.stringify(products));
+  const filterProducts = useCallback((searchTerm) => {
+    const filtered = products.filter(product =>
+      (product.numeroDeParte?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.descripcion?.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    setFilteredProducts(filtered);
   }, [products]);
 
-  const handleAddProduct = (newProduct) => {
-    setProducts(prevProducts => [...prevProducts, { ...newProduct, id: prevProducts.length + 1 }]);
-    setIsModalOpen(false); // Cerrar el modal después de agregar un producto
-    setEditingProduct(null); // Restablecer editingProduct a null
-  };
-
-  const handleEditProduct = (updatedProduct) => {
-    const updatedProducts = products.map(product => {
-      if (product.id === updatedProduct.id) {
-        return updatedProduct; // Actualizar el producto existente
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsSnapshot = await getDocs(collection(db, 'productos'));
+        const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Error al obtener los productos:', error);
       }
-      return product; // Mantener los otros productos sin cambios
-    });
-    setProducts(updatedProducts);
-    setIsModalOpen(false); // Cerrar el modal después de editar un producto
-    setEditingProduct(null); // Restablecer editingProduct a null
-  };
+    };
 
-  const handleDeleteProduct = (productId) => {
-    // Filtrar los productos para excluir el producto que se va a eliminar
-    const updatedProducts = products.filter(product => product.id !== productId);
-    // Actualizar el estado con la nueva lista de productos
-    setProducts(updatedProducts);
-  };
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
-    // Filtrar productos cuando se actualiza la lista de productos o cuando se cambia el término de búsqueda
     filterProducts('');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products]); // Agrega filterProducts a la lista de dependencias
+  }, [products, filterProducts]);
+
+  const handleAddProduct = async (newProduct) => {
+    try {
+      const docRef = await addDoc(collection(db, 'productos'), newProduct);
+      setProducts(prevProducts => [...prevProducts, { id: docRef.id, ...newProduct }]);
+      setIsModalOpen(false);
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Error al agregar el producto:', error);
+    }
+  };
+
+  const handleEditProduct = async (updatedProduct) => {
+    try {
+      await updateDoc(doc(db, 'productos', updatedProduct.id), updatedProduct);
+      const updatedProducts = products.map(product =>
+        product.id === updatedProduct.id ? updatedProduct : product
+      );
+      setProducts(updatedProducts);
+      setIsModalOpen(false);
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Error al editar el producto:', error);
+    }
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await deleteDoc(doc(db, 'productos', productId));
+      const updatedProducts = products.filter(product => product.id !== productId);
+      setProducts(updatedProducts);
+    } catch (error) {
+      console.error('Error al eliminar el producto:', error);
+    }
+  };
 
   const handleSearch = (searchTerm) => {
     filterProducts(searchTerm);
-  };
-
-  const filterProducts = (searchTerm) => {
-    const filtered = products.filter(product =>
-      (product.numeroDeParte?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.descripcion?.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-    setFilteredProducts(filtered);
   };
 
   return (
@@ -77,7 +94,7 @@ function App() {
       />
       <ActionButton text="Agregar Producto" onClick={() => {
         setIsModalOpen(true);
-        setEditingProduct(null); // Asegurarse de que estamos agregando un nuevo producto
+        setEditingProduct(null);
       }} />
       <AddProductModal
         isOpen={isModalOpen}
