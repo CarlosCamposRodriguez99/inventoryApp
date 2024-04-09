@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import ProductTable from './components/ProductTable';
+import Sidebar from './components/Sidebar';
 import SearchBar from './components/SearchBar';
 import ActionButton from './components/ActionButton';
 import AddProductModal from './components/AddProductModal';
@@ -81,8 +82,9 @@ function App() {
 
   return (
     <div className="App">
-      <h1 style={{ fontFamily: "Montserrat, sans-serif" }}>Inventario de Productos ICIAMEX</h1>
+      <h1 style={{ fontFamily: "Montserrat, sans-serif" }}>Lista de Artículos</h1>
       <SearchBar handleSearch={handleSearch} />
+      <Sidebar />
       <ProductTable
         products={filteredProducts}
         onEditProduct={(productId) => {

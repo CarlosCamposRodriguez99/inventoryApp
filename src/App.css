@@ -74,7 +74,6 @@
 /* SearchBar.css */
 
 .search-form {
-  align-items: center;
   margin-bottom: 2rem;
 }
 
@@ -159,4 +158,96 @@
 
 .btnEliminar:hover {
   background: #6B0202;
+}
+
+/* sidebar */
+
+.sidebar {
+  width: 250px;
+  background-color: #fff;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: width 0.3s; /* Agregar transición para el ancho */
+}
+
+.sidebar.closed {
+  width: 50px; /* Ancho reducido cuando está cerrado */
+}
+
+.logo {
+  display: block;
+  max-width: 80%; /* Ajusta el tamaño del logo según sea necesario */
+  margin: 0 auto; /* Centra el logo horizontalmente */
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.navbar {
+  border: none;
+  margin-bottom: 0;
+}
+
+.navbar-nav {
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-nav li {
+  list-style: none;
+  margin: 0;
+}
+
+.navbar-nav li a {
+  display: flex; /* Mostrar íconos y texto en línea */
+  align-items: center; /* Alinear íconos y texto verticalmente */
+  padding: 15px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.navbar-nav li a .icon {
+  margin-right: 10px; /* Espacio entre el ícono y el texto */
+}
+
+.navbar-nav li a.active,
+.navbar-nav li a:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+/* Estilos para ocultar texto cuando el sidebar está cerrado */
+.sidebar.closed .navbar-nav li a .text {
+  display: none;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid #eee;
+  margin-top: auto;
+}
+
+.sidebar-copyright {
+  color: #666;
+  text-align: center;
+}
+
+.menu-icon {
+  width: 20px;
+  cursor: pointer;
+  height: auto;
+}
+
+.sidebar.closed .centrar-logo,
+.sidebar.closed .sidebar-footer {
+  display: none;
 }
