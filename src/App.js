@@ -12,6 +12,7 @@ function App() {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
     localStorage.setItem('productos', JSON.stringify(products));
@@ -42,12 +43,31 @@ function App() {
     setProducts(updatedProducts);
   };
 
+  useEffect(() => {
+    // Filtrar productos cuando se actualiza la lista de productos o cuando se cambia el término de búsqueda
+    filterProducts('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products]); // Agrega filterProducts a la lista de dependencias
+
+  const handleSearch = (searchTerm) => {
+    filterProducts(searchTerm);
+  };
+
+  const filterProducts = (searchTerm) => {
+    const filtered = products.filter(product =>
+      (product.numeroDeParte?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.descripcion?.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    setFilteredProducts(filtered);
+  };
+
   return (
     <div className="App">
       <h1 style={{ fontFamily: "Montserrat, sans-serif" }}>Inventario de Productos ICIAMEX</h1>
-      <SearchBar />
+      <SearchBar handleSearch={handleSearch} />
       <ProductTable
-        products={products}
+        products={filteredProducts}
         onEditProduct={(productId) => {
           const productToEdit = products.find(product => product.id === productId);
           setEditingProduct(productToEdit);

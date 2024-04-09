@@ -1,3 +1,4 @@
+// En SearchBar.js
 import React, { useState } from 'react';
 
 const SearchBar = ({ handleSearch }) => {
@@ -13,9 +14,9 @@ const SearchBar = ({ handleSearch }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" value={searchTerm} onChange={handleChange} placeholder="Buscar por nombre..." />
-      <button type="submit">Buscar</button>
+    <form onSubmit={handleSubmit} className="search-form">
+      <input className="search-input" style={{textAlign: "center"}} type="text" value={searchTerm} onChange={handleChange} placeholder="Buscar..." />
+      <button className="search-button" type="submit">Buscar</button>
     </form>
   );
 };
