@@ -11,9 +11,6 @@ const customStyles = {
   content: {
     top: '50%',
     left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
     border: 'none',
     borderRadius: '8px',
@@ -23,6 +20,7 @@ const customStyles = {
     width: '100%',
     maxHeight: '90vh',
     overflow: 'auto',
+    fontFamily: 'Roboto, sans-serif', // Aplica la fuente Roboto
   },
   label: {
     display: 'block',
@@ -119,7 +117,7 @@ const ProductButton = ({ products, setProducts }) => {
         contentLabel="Ajuste de Precios"
       >
         <button className="modal-close" onClick={() => setModalIsOpen(false)}>x</button>
-        <h2>Editar Ajuste de Precios</h2>
+        <h2 style={{textAlign: "center"}}>Editar Ajuste de Precios</h2>
         <label style={customStyles.label}>
           Porcentaje:
           <input type="number" value={percentage} onChange={handlePercentageChange} style={customStyles.input} />

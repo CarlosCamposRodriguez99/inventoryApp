@@ -82,7 +82,6 @@ function App() {
   };
 
 
-
   return (
     <div className="App">
       <h1 style={{ fontFamily: "Montserrat, sans-serif" }}>Lista de Artículos</h1>

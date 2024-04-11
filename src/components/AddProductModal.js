@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import Modal from 'react-modal';
 
+
 // Establece la función de inicialización de react-modal para evitar un aviso de desenfoque de accesibilidad
 Modal.setAppElement('#root');
 
@@ -9,9 +10,6 @@ const customStyles = {
   content: {
     top: '50%',
     left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
     border: 'none',
     borderRadius: '8px',
@@ -21,6 +19,7 @@ const customStyles = {
     width: '100%',
     maxHeight: '90vh',
     overflow: 'auto',
+    fontFamily: 'Roboto, sans-serif', // Aplica la fuente Roboto
   },
   label: {
     display: 'block',
@@ -33,6 +32,20 @@ const customStyles = {
     borderRadius: '5px',
     border: '1px solid #ccc',
     boxSizing: 'border-box',
+  },
+  button: {
+    width: '50%', // Centra el botón de agregar
+    padding: '10px',
+    borderRadius: '5px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '16px',
+    display: 'flex',
+    justifyContent: 'center',
+    margin: "0 auto",
+    fontWeight: "700"
   },
 };
 
@@ -47,23 +60,23 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editingProduct }) => {
   const [imagePreviewUrl, setImagePreviewUrl] = useState('');
 
   useEffect(() => {
-  // Restablece el estado del formulario solo cuando el modal se abre y no hay un producto para editar
-  if (isOpen && !editingProduct) {
-    setProductDetails({
-      numeroDeParte: '',
-      nombre: '',
-      costo: '',
-      imagen: null
-    });
-    setImagePreviewUrl('');
-    setErrorMessage(''); // También limpia los mensajes de error previos
-  } else if (editingProduct) {
-    // Si hay un producto para editar, establece los detalles del producto en el estado
-    setProductDetails(editingProduct);
-    setImagePreviewUrl(editingProduct.imagen || '');
-    setErrorMessage(''); // Asegúrate de limpiar los mensajes de error aquí también
-  }
-}, [isOpen, editingProduct]);
+    // Restablece el estado del formulario solo cuando el modal se abre y no hay un producto para editar
+    if (isOpen && !editingProduct) {
+      setProductDetails({
+        numeroDeParte: '',
+        nombre: '',
+        costo: '',
+        imagen: null
+      });
+      setImagePreviewUrl('');
+      setErrorMessage(''); // También limpia los mensajes de error previos
+    } else if (editingProduct) {
+      // Si hay un producto para editar, establece los detalles del producto en el estado
+      setProductDetails(editingProduct);
+      setImagePreviewUrl(editingProduct.imagen || '');
+      setErrorMessage(''); // Asegúrate de limpiar los mensajes de error aquí también
+    }
+  }, [isOpen, editingProduct]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -121,7 +134,6 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editingProduct }) => {
       timer: 1500
     });
   };
-  
 
   const isValidImageFile = (file) => {
     return file.type.startsWith('image/');
@@ -135,7 +147,7 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editingProduct }) => {
       contentLabel={editingProduct ? "Editar Producto" : "Agregar Producto"}
     >
       <button className="modal-close" onClick={onClose}>x</button>
-      <h2>{editingProduct ? "Editar Producto" : "Agregar Producto"}</h2>
+      <h2 style={{textAlign: "center"}}>{editingProduct ? "Editar Producto" : "Agregar Producto"}</h2>
       <form onSubmit={handleSubmit}>
         <label style={customStyles.label}>
           Número de Parte:
@@ -155,7 +167,7 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editingProduct }) => {
         </label>
         {imagePreviewUrl && <img src={imagePreviewUrl} alt="Vista previa de la imagen" style={{ width: '100%', marginBottom: '20px' }} />}
         {errorMessage && <p className="error-message">{errorMessage}</p>}
-        <button type="submit">{editingProduct ? "Guardar Cambios" : "Agregar"}</button>
+        <button type="submit" style={customStyles.button}>{editingProduct ? "Guardar Cambios" : "Agregar"}</button>
       </form>
     </Modal>
   );

@@ -20,7 +20,7 @@ const ProductTable = ({ products, onEditProduct, onDeleteProduct }) => {
               <td>{product.id}</td>
               <td>{product.numeroDeParte}</td>
               <td>{product.nombre}</td>
-              <td>{product.costo}</td>
+              <td>{parseFloat(product.costo).toFixed(2)}</td>
               <td>
                 <img src={product.imagen} alt={product.nombre} style={{ width: '100px', height: 'auto' }} />
               </td>
