@@ -15,8 +15,8 @@ const SearchBar = ({ handleSearch }) => {
 
   return (
     <form onSubmit={handleSubmit} className="search-form">
-      <input className="search-input" style={{textAlign: "center"}} type="text" value={searchTerm} onChange={handleChange} placeholder="Buscar..." />
-      <button className="search-button" type="submit">Buscar</button>
+      <input className="search-input" type="text" value={searchTerm} onChange={handleChange} placeholder="Buscar..." />
+      <button className="search-button" type="submit"><img src="/img/search.svg" alt='search' width="20px" height="15px" /></button>
     </form>
   );
 };

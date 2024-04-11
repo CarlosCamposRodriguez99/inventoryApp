@@ -24,7 +24,7 @@
   th {
     background-color: #f2f2f2;
   }
-  
+
   .SearchBar {
     margin-bottom: 20px;
   }
@@ -52,7 +52,7 @@
   .modal-close {
     cursor: pointer;
     position: absolute;
-    top: 10px;
+    top: 5px;
     right: 15px;
     padding: 5px;
     background-color: transparent;
@@ -62,7 +62,7 @@
   }
   
   .modal-close:hover {
-    color: #4BF748; /* Cambia este color al deseado para el efecto hover */
+    color: #007bff; /* Cambia este color al deseado para el efecto hover */
     transition: color 0.3s ease-in-out;
   }
   
@@ -107,7 +107,7 @@
 .action-button {
   position: fixed;
   top: 20px;
-  right: 20px;
+  right: 50px;
   font-weight: 600;
   z-index: 9999;
   background-color: #007bff;
@@ -121,6 +121,26 @@
 }
 
 .action-button:hover {
+  background-color: #0056b3; /* Color de fondo al pasar el mouse */
+}
+
+.prices-button {
+  position: fixed;
+  top: 20px;
+  right: 250px;
+  font-weight: 600;
+  z-index: 9999;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.prices-button:hover {
   background-color: #0056b3; /* Color de fondo al pasar el mouse */
 }
 
@@ -250,4 +270,10 @@
 .sidebar.closed .centrar-logo,
 .sidebar.closed .sidebar-footer {
   display: none;
+}
+
+/* */
+
+.modal-apply-button {
+  margin: 5px;
 }

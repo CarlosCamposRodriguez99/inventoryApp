@@ -24,7 +24,7 @@ const Sidebar = () => {
             <li><a href="/"><span className="icon">🛒</span><span className="text">Lista de Proveedores</span></a></li>
             <li><a href="/"><span className="icon">👥</span><span className="text">Lista de Clientes</span></a></li>
             <li><a href="/"><span className="icon">📦</span><span className="text">Lista de Artículos</span></a></li>
-            <li><a href="/"><span className="icon">📊</span><span className="text">Informes</span></a></li>
+            <li><a href="/"><span className="icon">📈</span><span className="text">Informes</span></a></li>
           </ul>
         </nav>
       </div>

@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import SearchBar from './components/SearchBar';
 import ActionButton from './components/ActionButton';
 import AddProductModal from './components/AddProductModal';
+import ProductButton from './components/ProductButton';
 import db from './firebaseConfig';
 import { getDocs, addDoc, updateDoc, deleteDoc, collection, doc } from 'firebase/firestore';
 
@@ -80,6 +81,8 @@ function App() {
     filterProducts(searchTerm);
   };
 
+
+
   return (
     <div className="App">
       <h1 style={{ fontFamily: "Montserrat, sans-serif" }}>Lista de Artículos</h1>
@@ -98,6 +101,7 @@ function App() {
         setIsModalOpen(true);
         setEditingProduct(null);
       }} />
+      <ProductButton products={products} setProducts={setProducts} />
       <AddProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
