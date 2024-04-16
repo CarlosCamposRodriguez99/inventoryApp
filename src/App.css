@@ -289,3 +289,52 @@
   font-weight: 700;
   font-size: 14px;
 }
+
+/* lista de clientes */
+.client-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.client-form input,
+.client-form button {
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 16px;
+}
+
+.client-form button {
+  background-color: #007bff;
+  color: #fff;
+  width: 50%;
+  margin: 0 auto;
+  border: none;
+  cursor: pointer;
+}
+
+.client-form button:hover {
+  background-color: #0056b3;
+}
+
+.client-form input[type="text"],
+.client-form input[type="email"] {
+  width: 100%;
+}
+
+.client-form input[type="text"],
+.client-form input[type="email"],
+.client-form button {
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+}
+
+.client-form input[type="text"]:focus,
+.client-form input[type="email"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+

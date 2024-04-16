@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation(); // Obtener la ubicación actual
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -18,15 +20,16 @@ const Sidebar = () => {
         </a>
         <nav id="primary-menu" className="navbar">
           <ul className="nav navbar-nav">
-            <li><a className="active" href="index.html"><span className="icon">📝</span><span className="text">Ordenes de Compra</span></a></li>
-            <li><a href="/"><span className="icon">📊</span><span className="text">Cotizaciones</span></a></li>
-            <li><a href="/"><span className="icon">📜</span><span className="text">Facturas</span></a></li>
-            <li><a href="/"><span className="icon">🛒</span><span className="text">Lista de Proveedores</span></a></li>
-            <li><a href="/"><span className="icon">👥</span><span className="text">Lista de Clientes</span></a></li>
-            <li><a href="/"><span className="icon">📦</span><span className="text">Lista de Artículos</span></a></li>
-            <li><a href="/"><span className="icon">📈</span><span className="text">Informes</span></a></li>
+            <li><Link className={location.pathname === '/' ? 'active' : ''} to="/"><span className="icon">📝</span><span className="text">Ordenes de Compra</span></Link></li>
+            <li><Link className={location.pathname === '/cotizaciones' ? 'active' : ''} to="/cotizaciones"><span className="icon">📊</span><span className="text">Cotizaciones</span></Link></li>
+            <li><Link className={location.pathname === '/facturas' ? 'active' : ''} to="/facturas"><span className="icon">📜</span><span className="text">Facturas</span></Link></li>
+            <li><Link className={location.pathname === '/lista-de-proveedores' ? 'active' : ''} to="/lista-de-proveedores"><span className="icon">🛒</span><span className="text">Lista de Proveedores</span></Link></li>
+            <li><Link className={location.pathname === '/lista-de-clientes' ? 'active' : ''} to="/lista-de-clientes"><span className="icon">👥</span><span className="text">Lista de Clientes</span></Link></li>
+            <li><Link className={location.pathname === '/lista-de-articulos' ? 'active' : ''} to="/lista-de-articulos"><span className="icon">📦</span><span className="text">Lista de Artículos</span></Link></li>
+            <li><Link className={location.pathname === '/informes' ? 'active' : ''} to="/informes"><span className="icon">📈</span><span className="text">Informes</span></Link></li>
           </ul>
         </nav>
+        <Outlet />
       </div>
       <div className="sidebar-footer">
         <div className="sidebar-copyright">&copy; 2024 ICIAMEX</div>

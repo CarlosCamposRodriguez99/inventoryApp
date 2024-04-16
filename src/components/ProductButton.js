@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { doc, updateDoc } from 'firebase/firestore';
-import db from '../firebaseConfig';
+import { db } from '../firebaseConfig';
 import Swal from 'sweetalert2';
 
 // Establece la función de inicialización de react-modal para evitar un aviso de desenfoque de accesibilidad
