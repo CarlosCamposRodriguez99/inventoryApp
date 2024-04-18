@@ -339,9 +339,10 @@
 
 /* estilos para pagina cotizacion */
 
+
 .cotizacion-form {
   font-family: Arial, sans-serif;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -395,7 +396,8 @@
 
 .cotizacion-form label {
   display: block;
-  margin-bottom: 5px;
+  text-align: left;
+  margin-bottom: 10px;
 }
 
 .cotizacion-form input[type="text"],
