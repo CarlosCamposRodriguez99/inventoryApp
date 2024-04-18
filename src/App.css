@@ -337,4 +337,110 @@
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
+/* estilos para pagina cotizacion */
+
+
+.cotizacion-form {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.cotizacion-header {
+  width: 50%; /* Ajusta el ancho al 100% para ocupar todo el espacio disponible */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alinea los elementos a la izquierda */
+}
+
+.logoCotizacion {
+  width: 150px; /* Ajusta el tamaño del logotipo */
+  margin-right: 10px; /* Espaciado entre el logotipo y el borde */
+}
+
+.border-right {
+  width: 2px;
+  height: 30px; /* Altura ajustada al tamaño del título "Cotización" */
+  background-color: #ccc;
+  margin-right: 10px; /* Espaciado entre el borde y el título */
+}
+
+.cotizacion-title {
+  font-size: 24px;
+}
+
+.cotizacion-form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.cotizacion-form input[type="text"],
+.cotizacion-form input[type="number"],
+.cotizacion-form select,
+.cotizacion-form textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.cotizacion-form textarea {
+  height: 100px;
+}
+
+.cotizacion-form button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.cotizacion-form button:hover {
+  background-color: #0056b3;
+}
+
+.productos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.productos-table th,
+.productos-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.productos-table th {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.productos-table input[type="text"],
+.productos-table input[type="number"] {
+  width: calc(100% - 16px);
+  padding: 5px;
+  margin: 0;
+  border: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.productos-table input[type="text"]:focus,
+.productos-table input[type="number"]:focus {
+  outline: none;
+  box-shadow: 0 0 5px #007bff;
+}
+
+
+
 

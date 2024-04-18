@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import ProductTable from '../components/ProductTable';
 import Sidebar from '../components/Sidebar';
@@ -8,6 +7,7 @@ import AddProductModal from '../components/AddProductModal';
 import ProductButton from '../components/ProductButton';
 import { db } from '../firebaseConfig';
 import { getDocs, addDoc, updateDoc, deleteDoc, collection, doc } from 'firebase/firestore';
+import Swal from 'sweetalert2';
 
 const ListaArticulos = () => {
 
@@ -70,13 +70,38 @@ const ListaArticulos = () => {
     };
   
     const handleDeleteProduct = async (productId) => {
-      try {
-        await deleteDoc(doc(db, 'productos', productId));
-        const updatedProducts = products.filter(product => product.id !== productId);
-        setProducts(updatedProducts);
-      } catch (error) {
-        console.error('Error al eliminar el producto:', error);
-      }
+      // Primero, mostramos la alerta de confirmación
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¡No podrás deshacer esta acción!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            // Si el usuario confirma, procedemos con la eliminación
+            await deleteDoc(doc(db, 'productos', productId));
+            const updatedProducts = products.filter(product => product.id !== productId);
+            setProducts(updatedProducts);
+            Swal.fire(
+              '¡Eliminado!',
+              'El producto ha sido eliminado.',
+              'success'
+            );
+          } catch (error) {
+            console.error('Error al eliminar el producto:', error);
+            Swal.fire(
+              '¡Error!',
+              'Ha ocurrido un error al intentar eliminar el producto.',
+              'error'
+            );
+          }
+        }
+      });
     };
   
     const handleSearch = (searchTerm) => {

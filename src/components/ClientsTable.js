@@ -1,6 +1,8 @@
 import React from 'react';
 
 const ClientsTable = ({ clientes, onEditClient, onDeleteClient }) => {
+
+ 
     return (
         <div>
             <table>
@@ -10,7 +12,7 @@ const ClientsTable = ({ clientes, onEditClient, onDeleteClient }) => {
                         <th>RFC</th>
                         <th>Teléfono</th>
                         <th>Correo Electrónico</th>
-                        <th>Cuentas por cobrar</th>
+                        <th>Cuentas por Cobrar</th>
                         <th>Status</th>
                         <th>Acciones</th>
                         {/* Agrega más encabezados según tus datos */}
