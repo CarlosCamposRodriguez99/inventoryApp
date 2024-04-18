@@ -2,7 +2,6 @@ import React from 'react';
 
 const ClientsTable = ({ clientes, onEditClient, onDeleteClient }) => {
 
- 
     return (
         <div>
             <table>

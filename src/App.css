@@ -339,38 +339,58 @@
 
 /* estilos para pagina cotizacion */
 
-
 .cotizacion-form {
   font-family: Arial, sans-serif;
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  border: 2px solid #ccc;
+  border: 1px solid #ccc;
   border-radius: 10px;
   background-color: #f9f9f9;
 }
 
 .cotizacion-header {
-  width: 50%; /* Ajusta el ancho al 100% para ocupar todo el espacio disponible */
+  width: auto;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Alinea los elementos a la izquierda */
+  height: 60px;
+  border-bottom: 2px solid #cecece;;
+}
+
+.cotizacion-body {
+  margin-top: 1rem;
+}
+
+#fecha-vencimiento {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Estilos para el input de fecha al estar enfocado */
+#fecha-vencimiento:focus {
+  outline: none;
+  box-shadow: 0 0 5px #007bff;
 }
 
 .logoCotizacion {
-  width: 150px; /* Ajusta el tamaño del logotipo */
-  margin-right: 10px; /* Espaciado entre el logotipo y el borde */
+  width: 150px;
+  margin-right: 10px;
 }
 
 .border-right {
   width: 2px;
-  height: 30px; /* Altura ajustada al tamaño del título "Cotización" */
-  background-color: #ccc;
-  margin-right: 10px; /* Espaciado entre el borde y el título */
+  height: 45px;
+  background-color: #cecece;
+  margin-right: 10px;
 }
 
 .cotizacion-title {
   font-size: 24px;
+  margin: 0;
 }
 
 .cotizacion-form label {
@@ -416,8 +436,8 @@
 
 .productos-table th,
 .productos-table td {
+  padding: 10px;
   border: 1px solid #ccc;
-  padding: 8px;
 }
 
 .productos-table th {
@@ -441,6 +461,19 @@
   box-shadow: 0 0 5px #007bff;
 }
 
+.productos-table button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #000;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.productos-table button:hover {
+  color: #000;
+  background: none;
+}
 
 
 
