@@ -126,15 +126,13 @@ function CotizacionForm() {
                   </td>
                   <td>${parseFloat(producto.costo).toFixed(2)}</td>
                   <td>
-                    <button className='btnEliminarCotizacion' onClick={() => eliminarProducto(producto.id)}>✘</button>
+                    <button onClick={() => eliminarProducto(producto.id)}>✘</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-
-          <hr />
-
+          
           <p>Guardado por última vez: Hoy a las 4:30 p.m</p>
           <button type="button">Cancelar</button>
           <button type="button">Guardar</button>
