@@ -37,7 +37,6 @@ function CotizacionForm() {
       console.error('Error al obtener los productos:', error);
     }
   };
-  
 
   function getCurrentDate() {
     const date = new Date();
@@ -48,7 +47,7 @@ function CotizacionForm() {
     if (productoSeleccionado) {
       const producto = productos.find(p => p.id === productoSeleccionado);
       if (producto) {
-        setProductosSeleccionados([...productosSeleccionados, producto]);
+        setProductosSeleccionados([...productosSeleccionados, { ...producto, productoIdEditado: producto.id }]);
         setProductoSeleccionado('');
       }
     }
@@ -65,7 +64,7 @@ function CotizacionForm() {
       )
     );
   };
-  
+
   const guardarCotizacion = () => {
     // Aquí podrías agregar lógica para guardar la cotización en la base de datos
     setMostrarPrevia(true); // Mostrar previa después de guardar
@@ -75,12 +74,19 @@ function CotizacionForm() {
     const productoId = e.target.value;
     const producto = productos.find(p => p.id === productoId);
     if (producto) {
-      // Calcular subtotal para 1 cantidad
-      const subtotal = producto.costo;
-      // Establecer la cantidad en 1 por defecto
-      const productoConCantidad = { ...producto, cantidad: 1, subtotal };
-      setProductosSeleccionados([...productosSeleccionados, productoConCantidad]);
-      setProductoSeleccionado('');
+      const productoExistente = productosSeleccionados.find(p => p.id === productoId);
+      if (productoExistente) {
+        // Si el producto ya existe, aumentar la cantidad en 1
+        const nuevaCantidad = productoExistente.cantidad + 1;
+        actualizarCantidad(productoExistente.id, nuevaCantidad);
+      } else {
+        // Calcular subtotal para 1 cantidad
+        const subtotal = producto.costo;
+        // Establecer la cantidad en 1 por defecto
+        const productoConCantidad = { ...producto, cantidad: 1, subtotal, productoIdEditado: producto.id };
+        setProductosSeleccionados([...productosSeleccionados, productoConCantidad]);
+        setProductoSeleccionado('');
+      }
     }
   }
   
@@ -92,12 +98,11 @@ function CotizacionForm() {
       )
     );
   };
-  
 
   const calcularDescuento = (producto, tipoDescuento, valorDescuento) => {
     let subtotal = producto.cantidad * producto.costo;
     let descuentoAplicado = 0;
-  
+
     if (tipoDescuento === 'cantidad') {
       subtotal -= valorDescuento;
       descuentoAplicado = valorDescuento;
@@ -106,14 +111,14 @@ function CotizacionForm() {
       subtotal -= descuento;
       descuentoAplicado = descuento;
     }
-  
+
     return { ...producto, tipoDescuento, valorDescuento, subtotal, descuento: descuentoAplicado };
   };
 
   const actualizarIdProducto = (idProducto, nuevoId) => {
     setProductosSeleccionados(prevProductos =>
       prevProductos.map(producto =>
-        producto.id === idProducto ? { ...producto, id: nuevoId } : producto
+        producto.id === idProducto ? { ...producto, productoIdEditado: nuevoId } : producto
       )
     );
   };
@@ -126,10 +131,10 @@ function CotizacionForm() {
     );
   };
 
-  const actualizarPrecioProducto = (idProducto, nuevoPrecio) => {
+  const actualizarPrecio = (idProducto, nuevoPrecio) => {
     setProductosSeleccionados(prevProductos =>
       prevProductos.map(producto =>
-        producto.id === idProducto ? { ...producto, costo: nuevoPrecio } : producto
+        producto.id === idProducto ? { ...producto, costo: parseFloat(nuevoPrecio), subtotal: parseFloat(nuevoPrecio) * producto.cantidad } : producto
       )
     );
   };
@@ -188,61 +193,62 @@ function CotizacionForm() {
               </tr>
             </thead>
             <tbody>
-            {productosSeleccionados.map((producto) => (
-  <tr key={producto.id}>
-    <td>
-      <input
-        type="number"
-        value={producto.cantidad !== undefined ? producto.cantidad : ''}
-        onChange={(e) => actualizarCantidad(producto.id, e.target.value)}
-      />
-    </td>
-    <td>
-      <input
-        type="text"
-        value={producto.id}
-        onChange={(e) => actualizarIdProducto(producto.id, e.target.value)}
-      />
-    </td>
-    <td>
-      <input
-        type="text"
-        value={producto.nombre}
-        onChange={(e) => actualizarNombreProducto(producto.id, e.target.value)}
-      />
-    </td>
-    <td>
-      <input
-        type="number"
-        value={parseFloat(producto.costo).toFixed(2)}
-        onChange={(e) => actualizarPrecioProducto(producto.id, e.target.value)}
-      />
-    </td>
-    <td>
-      <select
-        value={producto.tipoDescuento}
-        onChange={(e) => actualizarDescuento(producto.id, e.target.value, producto.valorDescuento)}
-      >
-        <option value="cantidad">$</option>
-        <option value="porcentaje">%</option>
-      </select>
-      {producto.tipoDescuento === 'porcentaje' && '%'}
-      <input
-        type="text"
-        value={producto.valorDescuento}
-        onChange={(e) => actualizarDescuento(producto.id, producto.tipoDescuento, e.target.value)}
-      />
-    </td>
-    <td>${parseFloat(producto.subtotal).toFixed(2)}</td>
-    <td>
-      <button onClick={() => eliminarProducto(producto.id)}>✘</button>
-    </td>
-  </tr>
-))}
-
+              {productosSeleccionados.map((producto) => (
+                <tr key={producto.id}>
+                  <td>
+                    <input
+                      type="number"
+                      value={producto.cantidad !== undefined ? producto.cantidad : ''}
+                      onChange={(e) => actualizarCantidad(producto.id, e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={producto.productoIdEditado} // Utilizamos el estado local actualizado
+                      onChange={(e) => actualizarIdProducto(producto.id, e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={producto.nombre}
+                      onChange={(e) => actualizarNombreProducto(producto.id, e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      value={parseFloat(producto.costo).toFixed(2)}
+                      onChange={(e) => {
+                        actualizarPrecio(producto.id, e.target.value);
+                      }}
+                    />
+                  </td>
+                  <td>
+                    <select
+                      value={producto.tipoDescuento}
+                      onChange={(e) => actualizarDescuento(producto.id, e.target.value, producto.valorDescuento)}
+                    >
+                      <option value="cantidad">$</option>
+                      <option value="porcentaje">%</option>
+                    </select>
+                    {producto.tipoDescuento === 'porcentaje' && '%'}
+                    <input
+                      type="text"
+                      value={producto.valorDescuento}
+                      onChange={(e) => actualizarDescuento(producto.id, producto.tipoDescuento, e.target.value)}
+                    />
+                  </td>
+                  <td>${parseFloat(producto.subtotal).toFixed(2)}</td>
+                  <td>
+                    <button onClick={() => eliminarProducto(producto.id)}>✘</button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
-          
+
           <p>Guardado por última vez: Hoy a las 4:30 p.m</p>
           <button type="button">Cancelar</button>
           <button type="button" onClick={guardarCotizacion}>Guardar</button>
@@ -272,15 +278,15 @@ function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, producto
   const calcularTotales = () => {
     let subtotal = 0;
     let descuentoTotal = 0;
-
+  
     productosSeleccionados.forEach(producto => {
-      subtotal += producto.subtotal;
-      descuentoTotal += producto.descuento || 0;
+      subtotal += parseFloat(producto.subtotal);
+      descuentoTotal += parseFloat(producto.descuento) || 0;
     });
-
+  
     const iva = subtotal * 0.16;
     const total = subtotal + iva - descuentoTotal;
-
+  
     return { subtotal, iva, total, descuentoTotal };
   };
 
