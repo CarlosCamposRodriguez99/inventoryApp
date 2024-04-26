@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import TablaCotizaciones from './TablaCotizaciones';
 
-function CotizacionForm() {
+function CotizacionForm(props) {
   const [cliente, setCliente] = useState('');
   const [clientes, setClientes] = useState([]);
   const [productos, setProductos] = useState([]);
   const [asunto, setAsunto] = useState('');
-  const [fechaCotizacion, setFechaCotizacion] = useState(getCurrentDate());
+  const [fechaCotizacion] = useState(getCurrentDate());
   const [fechaVencimiento, setFechaVencimiento] = useState('');
   const [productoSeleccionado, setProductoSeleccionado] = useState('');
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
+  const [mostrarTabla, setMostrarTabla] = useState(false);
   const [mostrarPrevia, setMostrarPrevia] = useState(false);
 
   useEffect(() => {
     obtenerClientes();
     obtenerProductos();
   }, []);
+
+  const calcularTotal = () => {
+    return productosSeleccionados.reduce((total, producto) => {
+      return total + producto.subtotal;
+    }, 0);
+  };
 
   const obtenerClientes = async () => {
     try {
@@ -36,6 +44,10 @@ function CotizacionForm() {
     } catch (error) {
       console.error('Error al obtener los productos:', error);
     }
+  };
+
+  const continuarDesdePrevia = () => {
+    setMostrarTabla(true);
   };
 
   function getCurrentDate() {
@@ -65,31 +77,40 @@ function CotizacionForm() {
     );
   };
 
-  const guardarCotizacion = () => {
-    // Aquí podrías agregar lógica para guardar la cotización en la base de datos
-    setMostrarPrevia(true); // Mostrar previa después de guardar
-  };
-
   function agregarProductoAutomatico(e) {
     const productoId = e.target.value;
     const producto = productos.find(p => p.id === productoId);
     if (producto) {
       const productoExistente = productosSeleccionados.find(p => p.id === productoId);
       if (productoExistente) {
-        // Si el producto ya existe, aumentar la cantidad en 1
         const nuevaCantidad = productoExistente.cantidad + 1;
         actualizarCantidad(productoExistente.id, nuevaCantidad);
       } else {
-        // Calcular subtotal para 1 cantidad
         const subtotal = producto.costo;
-        // Establecer la cantidad en 1 por defecto
         const productoConCantidad = { ...producto, cantidad: 1, subtotal, productoIdEditado: producto.id };
         setProductosSeleccionados([...productosSeleccionados, productoConCantidad]);
         setProductoSeleccionado('');
       }
     }
   }
-  
+
+  const guardar = async () => {
+    try {
+      const cotizacionData = {
+        cliente,
+        asunto,
+        fechaCotizacion,
+        fechaVencimiento,
+        productosSeleccionados,
+        total: calcularTotal(),
+        createdAt: serverTimestamp()
+      };
+      await props.guardarCotizacion(cotizacionData); // Esperar a que la cotización se guarde correctamente
+      setMostrarPrevia(true); // Mostrar la vista previa después de guardar la cotización
+    } catch (error) {
+      console.error('Error al guardar la cotización:', error);
+    }
+  };
 
   const actualizarDescuento = (idProducto, tipoDescuento, valorDescuento) => {
     setProductosSeleccionados(prevProductos =>
@@ -205,7 +226,7 @@ function CotizacionForm() {
                   <td>
                     <input
                       type="text"
-                      value={producto.productoIdEditado} // Utilizamos el estado local actualizado
+                      value={producto.productoIdEditado}
                       onChange={(e) => actualizarIdProducto(producto.id, e.target.value)}
                     />
                   </td>
@@ -250,8 +271,8 @@ function CotizacionForm() {
           </table>
 
           <p>Guardado por última vez: Hoy a las 4:30 p.m</p>
-          <button type="button">Cancelar</button>
-          <button type="button" onClick={guardarCotizacion}>Guardar</button>
+          <button type="button" onClick={() => setMostrarPrevia(true)}>Vista Previa</button>
+          <button type="button" onClick={guardar}>Guardar</button>
         </div>
       </form>
 
@@ -262,50 +283,52 @@ function CotizacionForm() {
           asunto={asunto}
           fechaCotizacion={fechaCotizacion}
           productosSeleccionados={productosSeleccionados}
-          eliminarProducto={eliminarProducto}
-          actualizarCantidad={actualizarCantidad}
+          continuarDesdePrevia={continuarDesdePrevia} // Asegúrate de pasar la función aquí
         />
+      )}
+
+      {mostrarTabla && (
+        <TablaCotizaciones cotizaciones={props.cotizaciones} />
       )}
     </div>
   );
 }
 
-function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, productosSeleccionados, eliminarProducto, actualizarDescuento }) {
-  // Obtener el nombre del cliente
+function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, productosSeleccionados }) {
   const nombreCliente = clientes.find(c => c.id === cliente)?.empresa || '';
-
-  // Función para calcular los totales, incluyendo el descuento
-  const calcularTotales = () => {
-    let subtotal = 0;
-    let descuentoTotal = 0;
-  
-    productosSeleccionados.forEach(producto => {
-      subtotal += parseFloat(producto.subtotal);
-      descuentoTotal += parseFloat(producto.descuento) || 0;
-    });
-  
-    const iva = subtotal * 0.16;
-    const total = subtotal + iva - descuentoTotal;
-  
-    return { subtotal, iva, total, descuentoTotal };
-  };
-
-  const { subtotal, iva, total, descuentoTotal } = calcularTotales();
 
   return (
     <div className="previa-cotizacion">
       <h1>Previa</h1>
-      <h2>Cotización: 0001</h2>
       <hr />
       <p>Fecha de cotización: {fechaCotizacion}</p>
       <p>Asunto: {asunto}</p>
-      <p>Cliente: {nombreCliente}</p> {/* Mostrar nombre del cliente */}
+      <p>Cliente: {nombreCliente}</p>
       <h3>DESCRIPCIÓN</h3>
-      {/* Aquí puedes agregar los productos seleccionados */}
-      <h3>Subtotal: ${subtotal.toFixed(2)}</h3>
-      <h3>Descuento: ${descuentoTotal.toFixed(2)}</h3>
-      <h3>IVA: ${iva.toFixed(2)}</h3>
-      <h3>Total: ${total.toFixed(2)}</h3>
+      <table className="productos-table">
+        <thead>
+          <tr>
+            <th>Cantidad</th>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Descuento</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {productosSeleccionados.map((producto) => (
+            <tr key={producto.id}>
+              <td>{producto.cantidad}</td>
+              <td>{producto.productoIdEditado}</td>
+              <td>{producto.nombre}</td>
+              <td>${parseFloat(producto.costo).toFixed(2)}</td>
+              <td>${parseFloat(producto.descuento).toFixed(2)}</td>
+              <td>${parseFloat(producto.subtotal).toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
