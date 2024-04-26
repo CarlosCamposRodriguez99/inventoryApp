@@ -27,7 +27,6 @@ function CotizacionesContainer() {
     setMostrarFormulario(true); // Activar el formulario al hacer clic en el botón
   };
 
-
   const obtenerUltimoNumeroCotizacion = async () => {
     try {
       const cotizacionesRef = collection(db, 'cotizaciones');

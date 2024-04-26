@@ -1,7 +1,57 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import { collection, getDocs, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import TablaCotizaciones from './TablaCotizaciones';
+import Modal from 'react-modal';
+
+
+// Establece la función de inicialización de react-modal para evitar un aviso de desenfoque de accesibilidad
+Modal.setAppElement('#root');
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    border: 'none',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    padding: '20px',
+    maxWidth: '900px',
+    width: '100%',
+    height: "500px",
+    maxHeight: '90vh',
+    overflow: 'auto',
+    fontFamily: 'Roboto, sans-serif', // Aplica la fuente Roboto
+  },
+  label: {
+    display: 'block',
+    marginBottom: '10px',
+  },
+  input: {
+    width: '100%',
+    padding: '8px',
+    marginBottom: '20px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    boxSizing: 'border-box',
+  },
+  button: {
+    width: '50%', // Centra el botón de agregar
+    padding: '10px',
+    borderRadius: '5px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '16px',
+    display: 'flex',
+    justifyContent: 'center',
+    margin: "0 auto",
+    fontWeight: "700"
+  },
+};
 
 function CotizacionForm(props) {
   const [cliente, setCliente] = useState('');
@@ -14,11 +64,35 @@ function CotizacionForm(props) {
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
   const [mostrarTabla, setMostrarTabla] = useState(false);
   const [mostrarPrevia, setMostrarPrevia] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [ultimaInteraccion, setUltimaInteraccion] = useState('');
+
+  useEffect(() => {
+    // Al cargar la página, intenta obtener la última interacción del almacenamiento local
+    const ultimaInteraccionGuardada = localStorage.getItem('ultimaInteraccion');
+    if (ultimaInteraccionGuardada) {
+      setUltimaInteraccion(ultimaInteraccionGuardada);
+    } else {
+      actualizarUltimaInteraccion(); // Si no hay ninguna guardada, muestra la hora actual
+    }
+  }, []);
+  
 
   useEffect(() => {
     obtenerClientes();
     obtenerProductos();
   }, []);
+
+  const abrirModalPrevia = () => {
+    setMostrarPrevia(true); 
+    setModalIsOpen(true);
+    actualizarUltimaInteraccion();
+  };
+
+  const cerrarModalPrevia = () => {
+    setMostrarPrevia(false);
+    setModalIsOpen(false);
+  };
 
   const calcularTotal = () => {
     return productosSeleccionados.reduce((total, producto) => {
@@ -55,7 +129,7 @@ function CotizacionForm(props) {
     return date.toISOString().split('T')[0];
   }
 
-  function agregarProducto() {
+  /*function agregarProducto() {
     if (productoSeleccionado) {
       const producto = productos.find(p => p.id === productoSeleccionado);
       if (producto) {
@@ -63,7 +137,7 @@ function CotizacionForm(props) {
         setProductoSeleccionado('');
       }
     }
-  }
+  }*/
 
   const eliminarProducto = (idProducto) => {
     setProductosSeleccionados(prevProductos => prevProductos.filter(producto => producto.id !== idProducto));
@@ -94,6 +168,24 @@ function CotizacionForm(props) {
     }
   }
 
+  // Función para actualizar la última interacción
+  const actualizarUltimaInteraccion = () => {
+    const ahora = new Date();
+    const hora = ahora.getHours();
+    const minutos = ahora.getMinutes();
+    const periodo = hora >= 12 ? 'p.m.' : 'a.m.';
+    const horaFormato12 = hora > 12 ? hora - 12 : hora;
+    const horaString = horaFormato12.toString().padStart(2, '0');
+    const minutosString = minutos.toString().padStart(2, '0');
+    const ultimaInteraccionString = `Hoy a las ${horaString}:${minutosString} ${periodo}`;
+
+    // Guarda la hora en el almacenamiento local
+    localStorage.setItem('ultimaInteraccion', ultimaInteraccionString);
+
+    // Actualiza el estado para mostrar la última interacción al usuario
+    setUltimaInteraccion(ultimaInteraccionString);
+  };
+
   const guardar = async () => {
     try {
       const cotizacionData = {
@@ -105,12 +197,21 @@ function CotizacionForm(props) {
         total: calcularTotal(),
         createdAt: serverTimestamp()
       };
-      await props.guardarCotizacion(cotizacionData); // Esperar a que la cotización se guarde correctamente
-      setMostrarPrevia(true); // Mostrar la vista previa después de guardar la cotización
+      await props.guardarCotizacion(cotizacionData);
+      setMostrarPrevia(true);
+      actualizarUltimaInteraccion(); // Llama a la función para actualizar la última interacción al guardar
+      // Muestra la alerta de éxito
+      Swal.fire({
+        icon: 'success',
+        title: 'Cotización Guardada',
+        showConfirmButton: false,
+        timer: 1000 // Muestra la alerta por 1.5 segundos
+      });
     } catch (error) {
       console.error('Error al guardar la cotización:', error);
     }
   };
+  
 
   const actualizarDescuento = (idProducto, tipoDescuento, valorDescuento) => {
     setProductosSeleccionados(prevProductos =>
@@ -198,7 +299,7 @@ function CotizacionForm(props) {
               </option>
             ))}
           </select>
-          <button type="button" onClick={agregarProducto}>Agregar</button>
+          {/*<button type="button" onClick={agregarProducto}>Agregar</button>*/}
 
           <h2>Resumen:</h2>
           <table className="productos-table">
@@ -270,22 +371,35 @@ function CotizacionForm(props) {
             </tbody>
           </table>
 
-          <p>Guardado por última vez: Hoy a las 4:30 p.m</p>
-          <button type="button" onClick={() => setMostrarPrevia(true)}>Vista Previa</button>
+          <p>Guardado por última vez: {ultimaInteraccion}</p>
+          <button type="button" onClick={abrirModalPrevia}>Vista Previa</button>
           <button type="button" onClick={guardar}>Guardar</button>
         </div>
       </form>
 
-      {mostrarPrevia && (
-        <PreviaCotizacion
-          cliente={cliente}
-          clientes={clientes}
-          asunto={asunto}
-          fechaCotizacion={fechaCotizacion}
-          productosSeleccionados={productosSeleccionados}
-          continuarDesdePrevia={continuarDesdePrevia} // Asegúrate de pasar la función aquí
-        />
-      )}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={cerrarModalPrevia}
+        contentLabel="Vista Previa"
+        style={customStyles}
+      >
+        {mostrarPrevia && (
+          <PreviaCotizacion
+            cliente={cliente}
+            clientes={clientes}
+            asunto={asunto}
+            fechaCotizacion={fechaCotizacion}
+            productosSeleccionados={productosSeleccionados}
+            continuarDesdePrevia={continuarDesdePrevia}
+            numeroCotizacion={props.numeroCotizacion}
+          />
+        )}
+        <div className="modal-buttons">
+          <button onClick={cerrarModalPrevia} className='eliminarBtnModal'>Cerrar</button>
+          <button>Enviar por Correo</button>
+          <button>Descargar</button>
+        </div>
+      </Modal>
 
       {mostrarTabla && (
         <TablaCotizaciones cotizaciones={props.cotizaciones} />
@@ -294,12 +408,33 @@ function CotizacionForm(props) {
   );
 }
 
-function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, productosSeleccionados }) {
-  const nombreCliente = clientes.find(c => c.id === cliente)?.empresa || '';
+function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, productosSeleccionados, numeroCotizacion }) { 
+  
+    const nombreCliente = clientes.find(c => c.id === cliente)?.empresa || '';
+
+    // Calcular subtotal
+    const subtotal = productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.subtotal), 0);
+
+    // Calcular descuento total (suponiendo que hay un descuento en cada producto)
+    const descuentoTotal = productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.descuento), 0);
+  
+    // Calcular IVA
+    const iva = subtotal * 0.16; // Suponiendo que el IVA es del 16%
+  
+    // Calcular total
+    const total = subtotal - descuentoTotal + iva;
+
+    
 
   return (
     <div className="previa-cotizacion">
+       <div className="cotizacion-header">
+          <img src="/img/logo-iciamex.png" alt="ICIAMEX" className="logoCotizacion" />
+          <div className="border-right"></div>
+          <h1 className="cotizacion-title">Cotización</h1>
+      </div>
       <h1>Previa</h1>
+      <h2>Cotización: {numeroCotizacion?.toString().padStart(4, '0')}</h2>
       <hr />
       <p>Fecha de cotización: {fechaCotizacion}</p>
       <p>Asunto: {asunto}</p>
@@ -329,7 +464,13 @@ function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, producto
           ))}
         </tbody>
       </table>
+      <h3>Subtotal: ${subtotal.toFixed(2)}</h3>
+      <h3>Descuento: ${descuentoTotal.toFixed(2)}</h3>
+      <h3>IVA: ${iva.toFixed(2)}</h3>
+      <h3>Total: ${total.toFixed(2)}</h3>
+
     </div>
+    
   );
 }
 
