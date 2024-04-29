@@ -18,7 +18,7 @@ const customStyles = {
     borderRadius: '8px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     padding: '20px',
-    maxWidth: '900px',
+    maxWidth: '800px',
     width: '100%',
     height: "500px",
     maxHeight: '90vh',
@@ -188,6 +188,20 @@ function CotizacionForm(props) {
 
   const guardar = async () => {
     try {
+      // Validación de campos obligatorios
+      if (!cliente || !asunto || !fechaVencimiento || productosSeleccionados.length === 0) {
+        // Muestra una alerta si algún campo obligatorio está vacío
+        Swal.fire({
+          icon: 'warning',
+          title: 'Campos Incompletos',
+          text: 'Por favor, complete todos los campos obligatorios.',
+          confirmButtonColor: '#007bff',
+          confirmButtonText: 'Aceptar'
+        });
+        return; // Detiene la ejecución de la función si hay campos incompletos
+      }
+  
+      // Si todos los campos están completos, procede con el guardado
       const cotizacionData = {
         cliente,
         asunto,
@@ -211,6 +225,7 @@ function CotizacionForm(props) {
       console.error('Error al guardar la cotización:', error);
     }
   };
+  
   
 
   const actualizarDescuento = (idProducto, tipoDescuento, valorDescuento) => {

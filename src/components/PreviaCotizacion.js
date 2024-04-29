@@ -23,6 +23,11 @@ function PreviaCotizacion({ cotizacion, numeroCotizacion, clientes, cerrarPrevia
 
   return (
     <div className="previa-cotizacion">
+      <div className="cotizacion-header">
+        <img src="/img/logo-iciamex.png" alt="ICIAMEX" className="logoCotizacion" />
+        <div className="border-right"></div>
+        <h1 className="cotizacion-title">Cotización</h1>
+      </div>
       <h1>Previa</h1>
       <h2>Cotización: {numeroCotizacion?.toString().padStart(4, '0')}</h2>
       <hr />
@@ -56,7 +61,11 @@ function PreviaCotizacion({ cotizacion, numeroCotizacion, clientes, cerrarPrevia
       <h3>Descuento: ${descuentoTotal.toFixed(2)}</h3>
       <h3>IVA: ${iva.toFixed(2)}</h3>
       <h3>Total: ${total.toFixed(2)}</h3>
-      <button onClick={cerrarPrevia}>Cerrar</button>
+      <div className="modal-buttons">
+          <button onClick={cerrarPrevia} className='eliminarBtnModal'>Cerrar</button>
+          <button>Enviar por Correo</button>
+          <button>Descargar</button>
+        </div>
     </div>
   );
 }

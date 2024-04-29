@@ -16,7 +16,7 @@ const customStyles = {
     borderRadius: '8px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     padding: '20px',
-    maxWidth: '400px',
+    maxWidth: '450px',
     width: '100%',
     maxHeight: '90vh',
     overflow: 'auto',

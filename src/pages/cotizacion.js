@@ -106,7 +106,7 @@ function CotizacionesContainer() {
 
   return (
     <div>
-        {!mostrarFormulario && (
+      {!mostrarFormulario && (
         <div>
           <button className="action-button" onClick={activarFormulario}>Agregar Cotización</button>
         </div>

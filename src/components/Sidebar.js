@@ -23,9 +23,9 @@ const Sidebar = () => {
             <li><Link className={location.pathname === '/' ? 'active' : ''} to="/"><span className="icon">📝</span><span className="text">Ordenes de Compra</span></Link></li>
             <li><Link className={location.pathname === '/cotizacion' ? 'active' : ''} to="/cotizacion"><span className="icon">📊</span><span className="text">Cotizaciones</span></Link></li>
             <li><Link className={location.pathname === '/facturas' ? 'active' : ''} to="/facturas"><span className="icon">📜</span><span className="text">Facturas</span></Link></li>
-            <li><Link className={location.pathname === '/lista-de-proveedores' ? 'active' : ''} to="/lista-de-proveedores"><span className="icon">🛒</span><span className="text">Lista de Proveedores</span></Link></li>
-            <li><Link className={location.pathname === '/lista-de-clientes' ? 'active' : ''} to="/lista-de-clientes"><span className="icon">👥</span><span className="text">Lista de Clientes</span></Link></li>
-            <li><Link className={location.pathname === '/lista-de-articulos' ? 'active' : ''} to="/lista-de-articulos"><span className="icon">📦</span><span className="text">Lista de Artículos</span></Link></li>
+            <li><Link className={location.pathname === '/proveedores' ? 'active' : ''} to="/proveedores"><span className="icon">🛒</span><span className="text">Lista de Proveedores</span></Link></li>
+            <li><Link className={location.pathname === '/clientes' ? 'active' : ''} to="/clientes"><span className="icon">👥</span><span className="text">Lista de Clientes</span></Link></li>
+            <li><Link className={location.pathname === '/articulos' ? 'active' : ''} to="/articulos"><span className="icon">📦</span><span className="text">Lista de Artículos</span></Link></li>
             <li><Link className={location.pathname === '/informes' ? 'active' : ''} to="/informes"><span className="icon">📈</span><span className="text">Informes</span></Link></li>
           </ul>
         </nav>
