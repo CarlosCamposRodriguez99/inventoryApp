@@ -354,13 +354,13 @@ function CotizacionForm(props) {
                     />
                   </td>
                   <td>
-                    <input
-                      type="number"
-                      value={parseFloat(producto.costo).toFixed(2)}
-                      onChange={(e) => {
-                        actualizarPrecio(producto.id, e.target.value);
-                      }}
-                    />
+                  <input
+                    type="text"
+                    value={parseFloat(producto.costo).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    onChange={(e) => {
+                      actualizarPrecio(producto.id, e.target.value);
+                    }}
+                  />
                   </td>
                   <td>
                     <select
@@ -377,7 +377,7 @@ function CotizacionForm(props) {
                       onChange={(e) => actualizarDescuento(producto.id, producto.tipoDescuento, e.target.value)}
                     />
                   </td>
-                  <td>${parseFloat(producto.subtotal).toFixed(2)}</td>
+                  <td>${parseFloat(producto.subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
                   <td>
                     <button onClick={() => eliminarProducto(producto.id)}>✘</button>
                   </td>
@@ -411,8 +411,6 @@ function CotizacionForm(props) {
         )}
         <div className="modal-buttons">
           <button onClick={cerrarModalPrevia} className='eliminarBtnModal'>Cerrar</button>
-          <button>Enviar por Correo</button>
-          <button>Descargar</button>
         </div>
       </Modal>
 
@@ -472,17 +470,18 @@ function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, producto
               <td>{producto.cantidad}</td>
               <td>{producto.productoIdEditado}</td>
               <td>{producto.nombre}</td>
-              <td>${parseFloat(producto.costo).toFixed(2)}</td>
-              <td>${parseFloat(producto.descuento).toFixed(2)}</td>
-              <td>${parseFloat(producto.subtotal).toFixed(2)}</td>
+              <td>${parseFloat(producto.costo).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
+              <td>${parseFloat(producto.descuento).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
+              <td>${parseFloat(producto.subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <h3>Subtotal: ${subtotal.toFixed(2)}</h3>
-      <h3>Descuento: ${descuentoTotal.toFixed(2)}</h3>
-      <h3>IVA: ${iva.toFixed(2)}</h3>
-      <h3>Total: ${total.toFixed(2)}</h3>
+      <h3>Subtotal: ${parseFloat(subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>
+      <h3>Descuento: ${parseFloat(descuentoTotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>
+      <h3>IVA: ${parseFloat(iva).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>
+      <h3>Total: ${parseFloat(total).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>
+
 
     </div>
     
