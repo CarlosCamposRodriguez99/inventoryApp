@@ -112,10 +112,10 @@ function TablaCotizaciones({ cotizaciones, verPrevia, clientes }) {
                     <td>{cotizacion.numeroCotizacion?.toString().padStart(4, '0')}</td>
                     <td>{cotizacion.asunto}</td>
                     <td>{cotizacion.nombreCliente}</td>
-                    <td>${cotizacion.total?.toFixed(2)}</td>
+                    <td>${parseFloat(cotizacion.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
                     <td>{cotizacion.estado}</td>
                     <td>
-                      <button className='btnPrevia' onClick={() => abrirModalPrevia(cotizacion)}>Ver Previa</button>
+                      <button className='btnPrevia' onClick={() => abrirModalPrevia(cotizacion)}>Ver</button>
                     </td>
                   </tr>
                 ))}
