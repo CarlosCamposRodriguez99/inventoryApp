@@ -116,7 +116,7 @@ function CotizacionesContainer() {
       ) : mostrarPrevia ? (
         <PreviaCotizacion cotizacion={cotizacionSeleccionada} cerrarPrevia={() => setMostrarPrevia(false)} clientes={clientes} guardarCotizacion={guardarCotizacion} numeroCotizacion={cotizacionSeleccionada.numeroCotizacion}/> 
       ) : (
-        <TablaCotizaciones cotizaciones={cotizaciones} verPrevia={verPrevia} clientes={clientes} guardarCotizacion={guardarCotizacion} numeroCotizacion={numeroCotizacion} />
+        <TablaCotizaciones cotizaciones={cotizaciones} verPrevia={verPrevia} setCotizaciones={setCotizaciones} clientes={clientes} guardarCotizacion={guardarCotizacion} numeroCotizacion={numeroCotizacion} />
       )}
     </div>
   );

@@ -560,5 +560,74 @@
 
 /**/
 
+.image-button {
+  cursor: pointer;
+  position: absolute;
+  top: 150px;
+  left: 0;
+  margin-left: 85px;
+  width: 30px;
+}
+
+.filtro-options {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 500px;
+  left: 120px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filtro-options button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  border-radius: 5px;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.filtro-options button:hover {
+  background-color: #0056b3;
+}
+
+/**/
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.delete-button-container {
+  position: fixed;
+  top: 150px; /* Posición inicial */
+  right: 50px;
+  z-index: 1;
+  animation: slideIn 0.4s ease forwards; /* Aplicar animación */
+  opacity: 0; /* Inicialmente transparente */
+}
+
+.delete-button-container.active {
+  opacity: 1; /* Hacer visible */
+}
+
+.delete-button {
+  width: 30px;
+  cursor: pointer;
+}
+
+/**/
 
 

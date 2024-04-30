@@ -77,7 +77,8 @@ function PreviaCotizacion({ cotizacion, numeroCotizacion, clientes, cerrarPrevia
   const subtotal = productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.subtotal), 0);
 
   // Calcular descuento total (suponiendo que hay un descuento en cada producto)
-  const descuentoTotal = productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.descuento), 0);
+  const descuentoTotal = productosSeleccionados.reduce((acc, producto) => acc + (producto.descuento ? parseFloat(producto.descuento) : 0), 0);
+
 
   // Calcular IVA
   const iva = subtotal * 0.16; // Suponiendo que el IVA es del 16%
