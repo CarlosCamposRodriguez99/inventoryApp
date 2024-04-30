@@ -19,6 +19,7 @@ const customStyles = {
     maxWidth: '400px',
     width: '100%',
     maxHeight: '90vh',
+    height: '450px',
     overflow: 'auto',
     fontFamily: 'Roboto, sans-serif',
   },

@@ -18,6 +18,7 @@ const customStyles = {
     padding: '20px',
     maxWidth: '400px',
     width: '100%',
+    height: '450px',
     maxHeight: '90vh',
     overflow: 'auto',
     fontFamily: 'Roboto, sans-serif', // Aplica la fuente Roboto

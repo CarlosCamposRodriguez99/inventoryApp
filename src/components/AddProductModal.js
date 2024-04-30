@@ -166,7 +166,7 @@ const AddProductModal = ({ isOpen, onClose, onSubmit, editingProduct }) => {
           Imagen:
           <input type="file" name="imagen" onChange={handleChange} accept="image/*" style={customStyles.input} />
         </label>
-        {imagePreviewUrl && <img src={imagePreviewUrl} alt="Vista previa de la imagen" style={{ width: '100%', marginBottom: '20px' }} />}
+        {imagePreviewUrl && <img src={imagePreviewUrl} alt="Vista previa de la imagen" style={{ width: '30%', margin: "0 auto", display: "flex", paddingBottom: "20px" }} />}
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         <button type="submit" style={customStyles.button}>{editingProduct ? "Guardar Cambios" : "Agregar"}</button>
       </form>
