@@ -66,6 +66,8 @@ function CotizacionForm(props) {
   const [mostrarPrevia, setMostrarPrevia] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [ultimaInteraccion, setUltimaInteraccion] = useState('');
+  const [estado, setEstado] = useState('pendiente');
+
 
   useEffect(() => {
     // Al cargar la página, intenta obtener la última interacción del almacenamiento local
@@ -207,6 +209,7 @@ function CotizacionForm(props) {
         asunto,
         fechaCotizacion,
         fechaVencimiento,
+        estado,
         productosSeleccionados,
         total: calcularTotal(),
         createdAt: serverTimestamp()
@@ -304,6 +307,12 @@ function CotizacionForm(props) {
 
           <label htmlFor="fecha-vencimiento">Fecha de vencimiento:</label>
           <input type="date" id="fecha-vencimiento" name="fecha-vencimiento" value={fechaVencimiento} onChange={(e) => setFechaVencimiento(e.target.value)} /><br />
+
+          <label htmlFor="estado">Estado:</label>
+          <select id="estado" name="estado" value={estado} onChange={(e) => setEstado(e.target.value)}>
+            <option value="pendiente">Pendiente</option>
+            <option value="completado">Completado</option>
+          </select><br />
 
           <label htmlFor="productos">Agregar Producto:</label>
           <select id="productos" name="productos" value={productoSeleccionado} onChange={agregarProductoAutomatico}>

@@ -222,14 +222,14 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
                       checked={selectedCotizaciones.includes(cotizacion.id)}
                       onChange={() => handleSelectCotizacion(cotizacion.id)}
                       style={{ marginRight: '5px' }}
-                    />pendiente
+                    />{cotizacion.estado}
                   </td>
                   <td>{cotizacion.fechaCotizacion}</td>
                   <td>{cotizacion.numeroCotizacion?.toString().padStart(4, '0')}</td>
                   <td>{cotizacion.asunto}</td>
                   <td>{cotizacion.nombreCliente}</td>
                   <td>${parseFloat(cotizacion.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
-                  <td>Vencimiento</td>
+                  <td>{cotizacion.fechaVencimiento}</td>
                   <td>
                     <button className='btnPrevia' onClick={() => abrirModalPrevia(cotizacion)}>Ver</button>
                   </td>
