@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import PreviaCotizacion from './PreviaCotizacion';
+import ResumenCotizacion from './ResumenCotizacion';
 import SearchBar from './SearchBar';
 import { collection, deleteDoc, getFirestore, doc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
@@ -51,7 +52,7 @@ const customStyles = {
   },
 };
 
-function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
+function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones, onRowClick }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [cotizacionSeleccionada, setCotizacionSeleccionada] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -59,12 +60,18 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
   const [selectedCotizaciones, setSelectedCotizaciones] = useState([]);
   const [ordenamiento, setOrdenamiento] = useState('fechaCotizacion');
   const [showOptions, setShowOptions] = useState(false);
+  const [selectedCotizacionId, setSelectedCotizacionId] = useState(null);
+  const [resumenVisible, setResumenVisible] = useState(false);
 
   useEffect(() => {
     if (cotizaciones.length > 0) {
       setLoadingCotizaciones(false);
     }
   }, [cotizaciones]);
+
+  const cerrarResumen = () => {
+    setResumenVisible(false); // Función para cerrar el resumen
+  };
 
   const handleToggleOptions = () => {
     setShowOptions(!showOptions);
@@ -129,6 +136,12 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
   const cerrarModalPrevia = () => {
     setModalIsOpen(false);
   };
+
+  const handleRowClick = (cotizacionId) => {
+    setSelectedCotizacionId(cotizacionId);
+    setResumenVisible(true); // Aquí establecemos resumenVisible a true al hacer clic en una fila
+  };
+  
 
   const handleSelectCotizacion = (cotizacionId) => {
     setSelectedCotizaciones((prevSelected) => {
@@ -215,7 +228,7 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
               </thead>
               <tbody>
               {ordenarCotizaciones(filterCotizaciones(cotizaciones), ordenamiento).map((cotizacion, index) => (
-                <tr key={index}>
+                <tr key={index} onClick={() => handleRowClick(cotizacion.id)}>
                   <td>
                     <input
                       type="checkbox"
@@ -262,6 +275,14 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
           />
         )}
       </Modal>
+
+      {selectedCotizacionId && cotizaciones.some(cotizacion => cotizacion.id === selectedCotizacionId) && (
+        <ResumenCotizacion
+          cotizacion={cotizaciones.find(cotizacion => cotizacion.id === selectedCotizacionId)}
+          isOpen={resumenVisible} // Pasamos el estado de visibilidad
+          onClose={cerrarResumen} // Pasamos la función para cerrar el resumen
+        />
+      )}
     </div>
   );
 }

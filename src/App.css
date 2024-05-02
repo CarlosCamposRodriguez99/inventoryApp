@@ -628,6 +628,52 @@
   cursor: pointer;
 }
 
+/*Resumen Cotizacion*/
+.resumen-cotizacion-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 800px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.resumen-cotizacion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.resumen-cotizacion-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.resumen-cotizacion-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.resumen-cotizacion-actions button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
 /**/
+
+
 
 
