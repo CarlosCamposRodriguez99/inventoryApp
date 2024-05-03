@@ -124,6 +124,28 @@
   background-color: #0056b3; /* Color de fondo al pasar el mouse */
 }
 
+.action-button2 {
+  position: fixed;
+  top: 20px;
+  left: 20%; /* Posiciona el botón en el centro horizontal */
+  transform: translateX(-50%); /* Lo desplaza hacia la izquierda la mitad de su propio ancho */
+  font-weight: 600;
+  z-index: 9999;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.action-button2:hover {
+  background-color: #0056b3; /* Color de fondo al pasar el mouse */
+}
+
+
 .prices-button {
   position: fixed;
   top: 20px;
@@ -597,7 +619,7 @@
   background-color: #0056b3;
 }
 
-/**/
+/*DELETE COTIZACION*/
 
 @keyframes slideIn {
   0% {
@@ -628,51 +650,107 @@
   cursor: pointer;
 }
 
-/*Resumen Cotizacion*/
-.resumen-cotizacion-container {
+/*ResumenCotizacion*/
+
+.resumen-container {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  max-width: 800px;
-  width: 90%;
-  max-height: 90vh;
-  overflow: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%; /* Ancho del resumen */
+  background-color: #f0f0f0;
+  border-left: 1px solid #ccc; /* Línea divisoria */
+  overflow-y: auto;
+  padding: 20px; /* Añade un espacio interno */
+  box-shadow: -3px 0 5px rgba(0, 0, 0, 0.1); /* Añade una sombra para resaltar el contorno */
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.resumen-container.active {
+  transform: translateX(0);
+}
+
+.resumen-cotizacion-container {
+  max-width: 100%; /* Ajusta el ancho del contenido */
+  position: relative;
 }
 
 .resumen-cotizacion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  background-color: #ddd;
+  padding: 10px;
+  border-radius: 8px 8px 0 0; /* Borde redondeado solo en la parte superior */
+  border-bottom: 1px solid #ccc;
 }
 
 .resumen-cotizacion-title {
-  font-size: 24px;
-  font-weight: bold;
+  margin: 0;
+}
+
+.resumen-cotizacion-content {
+  padding: 20px 0; /* Ajusta el espacio interno */
 }
 
 .resumen-cotizacion-actions {
-  display: flex;
-  gap: 10px;
+  text-align: left;
+  margin-top: 10px;
 }
 
 .resumen-cotizacion-actions button {
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #007bff;
-  color: #fff;
-  cursor: pointer;
-  font-size: 16px;
+  margin-left: 10px; /* Añade espacio entre los botones */
 }
 
-/**/
+.cerrar-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #333;
+}
+
+.cerrar-button:hover {
+  color: #000; /* Cambia el color al pasar el ratón por encima */
+  font-weight: 600;
+}
+
+/*BandejaCotizaciones*/
+
+.mensaje-cotizacion {
+  display: flex;
+  align-items: flex-start; /* Alinea los elementos al principio */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 80%; /* Ancho del mensaje */
+}
+
+.mensaje-cotizacion input[type="checkbox"] {
+  margin-right: 20px;
+  margin-left: 60px;
+}
+
+.mensaje-cotizacion .info-container {
+  flex: 1;
+}
+
+.mensaje-cotizacion .info-container p {
+  margin: 5px 0;
+  text-align: left;
+}
+
+.mensaje-cotizacion .info-container p:first-child {
+  font-weight: bold;
+}
+
+
+/* Puedes añadir más estilos según tus necesidades */
+
 
 
 
