@@ -79,7 +79,6 @@ function PreviaCotizacion({ cotizacion, numeroCotizacion, clientes, cerrarPrevia
   // Calcular descuento total (suponiendo que hay un descuento en cada producto)
   const descuentoTotal = productosSeleccionados.reduce((acc, producto) => acc + (producto.descuento ? parseFloat(producto.descuento) : 0), 0);
 
-
   // Calcular IVA
   const iva = subtotal * 0.16; // Suponiendo que el IVA es del 16%
 
@@ -119,9 +118,10 @@ function PreviaCotizacion({ cotizacion, numeroCotizacion, clientes, cerrarPrevia
               </View>
             ))}
           </View>
-          <Text style={styles.text}>Subtotal: ${parseFloat(subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
+         
           <Text style={styles.text}>Descuento: ${parseFloat(descuentoTotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
           <Text style={styles.text}>IVA: ${parseFloat(iva).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
+          <Text style={styles.text}>Subtotal: ${parseFloat(subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
           <Text style={styles.text}>Total: ${parseFloat(total).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
 
         </View>
@@ -165,6 +165,7 @@ function PreviaCotizacion({ cotizacion, numeroCotizacion, clientes, cerrarPrevia
           ))}
         </tbody>
       </table>
+      
       <h3>Subtotal: ${parseFloat(subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>
       <h3>Descuento: ${parseFloat(descuentoTotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>
       <h3>IVA: ${parseFloat(iva).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>

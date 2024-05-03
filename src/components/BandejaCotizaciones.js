@@ -1,11 +1,11 @@
 // TablaCotizacionesBandeja.js
 import React from 'react';
 
-const BandejaCotizaciones = ({ cotizaciones }) => {
+const BandejaCotizaciones = ({ cotizaciones, onRowClick  }) => {
   return (
     <div className="cotizaciones-bandeja">
       {cotizaciones.map(cotizacion => (
-        <div key={cotizacion.id} className="mensaje-cotizacion">
+        <div key={cotizacion.id} className="mensaje-cotizacion" onClick={() => onRowClick(cotizacion.id)}>
           <input type="checkbox" />
           <div className="info-container">
             <div className="info-column">

@@ -689,15 +689,43 @@
 
 .resumen-cotizacion-content {
   padding: 20px 0; /* Ajusta el espacio interno */
+  text-align: left;
 }
 
 .resumen-cotizacion-actions {
-  text-align: left;
-  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 5px; /* Espacio entre botones */
+  margin-bottom: 50px;
 }
 
 .resumen-cotizacion-actions button {
-  margin-left: 10px; /* Añade espacio entre los botones */
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+.resumen-cotizacion-actions button:hover {
+  background-color: #0056b3; /* Cambia el color de fondo al pasar el ratón por encima */
+}
+
+.resumen-cotizacion-actions button:last-child {
+  margin-right: 0; /* Elimina el margen derecho del último botón */
+}
+
+.iconResumen {
+  margin-right: 6px; /* Espacio entre el ícono y el texto */
+  width: 20px; /* Ancho del ícono */
+  height: 20px; /* Altura del ícono */
 }
 
 .cerrar-button {
@@ -723,11 +751,11 @@
   align-items: flex-start; /* Alinea los elementos al principio */
   border: 1px solid #ccc;
   border-radius: 8px;
-  padding: 20px;
+  padding: 10px;
   margin-bottom: 10px;
   background-color: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 80%; /* Ancho del mensaje */
+  width: 60%; /* Ancho del mensaje */
 }
 
 .mensaje-cotizacion input[type="checkbox"] {
@@ -748,8 +776,40 @@
   font-weight: bold;
 }
 
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #007bff;
+  min-width: 135px;
+  z-index: 1;
+  border-radius: 3px;
+}
 
+.dropdown-content button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  border: none;
+  background-color: #007bff;
+  cursor: pointer;
+}
+
+.dropdown-content button:hover {
+  background-color: #0056b3;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #0056b3;
+}
 /* Puedes añadir más estilos según tus necesidades */
+
+
 
 
 

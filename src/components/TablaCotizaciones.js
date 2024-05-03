@@ -179,7 +179,7 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
     <div className="cotizaciones-table">
       <h2>Lista de Cotizaciones</h2>
       {showBandeja && (
-        <BandejaCotizaciones cotizaciones={cotizaciones} />
+        <BandejaCotizaciones cotizaciones={cotizaciones} onRowClick={handleRowClick}/>
       )}
       {!showBandeja && (
         <div>
@@ -296,6 +296,9 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
             setSelectedCotizacionId(null); // Reiniciar la cotización seleccionada
             setShowBandeja(false);
           }}
+          numeroCotizacion={cotizacionSeleccionada ? cotizacionSeleccionada.numeroCotizacion : null}
+          clientes={clientes}
+
         />
       </div>
     </div>
