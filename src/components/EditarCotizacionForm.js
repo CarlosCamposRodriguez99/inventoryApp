@@ -1,51 +1,70 @@
 import React, { useState } from 'react';
-import CotizacionForm from './CotizacionForm'; // Importa el componente CotizacionForm
+import CotizacionForm from './CotizacionForm';
 import PreviaCotizacion from './PreviaCotizacion';
-import { db } from '../firebaseConfig'; // Importa tu instancia de Firestore
-import { updateDoc, doc } from 'firebase/firestore';
+import Modal from 'react-modal';
+import TablaCotizaciones from './TablaCotizaciones';
+import { useNavigate } from 'react-router-dom';
+
+Modal.setAppElement('#root');
+
+const customStyles = {
+  content: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    border: 'none',
+    borderRadius: '0',
+    padding: '20px',
+    overflow: 'auto',
+    fontFamily: 'Roboto, sans-serif',
+  },
+};
 
 const EditarCotizacionForm = ({ cotizacion, clientes, productos, setCotizacion }) => {
-  const [mostrarPrevia, setMostrarPrevia] = useState(false); // Define mostrarPrevia y su setter
-  
+  const navigate = useNavigate();
+  const [modalIsOpen, setModalIsOpen] = useState(true);
+  const [mostrarPrevia, setMostrarPrevia] = useState(false);
 
-  // Función para guardar los cambios
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
   const guardarCotizacion = async (nuevosDatos) => {
     try {
-      const cotizacionRef = doc(db, 'cotizaciones', cotizacion.id);
-      await updateDoc(cotizacionRef, nuevosDatos);
-      console.log('Cotización actualizada:', nuevosDatos);
-  
-      // Actualiza el estado local con los nuevos datos
-      setCotizacion({ ...cotizacion, ...nuevosDatos });
-  
-      // Si necesitas realizar alguna acción adicional después de guardar, aquí es el lugar adecuado
+      // Aquí iría la lógica para guardar los cambios
+      // setCotizacion({ ...cotizacion, ...nuevosDatos });
+      closeModal();
     } catch (error) {
       console.error('Error al guardar la cotización:', error);
-      // Maneja el error según sea necesario
     }
   };
 
   return (
-    <div className="editar-cotizacion-form">
-      {/* Agrega el componente CotizacionForm aquí y pasa las props necesarias */}
-      <CotizacionForm
-        cotizacion={cotizacion}
-        clientes={clientes}
-        productos={productos}
-        guardarCotizacion={guardarCotizacion} // Pasa la función guardarCotizacion como prop
-        mostrarPrevia={mostrarPrevia} // Pasar mostrarPrevia como prop
-        setMostrarPrevia={setMostrarPrevia} // Pasar el setter de mostrarPrevia como prop
-      />
-      {/* Agrega el componente PreviaCotizacion aquí */}
-      {mostrarPrevia && (
-        <PreviaCotizacion
-          cotizacion={cotizacion}
-          clientes={clientes}
-          productos={productos}
-          continuarDesdePrevia={() => setMostrarPrevia(false)}
-        />
-      )}
-    </div>
+    <>
+      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles}>
+        <button onClick={closeModal} style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer', background: 'none', border: 'none' }}>X</button>
+        <div className="editar-cotizacion-form">
+          <h1 style={{ textAlign: "center" }}>Editar Cotización</h1>
+          <CotizacionForm
+            cotizacion={cotizacion}
+            clientes={clientes}
+            productos={productos}
+            guardarCotizacion={guardarCotizacion}
+            setCotizacion={setCotizacion}
+          />
+          {mostrarPrevia && (
+            <PreviaCotizacion
+              cotizacion={cotizacion}
+              clientes={clientes}
+              productos={productos}
+              continuarDesdePrevia={() => setMostrarPrevia(false)}
+            />
+          )}
+        </div>
+      </Modal>
+      {!modalIsOpen && <TablaCotizaciones />}
+    </>
   );
 };
 

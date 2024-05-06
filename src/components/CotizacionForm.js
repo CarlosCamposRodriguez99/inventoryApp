@@ -225,7 +225,7 @@ function CotizacionForm(props) {
         timer: 1000 // Muestra la alerta por 1.5 segundos
       });
     } catch (error) {
-      console.error('Error al guardar la cotización:', error);
+      //console.error('Error al guardar la cotización:', error);
     }
   };
   

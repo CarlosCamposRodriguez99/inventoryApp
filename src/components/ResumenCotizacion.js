@@ -1,7 +1,24 @@
 import React, { useState } from 'react';
 import EditarCotizacionForm from './EditarCotizacionForm';
 import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import Modal from 'react-modal'; // Importa react-modal
 
+// Establece la función de inicialización de react-modal para evitar un aviso de desenfoque de accesibilidad
+Modal.setAppElement('#root');
+
+const customStyles = {
+  content: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    border: 'none',
+    borderRadius: '0',
+    padding: '20px',
+    overflow: 'auto',
+    fontFamily: 'Roboto, sans-serif', // Aplica la fuente Roboto
+  },
+};
 
 const styles = StyleSheet.create({
   page: {
@@ -69,7 +86,8 @@ const ResumenCotizacion = ({
   cotizacion, 
   isOpen, 
   onClose,
-  clientes }) => {
+  clientes,
+  setCotizacion }) => {
 
   const [showOptions, setShowOptions] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -81,11 +99,14 @@ const ResumenCotizacion = ({
   if (editMode) {
     // Si está en modo de edición, renderiza el formulario de edición
     return (
-      <EditarCotizacionForm 
-        cotizacion={cotizacion} 
-        onClose={() => setEditMode(false)} 
-        clientes={clientes} 
-      />
+      <Modal isOpen={true} style={customStyles}>
+        <EditarCotizacionForm
+          cotizacion={cotizacion}
+          onClose={() => setEditMode(false)}
+          clientes={clientes}
+          setCotizacion={setCotizacion}
+        />
+      </Modal>
     );
   }
   
