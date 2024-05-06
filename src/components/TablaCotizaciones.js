@@ -4,7 +4,7 @@ import PreviaCotizacion from './PreviaCotizacion';
 import ResumenCotizacion from './ResumenCotizacion';
 import BandejaCotizaciones from './BandejaCotizaciones';
 import SearchBar from './SearchBar';
-import { collection, deleteDoc, getFirestore, doc } from 'firebase/firestore';
+import { collection, deleteDoc, getFirestore, doc, onSnapshot  } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 
 Modal.setAppElement('#root');
@@ -71,6 +71,15 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
       setLoadingCotizaciones(false);
     }
   }, [cotizaciones]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(getFirestore(), 'cotizaciones'), (snapshot) => {
+      const updatedCotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setCotizaciones(updatedCotizaciones);
+    });
+
+    return () => unsubscribe();
+  }, [setCotizaciones]);
 
   const handleToggleOptions = () => {
     setShowOptions(!showOptions);

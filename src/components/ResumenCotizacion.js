@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import EditarCotizacionForm from './EditarCotizacionForm';
 import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+
 
 const styles = StyleSheet.create({
   page: {
@@ -70,6 +72,22 @@ const ResumenCotizacion = ({
   clientes }) => {
 
   const [showOptions, setShowOptions] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+
+  const handleEdit = () => {
+    setEditMode(true); // Cambia a modo de edición al presionar el botón "Editar"
+  };
+
+  if (editMode) {
+    // Si está en modo de edición, renderiza el formulario de edición
+    return (
+      <EditarCotizacionForm 
+        cotizacion={cotizacion} 
+        onClose={() => setEditMode(false)} 
+        clientes={clientes} 
+      />
+    );
+  }
   
 
   const handlePrint = () => {
@@ -180,7 +198,7 @@ const ResumenCotizacion = ({
         </div>
 
           <button><img src="/img/correo.svg" alt="Correo" className="iconResumen" /> Correo</button>
-          <button><img src="/img/edit.svg" alt="Editar" className="iconResumen" /> Editar</button>
+          <button onClick={handleEdit}><img src="/img/edit.svg" alt="Editar" className="iconResumen" /> Editar</button>
           <button><img src="/img/factura.svg" alt="Convertir" className="iconResumen" /> Convertir en Factura</button>
         </div>
         <div className="cotizacion-header">
