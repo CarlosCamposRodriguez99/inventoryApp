@@ -59,7 +59,7 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingCotizaciones, setLoadingCotizaciones] = useState(false);
   const [selectedCotizaciones, setSelectedCotizaciones] = useState([]);
-  const [ordenamiento, setOrdenamiento] = useState('fechaCotizacion');
+  const [ordenamiento, setOrdenamiento] = useState({ campo: 'fechaCotizacion', ascendente: true });
   const [showOptions, setShowOptions] = useState(false);
   const [selectedCotizacionId, setSelectedCotizacionId] = useState(null);
   const [resumenVisible, setResumenVisible] = useState(false);
@@ -167,25 +167,37 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
     });
   };
 
-  const handleOrdenamientoChange = (tipoOrdenamiento) => {
-    setOrdenamiento(tipoOrdenamiento);
+  const handleOrdenamientoChange = (campo) => {
+    setOrdenamiento(prevOrdenamiento => ({
+      campo,
+      ascendente: campo === prevOrdenamiento.campo ? !prevOrdenamiento.ascendente : true
+    }));
   };
 
-  const ordenarCotizaciones = (cotizaciones, ordenamiento) => {
+  const ordenarCotizaciones = (cotizaciones, { campo, ascendente }) => {
     if (!cotizaciones || cotizaciones.length === 0) {
       return [];
     }
 
     const sortedCotizaciones = [...cotizaciones];
-    switch (ordenamiento) {
+    switch (campo) {
       case 'fechaCotizacion':
-        sortedCotizaciones.sort((a, b) => new Date(b.fechaCotizacion) - new Date(a.fechaCotizacion));
+        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * (new Date(a.fechaCotizacion) - new Date(b.fechaCotizacion)));
+        break;
+      case 'numeroCotizacion':
+        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * (a.numeroCotizacion - b.numeroCotizacion));
+        break;
+      case 'asunto':
+        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * a.asunto.localeCompare(b.asunto));
         break;
       case 'nombreCliente':
-        sortedCotizaciones.sort((a, b) => a.nombreCliente.localeCompare(b.nombreCliente));
+        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * a.nombreCliente.localeCompare(b.nombreCliente));
         break;
       case 'total':
-        sortedCotizaciones.sort((a, b) => a.total - b.total);
+        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * (a.total - b.total));
+        break;
+      case 'fechaVencimiento':
+        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * (new Date(a.fechaVencimiento) - new Date(b.fechaVencimiento)));
         break;
       default:
         break;
@@ -201,26 +213,6 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
       )}
       {!showBandeja && (
         <div>
-          <div className="button-container">
-            <button
-              className={ordenamiento === 'fechaCotizacion' ? 'active' : ''}
-              onClick={() => handleOrdenamientoChange('fechaCotizacion')}
-            >
-              Ordenar por fecha
-            </button>
-            <button
-              className={ordenamiento === 'nombreCliente' ? 'active' : ''}
-              onClick={() => handleOrdenamientoChange('nombreCliente')}
-            >
-              Ordenar por nombre
-            </button>
-            <button
-              className={ordenamiento === 'total' ? 'active' : ''}
-              onClick={() => handleOrdenamientoChange('total')}
-            >
-              Ordenar por total
-            </button>
-          </div>
           <img
             src="/img/checkbox.svg"
             alt="Icono"
@@ -242,13 +234,13 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
                 <table>
                   <thead>
                     <tr>
-                      <th>Estado</th>
-                      <th>Fecha</th>
-                      <th>No.</th>
-                      <th>Asunto</th>
-                      <th>Cliente</th>
-                      <th>Importe</th>
-                      <th>Vencimiento</th>
+                      <th onClick={() => handleOrdenamientoChange('estado')}>Estado</th>
+                      <th onClick={() => handleOrdenamientoChange('fechaCotizacion')}>Fecha</th>
+                      <th onClick={() => handleOrdenamientoChange('numeroCotizacion')}>No.</th>
+                      <th onClick={() => handleOrdenamientoChange('asunto')}>Asunto</th>
+                      <th onClick={() => handleOrdenamientoChange('nombreCliente')}>Cliente</th>
+                      <th onClick={() => handleOrdenamientoChange('total')}>Importe</th>
+                      <th onClick={() => handleOrdenamientoChange('fechaVencimiento')}>Vencimiento</th>
                       <th>Acciones</th>
                     </tr>
                   </thead>
