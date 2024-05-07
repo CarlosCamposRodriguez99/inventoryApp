@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import CotizacionForm from './CotizacionForm';
-import PreviaCotizacion from './PreviaCotizacion';
 import Modal from 'react-modal';
 import TablaCotizaciones from './TablaCotizaciones';
-import { useNavigate } from 'react-router-dom';
 
 Modal.setAppElement('#root');
 
@@ -21,23 +19,12 @@ const customStyles = {
   },
 };
 
-const EditarCotizacionForm = ({ cotizacion, clientes, productos, setCotizacion }) => {
-  const navigate = useNavigate();
+const EditarCotizacionForm = ({ cotizacion, clientes, productos, cotizaciones, setCotizaciones }) => {
+
   const [modalIsOpen, setModalIsOpen] = useState(true);
-  const [mostrarPrevia, setMostrarPrevia] = useState(false);
 
   const closeModal = () => {
     setModalIsOpen(false);
-  };
-
-  const guardarCotizacion = async (nuevosDatos) => {
-    try {
-      // Aquí iría la lógica para guardar los cambios
-      // setCotizacion({ ...cotizacion, ...nuevosDatos });
-      closeModal();
-    } catch (error) {
-      console.error('Error al guardar la cotización:', error);
-    }
   };
 
   return (
@@ -50,20 +37,17 @@ const EditarCotizacionForm = ({ cotizacion, clientes, productos, setCotizacion }
             cotizacion={cotizacion}
             clientes={clientes}
             productos={productos}
-            guardarCotizacion={guardarCotizacion}
-            setCotizacion={setCotizacion}
           />
-          {mostrarPrevia && (
-            <PreviaCotizacion
-              cotizacion={cotizacion}
-              clientes={clientes}
-              productos={productos}
-              continuarDesdePrevia={() => setMostrarPrevia(false)}
-            />
-          )}
         </div>
       </Modal>
-      {!modalIsOpen && <TablaCotizaciones />}
+      {!modalIsOpen && Array.isArray(cotizaciones) && cotizaciones.length > 0 && (
+        <TablaCotizaciones 
+          cotizaciones={cotizaciones} 
+          clientes={clientes} 
+          productos={productos} 
+          setCotizaciones={setCotizaciones} 
+        />
+      )}
     </>
   );
 };

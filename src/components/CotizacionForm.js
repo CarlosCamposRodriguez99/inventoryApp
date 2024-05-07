@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { collection, getDocs, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import TablaCotizaciones from './TablaCotizaciones';
 import Modal from 'react-modal';
@@ -67,6 +67,21 @@ function CotizacionForm(props) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [ultimaInteraccion, setUltimaInteraccion] = useState('');
   const [estado, setEstado] = useState('pendiente');
+  const { cotizacion } = props;
+  const [modoEdicion, setModoEdicion] = useState(false);
+
+  useEffect(() => {
+    // Si recibimos una cotización para editar, llenamos el formulario con sus datos
+    if (cotizacion) {
+      setModoEdicion(true);
+      // Llenar el formulario con los datos de la cotización
+      setCliente(cotizacion.cliente);
+      setAsunto(cotizacion.asunto);
+      setFechaVencimiento(cotizacion.fechaVencimiento);
+      setEstado(cotizacion.estado);
+      // Resto de los campos...
+    }
+  }, [cotizacion]);
 
 
   useEffect(() => {
@@ -188,6 +203,27 @@ function CotizacionForm(props) {
     setUltimaInteraccion(ultimaInteraccionString);
   };
 
+
+  const actualizarCotizacionExistente = async (cotizacionId, cotizacionData) => {
+    try {
+      // Aquí debes realizar la lógica para actualizar la cotización existente en tu base de datos
+      // Por ejemplo, podrías utilizar Firebase Firestore para actualizar el documento de la cotización
+  
+      // Primero, obtén la referencia al documento de la cotización que deseas actualizar
+      const cotizacionRef = doc(db, 'cotizaciones', cotizacionId);
+  
+      // Luego, utiliza la función `updateDoc` para actualizar los datos de la cotización
+      await updateDoc(cotizacionRef, cotizacionData);
+  
+      // Si la actualización se realiza correctamente, no es necesario hacer nada más
+    } catch (error) {
+      // Manejo de errores
+      console.error('Error al actualizar la cotización:', error);
+      throw error; // Puedes lanzar el error para que sea manejado por la función `guardar`
+    }
+  };
+
+
   const guardar = async () => {
     try {
       // Validación de campos obligatorios
@@ -214,7 +250,15 @@ function CotizacionForm(props) {
         total: calcularTotal(),
         createdAt: serverTimestamp()
       };
-      await props.guardarCotizacion(cotizacionData);
+  
+      if (modoEdicion) {
+        // Si estamos en modo de edición, actualiza la cotización existente
+        await actualizarCotizacionExistente(cotizacion.id, cotizacionData);
+      } else {
+        // Si no estamos en modo de edición, guarda una nueva cotización
+        await props.guardarCotizacion(cotizacionData);
+      }
+  
       setMostrarPrevia(true);
       actualizarUltimaInteraccion(); // Llama a la función para actualizar la última interacción al guardar
       // Muestra la alerta de éxito
@@ -222,15 +266,18 @@ function CotizacionForm(props) {
         icon: 'success',
         title: 'Cotización Guardada',
         showConfirmButton: false,
-        timer: 1000 // Muestra la alerta por 1.5 segundos
+        timer: 1000
+      }).then(() => {
+        // Después de mostrar la alerta de éxito, recarga la página
+        window.location.reload();
       });
     } catch (error) {
-      //console.error('Error al guardar la cotización:', error);
+      // Manejo de errores
+      console.error('Error al guardar la cotización:', error);
     }
   };
   
   
-
   const actualizarDescuento = (idProducto, tipoDescuento, valorDescuento) => {
     setProductosSeleccionados(prevProductos =>
       prevProductos.map(producto =>
@@ -397,7 +444,9 @@ function CotizacionForm(props) {
 
           <p>Guardado por última vez: {ultimaInteraccion}</p>
           <button type="button" onClick={abrirModalPrevia}>Vista Previa</button>
-          <button type="button" onClick={guardar}>Guardar</button>
+          <button type="button" onClick={guardar}>
+            {modoEdicion ? 'Actualizar Cotización' : 'Guardar Cotización'}
+          </button>
         </div>
       </form>
 
@@ -433,20 +482,15 @@ function CotizacionForm(props) {
 function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, productosSeleccionados, numeroCotizacion }) { 
   
     const nombreCliente = clientes.find(c => c.id === cliente)?.empresa || '';
-
     // Calcular subtotal
     const subtotal = productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.subtotal), 0);
-
     // Calcular descuento total (suponiendo que hay un descuento en cada producto)
     const descuentoTotal = productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.descuento), 0);
-  
     // Calcular IVA
     const iva = subtotal * 0.16; // Suponiendo que el IVA es del 16%
-  
     // Calcular total
     const total = subtotal - descuentoTotal + iva;
 
-    
 
   return (
     <div className="previa-cotizacion">
@@ -490,7 +534,6 @@ function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, producto
       <h3>Descuento: ${parseFloat(descuentoTotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>
       <h3>IVA: ${parseFloat(iva).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>
       <h3>Total: ${parseFloat(total).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h3>
-
 
     </div>
     

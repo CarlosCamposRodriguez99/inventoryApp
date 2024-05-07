@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import PreviaCotizacion from './PreviaCotizacion';
 import ResumenCotizacion from './ResumenCotizacion';
 import BandejaCotizaciones from './BandejaCotizaciones';
 import SearchBar from './SearchBar';
-import { collection, deleteDoc, getFirestore, doc, onSnapshot  } from 'firebase/firestore';
+import { collection, deleteDoc, getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 
 Modal.setAppElement('#root');
@@ -57,29 +57,33 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [cotizacionSeleccionada, setCotizacionSeleccionada] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loadingCotizaciones, setLoadingCotizaciones] = useState(true);
+  const [loadingCotizaciones, setLoadingCotizaciones] = useState(false);
   const [selectedCotizaciones, setSelectedCotizaciones] = useState([]);
   const [ordenamiento, setOrdenamiento] = useState('fechaCotizacion');
   const [showOptions, setShowOptions] = useState(false);
   const [selectedCotizacionId, setSelectedCotizacionId] = useState(null);
   const [resumenVisible, setResumenVisible] = useState(false);
   const [showBandeja, setShowBandeja] = useState(false);
-  
+
+  const setCotizacionesRef = useRef(setCotizaciones);
 
   useEffect(() => {
-    if (cotizaciones.length > 0) {
-      setLoadingCotizaciones(false);
-    }
-  }, [cotizaciones]);
+    setCotizacionesRef.current = setCotizaciones;
+  }, [setCotizaciones]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(getFirestore(), 'cotizaciones'), (snapshot) => {
+    setLoadingCotizaciones(true);
+    const firestore = getFirestore();
+    const cotizacionesRef = collection(firestore, 'cotizaciones');
+
+    const unsubscribe = onSnapshot(cotizacionesRef, (snapshot) => {
       const updatedCotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setCotizaciones(updatedCotizaciones);
+      setCotizacionesRef.current(updatedCotizaciones);
+      setLoadingCotizaciones(false);
     });
 
     return () => unsubscribe();
-  }, [setCotizaciones]);
+  }, []);
 
   const handleToggleOptions = () => {
     setShowOptions(!showOptions);
@@ -105,7 +109,7 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'
       });
-  
+
       if (confirmed.isConfirmed) {
         const firestore = getFirestore();
         const cotizacionesEliminadas = [];
@@ -125,16 +129,17 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
   };
 
   const filterCotizaciones = () => {
-    return cotizaciones.filter(cotizacion => {
+    const cotizacionesFiltradas = cotizaciones && cotizaciones.filter(cotizacion => {
       const searchableFields = [
         cotizacion.fechaCotizacion,
-        cotizacion.numeroCotizacion.toString(),
-        cotizacion.asunto.toLowerCase(),
-        cotizacion.nombreCliente.toLowerCase(),
-        cotizacion.total.toString()
+        cotizacion.numeroCotizacion?.toString(),
+        cotizacion.asunto?.toLowerCase(),
+        cotizacion.nombreCliente?.toLowerCase(),
+        cotizacion.total?.toString()
       ];
-      return searchableFields.some(field => field.includes(searchTerm.toLowerCase()));
+      return searchableFields.some(field => field && field.includes(searchTerm.toLowerCase()));
     });
+    return cotizacionesFiltradas || []; // Devuelve un array vacío si cotizacionesFiltradas es undefined
   };
 
   const abrirModalPrevia = (cotizacion) => {
@@ -148,7 +153,7 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
 
   const handleRowClick = (cotizacionId) => {
     setSelectedCotizacionId(cotizacionId);
-    setResumenVisible(true); // Mostrar el resumen cuando se hace clic en una fila
+    setResumenVisible(true);
     setShowBandeja(true);
   };
 
@@ -167,6 +172,10 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
   };
 
   const ordenarCotizaciones = (cotizaciones, ordenamiento) => {
+    if (!cotizaciones || cotizaciones.length === 0) {
+      return [];
+    }
+
     const sortedCotizaciones = [...cotizaciones];
     switch (ordenamiento) {
       case 'fechaCotizacion':
@@ -188,7 +197,7 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
     <div className="cotizaciones-table">
       <h2>Lista de Cotizaciones</h2>
       {showBandeja && (
-        <BandejaCotizaciones cotizaciones={cotizaciones} onRowClick={handleRowClick}/>
+        <BandejaCotizaciones cotizaciones={cotizaciones} onRowClick={handleRowClick} />
       )}
       {!showBandeja && (
         <div>
@@ -244,27 +253,27 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
                     </tr>
                   </thead>
                   <tbody>
-                  {ordenarCotizaciones(filterCotizaciones(), ordenamiento).map((cotizacion, index) => (
-                    <tr key={index} onClick={() => handleRowClick(cotizacion.id)}>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={selectedCotizaciones.includes(cotizacion.id)}
-                          onChange={() => handleSelectCotizacion(cotizacion.id)}
-                          style={{ marginRight: '5px' }}
-                        />{cotizacion.estado}
-                      </td>
-                      <td>{cotizacion.fechaCotizacion}</td>
-                      <td>{cotizacion.numeroCotizacion?.toString().padStart(4, '0')}</td>
-                      <td>{cotizacion.asunto}</td>
-                      <td>{cotizacion.nombreCliente}</td>
-                      <td>${parseFloat(cotizacion.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
-                      <td>{cotizacion.fechaVencimiento}</td>
-                      <td>
-                        <button className='btnPrevia' onClick={() => abrirModalPrevia(cotizacion)}>Ver</button>
-                      </td>
-                    </tr>
-                  ))}
+                    {ordenarCotizaciones(filterCotizaciones(), ordenamiento).map((cotizacion, index) => (
+                      <tr key={index} onClick={() => handleRowClick(cotizacion.id)}>
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={selectedCotizaciones.includes(cotizacion.id)}
+                            onChange={() => handleSelectCotizacion(cotizacion.id)}
+                            style={{ marginRight: '5px' }}
+                          />{cotizacion.estado}
+                        </td>
+                        <td>{cotizacion.fechaCotizacion}</td>
+                        <td>{cotizacion.numeroCotizacion?.toString().padStart(4, '0')}</td>
+                        <td>{cotizacion.asunto}</td>
+                        <td>{cotizacion.nombreCliente}</td>
+                        <td>${parseFloat(cotizacion.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
+                        <td>{cotizacion.fechaVencimiento}</td>
+                        <td>
+                          <button className='btnPrevia' onClick={() => abrirModalPrevia(cotizacion)}>Ver</button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               ) : (
@@ -298,11 +307,11 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
 
       <div className={`resumen-container ${selectedCotizacionId ? 'active' : ''}`}>
         <ResumenCotizacion
-          cotizacion={cotizaciones.find(cotizacion => cotizacion.id === selectedCotizacionId)}
-          isOpen={resumenVisible} // Pasamos el estado de visibilidad
+          cotizacion={cotizaciones && cotizaciones.find(cotizacion => cotizacion.id === selectedCotizacionId)}
+          isOpen={resumenVisible}
           onClose={() => {
-            setResumenVisible(false); // Cerrar el resumen
-            setSelectedCotizacionId(null); // Reiniciar la cotización seleccionada
+            setResumenVisible(false);
+            setSelectedCotizacionId(null);
             setShowBandeja(false);
           }}
           numeroCotizacion={cotizacionSeleccionada ? cotizacionSeleccionada.numeroCotizacion : null}
@@ -312,7 +321,6 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
       </div>
     </div>
   );
-
 }
 
 export default TablaCotizaciones;
