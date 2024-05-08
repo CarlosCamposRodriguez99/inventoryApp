@@ -125,9 +125,9 @@
 }
 
 .action-button2 {
-  position: fixed;
+  position: absolute;
   top: 20px;
-  left: 20%; /* Posiciona el botón en el centro horizontal */
+  left: 15%; /* Posiciona el botón en el centro horizontal */
   transform: translateX(-50%); /* Lo desplaza hacia la izquierda la mitad de su propio ancho */
   font-weight: 600;
   z-index: 9999;
