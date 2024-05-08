@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import EditarCotizacionForm from './EditarCotizacionForm';
 
@@ -79,6 +79,12 @@ const ResumenCotizacion = ({
   const handlePrint = () => {
     // Función handlePrint omitida para mayor claridad
   };
+
+  useEffect(() => {
+    if (!isOpen && onClose) {
+      onClose();
+    }
+  }, [isOpen, onClose]);
 
   const generatePDF = () => {
     // Verificamos si la cotización está disponible

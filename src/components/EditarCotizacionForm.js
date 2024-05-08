@@ -19,13 +19,16 @@ const customStyles = {
   },
 };
 
-const EditarCotizacionForm = ({ cotizacion, clientes, productos, cotizaciones, setCotizaciones }) => {
+const EditarCotizacionForm = ({ cotizacion, clientes, productos, cotizaciones, setCotizaciones, onClose }) => {
   const [modalIsOpen, setModalIsOpen] = useState(true);
-  const [mostrarResumen, setMostrarResumen] = useState(false);
+  const [mostrarResumen] = useState(false);
 
   const closeModal = () => {
     setModalIsOpen(false);
-    setMostrarResumen(true);
+    // Llamar a la función onClose para cerrar el ResumenCotizacion
+    if (onClose) {
+      onClose();
+    }
   };
 
   return (
@@ -42,7 +45,7 @@ const EditarCotizacionForm = ({ cotizacion, clientes, productos, cotizaciones, s
         </div>
       </Modal>
       {mostrarResumen && (
-        <ResumenCotizacion cotizacion={cotizacion} />
+        <ResumenCotizacion cotizacion={cotizacion} onClose={onClose} />
       )}
     </>
   );

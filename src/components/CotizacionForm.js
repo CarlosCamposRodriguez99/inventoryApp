@@ -445,7 +445,7 @@ function CotizacionForm(props) {
           <p>Guardado por última vez: {ultimaInteraccion}</p>
           <button type="button" onClick={abrirModalPrevia}>Vista Previa</button>
           <button type="button" onClick={guardar}>
-            {modoEdicion ? 'Actualizar Cotización' : 'Guardar Cotización'}
+            {modoEdicion ? 'Guardar' : 'Guardar Cotización'}
           </button>
         </div>
       </form>
