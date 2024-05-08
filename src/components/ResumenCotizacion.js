@@ -84,46 +84,59 @@ const ResumenCotizacion = ({
     // Función handleSave omitida para mayor claridad
   };
 
-  const generatePDF = () => (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.section}>
-          <View style={styles.logoContainer}>
-            <Image src="/img/logo-iciamex.png" style={styles.logo} />
-            <Text style={styles.title}>Cotización</Text>
-          </View>
-          <Text style={styles.title}>Previa de Cotización</Text>
-          <Text style={styles.details}>Cotización: {cotizacion && cotizacion.numeroCotizacion?.toString().padStart(4, '0')}</Text>
-          <Text style={styles.details}>Fecha de cotización: {cotizacion && cotizacion.fechaCotizacion}</Text>
-          <Text style={styles.details}>Asunto: {cotizacion && cotizacion.asunto}</Text>
-          <Text style={styles.details}>Cliente: {cotizacion && cotizacion.nombreCliente}</Text>
-          <Text style={styles.subtitle}>DESCRIPCIÓN</Text>
-          <View style={styles.table}>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>Cantidad</Text>
-              <Text style={styles.tableCell}>ID</Text>
-              <Text style={styles.tableCell}>Descripción</Text>
-              <Text style={styles.tableCell}>Precio</Text>
-              <Text style={styles.tableCell}>Subtotal</Text>
+  const generatePDF = () => {
+    // Verificamos si la cotización está disponible
+    if (!cotizacion) {
+      return null;
+    }
+
+    // Calcular subtotal, descuento total, IVA y total
+    const subtotal = cotizacion.productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.subtotal), 0);
+    const descuentoTotal = cotizacion.productosSeleccionados.reduce((acc, producto) => acc + (producto.descuento ? parseFloat(producto.descuento) : 0), 0);
+    const iva = subtotal * 0.16; // Suponiendo que el IVA es del 16%
+    const total = subtotal - descuentoTotal + iva;
+
+    return (
+      <Document>
+        <Page size="A4" style={styles.page}>
+          <View style={styles.section}>
+            <View style={styles.logoContainer}>
+              <Image src="/img/logo-iciamex.png" style={styles.logo} />
+              <Text style={styles.title}>Cotización</Text>
             </View>
-            {cotizacion && cotizacion.productosSeleccionados.map((producto) => (
-              <View style={styles.tableRow} key={producto.id}>
-                <Text style={styles.tableCell}>{producto.cantidad}</Text>
-                <Text style={styles.tableCell}>{producto.productoIdEditado}</Text>
-                <Text style={styles.tableCell}>{producto.nombre}</Text>
-                <Text style={styles.tableCell}>${parseFloat(producto.costo).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
-                <Text style={styles.tableCell}>${parseFloat(producto.subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
+            <Text style={styles.title}>Previa de Cotización</Text>
+            <Text style={styles.details}>Cotización: {cotizacion.numeroCotizacion?.toString().padStart(4, '0')}</Text>
+            <Text style={styles.details}>Fecha de cotización: {cotizacion.fechaCotizacion}</Text>
+            <Text style={styles.details}>Asunto: {cotizacion.asunto}</Text>
+            <Text style={styles.details}>Cliente: {cotizacion.nombreCliente}</Text>
+            <Text style={styles.subtitle}>DESCRIPCIÓN</Text>
+            <View style={styles.table}>
+              <View style={styles.tableRow}>
+                <Text style={styles.tableCell}>Cantidad</Text>
+                <Text style={styles.tableCell}>ID</Text>
+                <Text style={styles.tableCell}>Descripción</Text>
+                <Text style={styles.tableCell}>Precio</Text>
+                <Text style={styles.tableCell}>Subtotal</Text>
               </View>
-            ))}
+              {cotizacion.productosSeleccionados.map((producto) => (
+                <View style={styles.tableRow} key={producto.id}>
+                  <Text style={styles.tableCell}>{producto.cantidad}</Text>
+                  <Text style={styles.tableCell}>{producto.productoIdEditado}</Text>
+                  <Text style={styles.tableCell}>{producto.nombre}</Text>
+                  <Text style={styles.tableCell}>${parseFloat(producto.costo).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
+                  <Text style={styles.tableCell}>${parseFloat(producto.subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
+                </View>
+              ))}
+            </View>
+            <Text style={styles.text}>Descuento: ${parseFloat(descuentoTotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
+            <Text style={styles.text}>IVA: ${parseFloat(iva).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
+            <Text style={styles.text}>Subtotal: ${parseFloat(subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
+            <Text style={styles.text}>Total: ${parseFloat(total).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
           </View>
-          <Text style={styles.text}>Descuento: ${parseFloat(cotizacion && cotizacion.descuentoTotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
-          <Text style={styles.text}>IVA: ${parseFloat(cotizacion && cotizacion.iva).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
-          <Text style={styles.text}>Subtotal: ${parseFloat(cotizacion && cotizacion.subtotal).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
-          <Text style={styles.text}>Total: ${parseFloat(cotizacion && cotizacion.total).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
-        </View>
-      </Page>
-    </Document>
-  );
+        </Page>
+      </Document>
+    );
+  };
 
   const handleEdit = () => {
     setEditMode(true);
