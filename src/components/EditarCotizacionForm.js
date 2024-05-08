@@ -19,7 +19,7 @@ const customStyles = {
   },
 };
 
-const EditarCotizacionForm = ({ cotizacion, clientes, productos, cotizaciones, setCotizaciones, onClose }) => {
+const EditarCotizacionForm = ({ cotizacion, clientes, productos, onClose }) => {
   const [modalIsOpen, setModalIsOpen] = useState(true);
   const [mostrarResumen] = useState(false);
 
