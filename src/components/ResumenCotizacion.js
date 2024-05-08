@@ -80,10 +80,6 @@ const ResumenCotizacion = ({
     // Función handlePrint omitida para mayor claridad
   };
 
-  const handleSave = (nuevosDatos) => {
-    // Función handleSave omitida para mayor claridad
-  };
-
   const generatePDF = () => {
     // Verificamos si la cotización está disponible
     if (!cotizacion) {
@@ -158,7 +154,6 @@ const ResumenCotizacion = ({
         setCotizaciones={setCotizaciones}
         cotizaciones={cotizaciones}
         onClose={closeModal}
-        onSave={handleSave}
       />
     );
   }
