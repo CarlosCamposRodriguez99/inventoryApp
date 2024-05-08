@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import CotizacionForm from './CotizacionForm';
 import Modal from 'react-modal';
-import TablaCotizaciones from './TablaCotizaciones';
+import ResumenCotizacion from './ResumenCotizacion';
 
 Modal.setAppElement('#root');
 
@@ -20,11 +20,12 @@ const customStyles = {
 };
 
 const EditarCotizacionForm = ({ cotizacion, clientes, productos, cotizaciones, setCotizaciones }) => {
-
   const [modalIsOpen, setModalIsOpen] = useState(true);
+  const [mostrarResumen, setMostrarResumen] = useState(false);
 
   const closeModal = () => {
     setModalIsOpen(false);
+    setMostrarResumen(true);
   };
 
   return (
@@ -40,13 +41,8 @@ const EditarCotizacionForm = ({ cotizacion, clientes, productos, cotizaciones, s
           />
         </div>
       </Modal>
-      {!modalIsOpen && Array.isArray(cotizaciones) && cotizaciones.length > 0 && (
-        <TablaCotizaciones 
-          cotizaciones={cotizaciones} 
-          clientes={clientes} 
-          productos={productos} 
-          setCotizaciones={setCotizaciones} 
-        />
+      {mostrarResumen && (
+        <ResumenCotizacion cotizacion={cotizacion} />
       )}
     </>
   );
