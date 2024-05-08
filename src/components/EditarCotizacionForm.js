@@ -31,7 +31,7 @@ const EditarCotizacionForm = ({ cotizacion, clientes, productos, cotizaciones, s
   return (
     <>
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles}>
-        <button onClick={closeModal} style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer', background: 'none', border: 'none' }}>X</button>
+        <button onClick={closeModal} className="cerrar-button">X</button>
         <div className="editar-cotizacion-form">
           <h1 style={{ textAlign: "center" }}>Editar Cotización</h1>
           <CotizacionForm
