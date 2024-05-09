@@ -78,61 +78,83 @@ const ListaClientes = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (step === 1) {
-      if (formData.empresa.trim() === '') {
+    // Validar campos obligatorios para el primer paso
+    if (step === 1 && formData.empresa.trim() === '') {
         Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'El campo "Nombre de la Empresa" es obligatorio!',
+            icon: 'error',
+            title: 'Oops...',
+            text: 'El campo "Nombre de la Empresa" es obligatorio!',
         });
         return;
-      }
-      setStep(2);
-    } else {
-      try {
+    }
+
+    // Validar campos obligatorios para el segundo paso
+    if (step === 2 &&
+        (formData.domicilio.trim() === '' ||
+        formData.numeroExt.trim() === '' ||
+        formData.colonia.trim() === '' ||
+        formData.codigoPostal.trim() === '' ||
+        formData.ciudad.trim() === '' ||
+        formData.estado.trim() === '')) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Todos los campos son obligatorios!',
+        });
+        return;
+    }
+
+    // Paso 1 completado, avanzar al paso 2
+    if (step === 1) {
+        setStep(2);
+        return;
+    }
+
+    // Procesar el envío del formulario
+    try {
         const clienteData = { ...formData };
         if (editingClientId) {
-          await updateDoc(doc(db, 'clientes', editingClientId), clienteData);
-          setEditingClientId(null);
-          Swal.fire({
-            icon: 'success',
-            title: '¡Cliente actualizado con éxito!',
-            showConfirmButton: false,
-            timer: 1000,
-          });
+            await updateDoc(doc(db, 'clientes', editingClientId), clienteData);
+            setEditingClientId(null);
+            Swal.fire({
+                icon: 'success',
+                title: '¡Cliente actualizado con éxito!',
+                showConfirmButton: false,
+                timer: 1000,
+            });
         } else {
-          await addDoc(collection(db, 'clientes'), clienteData);
-          Swal.fire({
-            icon: 'success',
-            title: '¡Cliente registrado con éxito!',
-            showConfirmButton: false,
-            timer: 1000,
-          });
+            await addDoc(collection(db, 'clientes'), clienteData);
+            Swal.fire({
+                icon: 'success',
+                title: '¡Cliente registrado con éxito!',
+                showConfirmButton: false,
+                timer: 1000,
+            });
         }
         setFormData({
-          empresa: '',
-          rfc: '',
-          regimenFiscal: '',
-          moneda: '',
-          telefono: '',
-          correo: '',
-          imagenURL: null,
-          domicilio: '',
-          numeroExt: '',
-          numeroInt: '',
-          colonia: '',
-          codigoPostal: '',
-          ciudad: '',
-          estado: '',
+            empresa: '',
+            rfc: '',
+            regimenFiscal: '',
+            moneda: '',
+            telefono: '',
+            correo: '',
+            imagenURL: null,
+            domicilio: '',
+            numeroExt: '',
+            numeroInt: '',
+            colonia: '',
+            codigoPostal: '',
+            ciudad: '',
+            estado: '',
         });
         setStep(1);
         obtenerClientes();
         setModalIsOpen(false);
-      } catch (error) {
+    } catch (error) {
         console.error('Error al agregar cliente:', error);
-      }
     }
-  };
+};
+
 
   const handleEditClient = (id) => {
     const clientToEdit = clientes.find((cliente) => cliente.id === id);

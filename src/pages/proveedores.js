@@ -79,15 +79,28 @@ const ListaProveedores = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        // Validar campos obligatorios para ambos pasos
+        if (formData.empresa.trim() === '' ||
+            formData.rfc.trim() === '' ||
+            formData.regimenFiscal.trim() === '' ||
+            formData.moneda.trim() === '' ||
+            formData.telefono.trim() === '' ||
+            formData.correo.trim() === '' ||
+            formData.domicilio.trim() === '' ||
+            formData.numeroExt.trim() === '' ||
+            formData.colonia.trim() === '' ||
+            formData.codigoPostal.trim() === '' ||
+            formData.ciudad.trim() === '' ||
+            formData.estado.trim() === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Todos los campos son obligatorios'
+            });
+            return;
+        }
+    
         if (step === 1) {
-            if (formData.empresa.trim() === '') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'El campo "Nombre de la Empresa" es obligatorio!'
-                });
-                return;
-            }
             setStep(2);
         } else {
             try {
@@ -136,6 +149,7 @@ const ListaProveedores = () => {
             }
         }
     };
+    
 
     const handleEditProveedor = (id) => {
         const proveedorToEdit = proveedores.find(proveedor => proveedor.id === id);
