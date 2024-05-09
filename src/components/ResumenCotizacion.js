@@ -70,7 +70,7 @@ const ResumenCotizacion = ({
   onClose,
   clientes,
   setCotizaciones,
-  cotizaciones // Añade setCotizacion como prop
+  cotizaciones
 }) => {
   
   const [showOptions, setShowOptions] = useState(false);

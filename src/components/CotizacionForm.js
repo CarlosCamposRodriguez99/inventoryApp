@@ -79,6 +79,7 @@ function CotizacionForm(props) {
       setAsunto(cotizacion.asunto);
       setFechaVencimiento(cotizacion.fechaVencimiento);
       setEstado(cotizacion.estado);
+      setProductosSeleccionados(cotizacion.productosSeleccionados);
       // Resto de los campos...
     }
   }, [cotizacion]);
