@@ -1,13 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Modal from 'react-modal';
 import PreviaCotizacion from './PreviaCotizacion';
 import ResumenCotizacion from './ResumenCotizacion';
 import BandejaCotizaciones from './BandejaCotizaciones';
 import SearchBar from './SearchBar';
+import CotizacionForm from './CotizacionForm'; // Importa el componente CotizacionForm
 import { collection, deleteDoc, getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import Swal from 'sweetalert2';
+import Modal from 'react-modal';
 
-Modal.setAppElement('#root');
+const styleForm = {
+  content: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    border: 'none',
+    borderRadius: '0',
+    padding: '20px',
+    overflow: 'auto',
+    fontFamily: 'Roboto, sans-serif',
+  },
+};
 
 const customStyles = {
   content: {
@@ -53,7 +66,7 @@ const customStyles = {
   },
 };
 
-function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
+function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones, guardarCotizacion, modoEdicion, cotizacion }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [cotizacionSeleccionada, setCotizacionSeleccionada] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,8 +77,21 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
   const [selectedCotizacionId, setSelectedCotizacionId] = useState(null);
   const [resumenVisible, setResumenVisible] = useState(false);
   const [showBandeja, setShowBandeja] = useState(false);
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [showNuevoButton, setShowNuevoButton] = useState(true);
 
   const setCotizacionesRef = useRef(setCotizaciones);
+
+  const openFormulario = () => {
+    setMostrarFormulario(true);
+    setShowNuevoButton(false); // Oculta el botón + Nuevo al abrir el formulario
+  };
+
+  const closeModal = () => {
+    setMostrarFormulario(false);
+    setShowNuevoButton(true); // Vuelve a mostrar el botón + Nuevo al cerrar el formulario
+  };
+
 
   useEffect(() => {
     setCotizacionesRef.current = setCotizaciones;
@@ -278,9 +304,29 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
               <img className="delete-button" onClick={handleDeleteSelected} src="/img/eliminar.svg" alt="Eliminar seleccionados" />
             </div>
           )}
+          <Modal
+            isOpen={mostrarFormulario}
+            onRequestClose={closeModal}
+            contentLabel="Nuevo Cotización"
+            style={styleForm}
+          >
+            <button onClick={closeModal} className="cerrar-button">X</button>
+            <CotizacionForm
+              clientes={clientes}
+              guardarCotizacion={guardarCotizacion}
+              modoEdicion={modoEdicion}
+              cotizacion={cotizacion}
+            />
+          </Modal>
+
+          {showNuevoButton && (
+            <button className="action-button2" onClick={openFormulario}>
+              + Nuevo
+            </button>
+          )}
+
         </div>
       )}
-
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={cerrarModalPrevia}
@@ -308,7 +354,7 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones }) {
           }}
           numeroCotizacion={cotizacionSeleccionada ? cotizacionSeleccionada.numeroCotizacion : null}
           clientes={clientes}
-
+          mostrarBotonNuevo={false}
         />
       </div>
     </div>

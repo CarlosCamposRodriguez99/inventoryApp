@@ -442,11 +442,13 @@ function CotizacionForm(props) {
             </tbody>
           </table>
 
-          <p>Guardado por última vez: {ultimaInteraccion}</p>
-          <button type="button" onClick={abrirModalPrevia}>Vista Previa</button>
-          <button type="button" onClick={guardar}>
-            {modoEdicion ? 'Guardar' : 'Guardar Cotización'}
-          </button>
+          <div style={{textAlign: "center"}}>
+            <p>Guardado por última vez: {ultimaInteraccion}</p>
+            <button type="button" onClick={abrirModalPrevia}>Vista Previa</button>
+            <button type="button" onClick={guardar}>
+              {modoEdicion ? 'Guardar' : 'Guardar Cotización'}
+            </button>
+          </div>
         </div>
       </form>
 

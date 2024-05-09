@@ -72,6 +72,7 @@ const ResumenCotizacion = ({
   setCotizaciones,
   cotizaciones // Añade setCotizacion como prop
 }) => {
+  
   const [showOptions, setShowOptions] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [showSummary, setShowSummary] = useState(true);
