@@ -145,8 +145,6 @@
   background-color: #0056b3; /* Color de fondo al pasar el mouse */
 }
 
-
-
 .prices-button {
   position: fixed;
   top: 20px;
@@ -833,6 +831,44 @@
 .cotizaciones-table {
   text-align: center;
 }
+
+/**/
+
+.search-bar {
+  position: relative;
+  right: 25%;
+}
+
+.encabezado {
+  display: flex;
+  gap: 2rem;
+  justify-content: left;
+  align-items: center;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.boton-accion {
+  position: relative;
+  left: 5%;
+  font-weight: 600;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.boton-accion:hover {
+  background-color: #0056b3;
+}
+
+
+
 
 
 
