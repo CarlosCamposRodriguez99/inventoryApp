@@ -235,7 +235,13 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones, guardarCot
     <div className="cotizaciones-table">
       <h2>Lista de Cotizaciones</h2>
       {showBandeja && (
-        <BandejaCotizaciones cotizaciones={cotizaciones} onRowClick={handleRowClick} />
+        <BandejaCotizaciones 
+          cotizaciones={cotizaciones} 
+          onRowClick={handleRowClick}  
+          clientes={clientes}
+          guardarCotizacion={guardarCotizacion}
+          cotizacion={cotizacion}          
+        />
       )}
       {!showBandeja && (
         <div>
