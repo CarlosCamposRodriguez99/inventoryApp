@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image, PDFViewer } from '@react-pdf/renderer';
 import EditarCotizacionForm from './EditarCotizacionForm';
 
 const styles = StyleSheet.create({
@@ -62,6 +62,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 5,
   },
+  pdfContainer: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pdfViewer: {
+    width: '80%',
+    height: '80%',
+    border: '1px solid #ccc',
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 5,
+    backgroundColor: 'transparent',
+    color: "#fff",
+    cursor: 'pointer',
+  },
 });
 
 const ResumenCotizacion = ({ 
@@ -76,10 +104,7 @@ const ResumenCotizacion = ({
   const [showOptions, setShowOptions] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [showSummary, setShowSummary] = useState(true);
-
-  const handlePrint = () => {
-    // Función handlePrint omitida para mayor claridad
-  };
+  const [pdfVisible, setPdfVisible] = useState(false);
 
   useEffect(() => {
     if (!isOpen && onClose) {
@@ -140,6 +165,26 @@ const ResumenCotizacion = ({
       </Document>
     );
   };
+
+  const handlePrint = () => {
+    setPdfVisible(true);
+  };
+
+  const handleClosePDF = () => {
+    setPdfVisible(false);
+  };
+
+
+  if (pdfVisible) {
+    return (
+      <div className="pdf-viewer-container" style={styles.pdfContainer}>
+        <button className="cerrar-button" style={styles.closeButton} onClick={handleClosePDF}>X</button>
+        <PDFViewer className="pdf-viewer" style={styles.pdfViewer}>
+          {generatePDF()}
+        </PDFViewer>
+      </div>
+    );
+  }
 
   const handleEdit = () => {
     setEditMode(true);
