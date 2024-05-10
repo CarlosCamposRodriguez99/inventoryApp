@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PreviaCotizacion from './PreviaCotizacion';
-import ResumenCotizacion from './ResumenCotizacion';
-import BandejaCotizaciones from './BandejaCotizaciones';
+import PreviaOrden from './PreviaOrden';
+import ResumenOrden from './ResumenOrden';
+import BandejaOrdenes from './BandejaOrdenes';
 import SearchBar from './SearchBar';
-import CotizacionForm from './CotizacionForm'; // Importa el componente CotizacionForm
+import OrdenForm from './OrdenForm'; // Importa el componente CotizacionForm
 import { collection, deleteDoc, getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 import Modal from 'react-modal';
+
 
 const styleForm = {
   content: {
@@ -235,7 +236,7 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
     <div className="cotizaciones-table">
       <h2>Lista de Ordenes de Compra</h2>
       {showBandeja && (
-        <BandejaCotizaciones 
+        <BandejaOrdenes 
           cotizaciones={cotizaciones} 
           onRowClick={handleRowClick}  
           clientes={clientes}
@@ -317,7 +318,7 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
             style={styleForm}
           >
             <button onClick={closeModal} className="cerrar-button">X</button>
-            <CotizacionForm
+            <OrdenForm
               clientes={clientes}
               guardarCotizacion={guardarCotizacion}
               modoEdicion={modoEdicion}
@@ -340,7 +341,7 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
         style={customStyles}
       >
         {cotizacionSeleccionada && (
-          <PreviaCotizacion
+          <PreviaOrden
             cotizacion={cotizacionSeleccionada}
             numeroCotizacion={cotizacionSeleccionada.numeroCotizacion}
             clientes={clientes}
@@ -350,7 +351,7 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
       </Modal>
 
       <div className={`resumen-container ${selectedCotizacionId ? 'active' : ''}`}>
-        <ResumenCotizacion
+        <ResumenOrden
           cotizacion={cotizaciones && cotizaciones.find(cotizacion => cotizacion.id === selectedCotizacionId)}
           isOpen={resumenVisible}
           onClose={() => {

@@ -54,6 +54,8 @@ const customStyles = {
 };
 
 function OrdenForm(props) {
+  const [comprador, setComprador] = useState('');
+  const [condicion, setCondicion] = useState('');
   const [cliente, setCliente] = useState('');
   const [clientes, setClientes] = useState([]);
   const [productos, setProductos] = useState([]);
@@ -333,19 +335,22 @@ function OrdenForm(props) {
         <div className="cotizacion-header">
           <img src="/img/logo-iciamex.png" alt="ICIAMEX" className="logoCotizacion" />
           <div className="border-right"></div>
-          <h1 className="cotizacion-title">Cotización</h1>
+          <h1 className="cotizacion-title">Orden de Compra</h1>
         </div>
 
         <div className="cotizacion-body">
-          <label htmlFor="cliente">Cliente:</label>
-          <select id="cliente" name="cliente" value={cliente} onChange={(e) => setCliente(e.target.value)}>
-            <option value="">Seleccionar cliente</option>
+          <label htmlFor="cliente">Proveedor:</label>
+          <select id="proveedor" name="proveedor" value={cliente} onChange={(e) => setCliente(e.target.value)}>
+            <option value="">Seleccionar Proveedor</option>
             {clientes.map((cliente) => (
               <option key={cliente.id} value={cliente.id}>
                 {cliente.empresa}
               </option>
             ))}
           </select><br />
+
+          <label htmlFor="asunto">Comprador:</label>
+          <input type="text" id="comprador" name="comprador" value={comprador} onChange={(e) => setComprador(e.target.value)} /><br />
 
           <label htmlFor="asunto">Asunto:</label>
           <input type="text" id="asunto" name="asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} /><br />
@@ -361,6 +366,30 @@ function OrdenForm(props) {
             <option value="pendiente">Pendiente</option>
             <option value="completado">Completado</option>
           </select><br />
+
+          <label htmlFor="estado">Incoterms:</label>
+          <select id="estado" name="estado" value={estado} onChange={(e) => setEstado(e.target.value)}>
+            <option value="exw">EXW</option>
+            <option value="fob">FOB</option>
+            <option value="cif">CIF</option>
+            <option value="dap">DAP</option>
+            <option value="ddp">DDP</option>
+          </select><br />
+
+          <label htmlFor="estado">Divisas:</label>
+          <select id="estado" name="estado" value={estado} onChange={(e) => setEstado(e.target.value)}>
+            <option value="exw">MX</option>
+            <option value="fob">USD</option>
+            <option value="jpy">JPY</option>
+            <option value="gbp">GBP</option>
+            <option value="aud">AUD</option>
+            <option value="chf">CHF</option>
+            <option value="cny">CNY</option>
+          </select><br />
+
+          <label htmlFor="asunto">Condición de Pago:</label>
+          <input type="text" id="comprador" name="comprador" value={condicion} onChange={(e) => setCondicion(e.target.value)} /><br />
+
 
           <label htmlFor="productos">Agregar Producto:</label>
           <select id="productos" name="productos" value={productoSeleccionado} onChange={agregarProductoAutomatico}>

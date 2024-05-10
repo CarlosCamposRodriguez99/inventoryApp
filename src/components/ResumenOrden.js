@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, Image, PDFViewer } from '@react-pdf/renderer';
-import EditarCotizacionForm from './EditarCotizacionForm';
+import EditarOrdenForm from './EditarOrdenForm';
 
 const styles = StyleSheet.create({
   page: {
@@ -199,7 +199,7 @@ const ResumenOrden = ({
 
   if (editMode) {
     return (
-      <EditarCotizacionForm
+      <EditarOrdenForm
         cotizacion={cotizacion}
         clientes={clientes}
         productos={cotizacion && cotizacion.productosSeleccionados}
@@ -250,14 +250,14 @@ const ResumenOrden = ({
         <div className="cotizacion-header">
           <img src="/img/logo-iciamex.png" alt="ICIAMEX" className="logoCotizacion" />
           <div className="border-right"></div>
-          <h1 className="cotizacion-title">Cotización</h1>
+          <h1 className="cotizacion-title">Orden de Compra</h1>
         </div>
         <div className="resumen-cotizacion-content">
           <h2>No. {cotizacion.numeroCotizacion.toString().padStart(4, '0')}</h2>
           <div style={{borderBottom: "2px solid #cecece"}}></div>
-          <p>Fecha de Cotización: {fechaCotizacion}</p>
+          <p>Fecha de Orden: {fechaCotizacion}</p>
           <p>Asunto: {asunto}</p>
-          <p>Cliente: {nombreCliente}</p>
+          <p>Proveedor: {nombreCliente}</p>
           <h3>DESCRIPCIÓN</h3>
           <table className="productos-table">
             <thead>

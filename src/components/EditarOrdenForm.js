@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import CotizacionForm from './CotizacionForm';
+import OrdenForm from './OrdenForm';
 import Modal from 'react-modal';
-import ResumenCotizacion from './ResumenCotizacion';
+import ResumenOrden from './ResumenOrden';
 
 Modal.setAppElement('#root');
 
@@ -36,8 +36,8 @@ const EditarOrdenForm = ({ cotizacion, clientes, productos, onClose }) => {
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles}>
         <button onClick={closeModal} className="cerrar-button">X</button>
         <div className="editar-cotizacion-form">
-          <h1 style={{ textAlign: "center" }}>Editar Cotización</h1>
-          <CotizacionForm
+          <h1 style={{ textAlign: "center" }}>Editar Orden de Compra</h1>
+          <OrdenForm
             cotizacion={cotizacion}
             clientes={clientes}
             productos={productos}
@@ -45,7 +45,7 @@ const EditarOrdenForm = ({ cotizacion, clientes, productos, onClose }) => {
         </div>
       </Modal>
       {mostrarResumen && (
-        <ResumenCotizacion cotizacion={cotizacion} onClose={onClose} />
+        <ResumenOrden cotizacion={cotizacion} onClose={onClose} />
       )}
     </>
   );

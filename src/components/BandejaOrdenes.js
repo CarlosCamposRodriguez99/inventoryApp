@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SearchBar from './SearchBar';
 import Modal from 'react-modal';
-import CotizacionForm from './CotizacionForm';
+import OrdenForm from './OrdenForm';
 
 Modal.setAppElement('#root');
 
@@ -46,11 +46,11 @@ const BandejaOrdenes = ({ cotizaciones, onRowClick, guardarCotizacion, modoEdici
             <input type="checkbox" />
             <div className="info-container">
               <div className="info-column">
-                <p>Cliente: {cotizacion.nombreCliente}</p>
+                <p>Proveedor: {cotizacion.nombreCliente}</p>
                 <p>Importe: ${parseFloat(cotizacion?.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</p>
               </div>
               <div className="info-column">
-                <p>No. Cotización: {cotizacion.numeroCotizacion}</p>
+                <p>No. Orden: {cotizacion.numeroCotizacion}</p>
                 <p>Fecha: {cotizacion.fechaCotizacion}</p>
                 <p>Estado: {cotizacion.estado}</p>
                 <p>Asunto: {cotizacion.asunto}</p>
@@ -85,7 +85,7 @@ const BandejaOrdenes = ({ cotizaciones, onRowClick, guardarCotizacion, modoEdici
       >
         <button onClick={closeModal} className="cerrar-button">X</button>
         {/* Pasamos `guardarCotizacion` como prop a CotizacionForm */}
-        <CotizacionForm
+        <OrdenForm
           clientes={clientes}
           guardarCotizacion={guardarCotizacion}
           cotizacion={cotizacion}
