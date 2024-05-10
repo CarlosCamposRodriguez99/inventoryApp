@@ -130,7 +130,6 @@
   left: 15%; /* Posiciona el botón en el centro horizontal */
   transform: translateX(-50%); /* Lo desplaza hacia la izquierda la mitad de su propio ancho */
   font-weight: 600;
-  z-index: 9999;
   background-color: #007bff;
   color: #fff;
   border: none;
