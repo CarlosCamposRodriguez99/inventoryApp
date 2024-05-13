@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { collection, getDocs, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import TablaCotizaciones from './TablaCotizaciones';
+import TablaOrdenes from './TablaOrdenes';
 import Modal from 'react-modal';
 
 
@@ -56,11 +56,11 @@ const customStyles = {
 function OrdenForm(props) {
   const [comprador, setComprador] = useState('');
   const [condicion, setCondicion] = useState('');
-  const [cliente, setCliente] = useState('');
-  const [clientes, setClientes] = useState([]);
+  const [proveedor, setProveedor] = useState('');
+  const [proveedores, setProveedores] = useState([]);
   const [productos, setProductos] = useState([]);
   const [asunto, setAsunto] = useState('');
-  const [fechaCotizacion] = useState(getCurrentDate());
+  const [fechaOrden] = useState(getCurrentDate());
   const [fechaVencimiento, setFechaVencimiento] = useState('');
   const [productoSeleccionado, setProductoSeleccionado] = useState('');
   const [productosSeleccionados, setProductosSeleccionados] = useState([]);
@@ -69,22 +69,22 @@ function OrdenForm(props) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [ultimaInteraccion, setUltimaInteraccion] = useState('');
   const [estado, setEstado] = useState('pendiente');
-  const { cotizacion } = props;
+  const { orden } = props;
   const [modoEdicion, setModoEdicion] = useState(false);
 
   useEffect(() => {
     // Si recibimos una cotización para editar, llenamos el formulario con sus datos
-    if (cotizacion) {
+    if (orden) {
       setModoEdicion(true);
       // Llenar el formulario con los datos de la cotización
-      setCliente(cotizacion.cliente);
-      setAsunto(cotizacion.asunto);
-      setFechaVencimiento(cotizacion.fechaVencimiento);
-      setEstado(cotizacion.estado);
-      setProductosSeleccionados(cotizacion.productosSeleccionados);
+      setProveedor(orden.proveedor);
+      setAsunto(orden.asunto);
+      setFechaVencimiento(orden.fechaVencimiento);
+      setEstado(orden.estado);
+      setProductosSeleccionados(orden.productosSeleccionados);
       // Resto de los campos...
     }
-  }, [cotizacion]);
+  }, [orden]);
 
 
   useEffect(() => {
@@ -99,7 +99,7 @@ function OrdenForm(props) {
   
 
   useEffect(() => {
-    obtenerClientes();
+    obtenerProveedores();
     obtenerProductos();
   }, []);
 
@@ -120,13 +120,13 @@ function OrdenForm(props) {
     }, 0);
   };
 
-  const obtenerClientes = async () => {
+  const obtenerProveedores = async () => {
     try {
-      const clientesSnapshot = await getDocs(collection(db, 'clientes'));
-      const listaClientes = clientesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setClientes(listaClientes);
+      const proveedoresSnapshot = await getDocs(collection(db, 'proveedores'));
+      const listaProveedores = proveedoresSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setProveedores(listaProveedores);
     } catch (error) {
-      console.error('Error al obtener clientes:', error);
+      console.error('Error al obtener proveedores:', error);
     }
   };
 
@@ -207,21 +207,21 @@ function OrdenForm(props) {
   };
 
 
-  const actualizarCotizacionExistente = async (cotizacionId, cotizacionData) => {
+  const actualizarOrdenExistente = async (ordenId, ordenData) => {
     try {
       // Aquí debes realizar la lógica para actualizar la cotización existente en tu base de datos
       // Por ejemplo, podrías utilizar Firebase Firestore para actualizar el documento de la cotización
   
       // Primero, obtén la referencia al documento de la cotización que deseas actualizar
-      const cotizacionRef = doc(db, 'cotizaciones', cotizacionId);
+      const ordenRef = doc(db, 'ordenes', ordenId);
   
       // Luego, utiliza la función `updateDoc` para actualizar los datos de la cotización
-      await updateDoc(cotizacionRef, cotizacionData);
+      await updateDoc(ordenRef, ordenData);
   
       // Si la actualización se realiza correctamente, no es necesario hacer nada más
     } catch (error) {
       // Manejo de errores
-      console.error('Error al actualizar la cotización:', error);
+      console.error('Error al actualizar la orden:', error);
       throw error; // Puedes lanzar el error para que sea manejado por la función `guardar`
     }
   };
@@ -230,7 +230,7 @@ function OrdenForm(props) {
   const guardar = async () => {
     try {
       // Validación de campos obligatorios
-      if (!cliente || !asunto || !fechaVencimiento || productosSeleccionados.length === 0) {
+      if (!proveedor || !asunto || !fechaVencimiento || productosSeleccionados.length === 0) {
         // Muestra una alerta si algún campo obligatorio está vacío
         Swal.fire({
           icon: 'warning',
@@ -243,10 +243,10 @@ function OrdenForm(props) {
       }
   
       // Si todos los campos están completos, procede con el guardado
-      const cotizacionData = {
-        cliente,
+      const ordenData = {
+        proveedor,
         asunto,
-        fechaCotizacion,
+        fechaOrden,
         fechaVencimiento,
         estado,
         productosSeleccionados,
@@ -256,10 +256,10 @@ function OrdenForm(props) {
   
       if (modoEdicion) {
         // Si estamos en modo de edición, actualiza la cotización existente
-        await actualizarCotizacionExistente(cotizacion.id, cotizacionData);
+        await actualizarOrdenExistente(orden.id, ordenData);
       } else {
         // Si no estamos en modo de edición, guarda una nueva cotización
-        await props.guardarCotizacion(cotizacionData);
+        await props.guardarOrden(ordenData);
       }
   
       setMostrarPrevia(true);
@@ -267,7 +267,7 @@ function OrdenForm(props) {
       // Muestra la alerta de éxito
       Swal.fire({
         icon: 'success',
-        title: 'Cotización Guardada',
+        title: 'Orden Guardada',
         showConfirmButton: false,
         timer: 1000
       }).then(() => {
@@ -276,7 +276,7 @@ function OrdenForm(props) {
       });
     } catch (error) {
       // Manejo de errores
-      console.error('Error al guardar la cotización:', error);
+      console.error('Error al guardar la orden:', error);
     }
   };
   
@@ -340,11 +340,11 @@ function OrdenForm(props) {
 
         <div className="cotizacion-body">
           <label htmlFor="cliente">Proveedor:</label>
-          <select id="proveedor" name="proveedor" value={cliente} onChange={(e) => setCliente(e.target.value)}>
+          <select id="proveedor" name="proveedor" value={proveedor} onChange={(e) => setProveedor(e.target.value)}>
             <option value="">Seleccionar Proveedor</option>
-            {clientes.map((cliente) => (
-              <option key={cliente.id} value={cliente.id}>
-                {cliente.empresa}
+            {proveedores.map((proveedor) => (
+              <option key={proveedor.id} value={proveedor.id}>
+                {proveedor.empresa}
               </option>
             ))}
           </select><br />
@@ -476,7 +476,7 @@ function OrdenForm(props) {
             <p>Guardado por última vez: {ultimaInteraccion}</p>
             <button type="button" onClick={abrirModalPrevia}>Vista Previa</button>
             <button type="button" onClick={guardar}>
-              {modoEdicion ? 'Guardar' : 'Guardar Cotización'}
+              {modoEdicion ? 'Guardar' : 'Guardar Orden'}
             </button>
           </div>
         </div>
@@ -489,14 +489,14 @@ function OrdenForm(props) {
         style={customStyles}
       >
         {mostrarPrevia && (
-          <PreviaCotizacion
-            cliente={cliente}
-            clientes={clientes}
+          <PreviaOrden
+            proveedor={proveedor}
+            proveedores={proveedores}
             asunto={asunto}
-            fechaCotizacion={fechaCotizacion}
+            fechaOrden={fechaOrden}
             productosSeleccionados={productosSeleccionados}
             continuarDesdePrevia={continuarDesdePrevia}
-            numeroCotizacion={props.numeroCotizacion}
+            numeroOrden={props.numeroOrden}
           />
         )}
         <div className="modal-buttons">
@@ -505,15 +505,15 @@ function OrdenForm(props) {
       </Modal>
 
       {mostrarTabla && (
-        <TablaCotizaciones cotizaciones={props.cotizaciones} />
+        <TablaOrdenes ordenes={props.ordenes} />
       )}
     </div>
   );
 }
 
-function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, productosSeleccionados, numeroCotizacion }) { 
+function PreviaOrden({ proveedor, proveedores, asunto, fechaOrden, productosSeleccionados, numeroOrden }) { 
   
-    const nombreCliente = clientes.find(c => c.id === cliente)?.empresa || '';
+    const nombreProveedor = proveedores.find(c => c.id === proveedor)?.empresa || '';
     // Calcular subtotal
     const subtotal = productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.subtotal), 0);
     // Calcular descuento total (suponiendo que hay un descuento en cada producto)
@@ -529,14 +529,14 @@ function PreviaCotizacion({ cliente, clientes, asunto, fechaCotizacion, producto
        <div className="cotizacion-header">
           <img src="/img/logo-iciamex.png" alt="ICIAMEX" className="logoCotizacion" />
           <div className="border-right"></div>
-          <h1 className="cotizacion-title">Cotización</h1>
+          <h1 className="cotizacion-title">Orden de Compra</h1>
       </div>
       <h1>Previa</h1>
-      <h2>Cotización: {numeroCotizacion?.toString().padStart(4, '0')}</h2>
+      <h2>Orden: {numeroOrden?.toString().padStart(4, '0')}</h2>
       <hr />
-      <p>Fecha de cotización: {fechaCotizacion}</p>
+      <p>Fecha de orden: {fechaOrden}</p>
       <p>Asunto: {asunto}</p>
-      <p>Cliente: {nombreCliente}</p>
+      <p>Proveedor: {nombreProveedor}</p>
       <h3>DESCRIPCIÓN</h3>
       <table className="productos-table">
         <thead>

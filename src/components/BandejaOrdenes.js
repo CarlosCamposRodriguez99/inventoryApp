@@ -5,21 +5,21 @@ import OrdenForm from './OrdenForm';
 
 Modal.setAppElement('#root');
 
-const BandejaOrdenes = ({ cotizaciones, onRowClick, guardarCotizacion, modoEdicion, cotizacion, clientes }) => {
-  const [filteredCotizaciones, setFilteredCotizaciones] = useState(cotizaciones);
+const BandejaOrdenes = ({ ordenes, onRowClick, guardarOrden, modoEdicion, orden, proveedores }) => {
+  const [filteredOrdenes, setFilteredOrdenes] = useState(ordenes);
   const [showModal, setShowModal] = useState(false);
 
 
   const handleSearch = (searchTerm) => {
-    const filtered = cotizaciones.filter(cotizacion => {
+    const filtered = ordenes.filter(orden => {
       return (
-        cotizacion.nombreCliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cotizacion.asunto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cotizacion.fechaCotizacion.includes(searchTerm) ||
-        cotizacion.estado.toLowerCase().includes(searchTerm)
+        orden.nombreProveedor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        orden.asunto.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        orden.fechaOrden.includes(searchTerm) ||
+        orden.estado.toLowerCase().includes(searchTerm)
       );
     });
-    setFilteredCotizaciones(filtered);
+    setFilteredOrdenes(filtered);
   };
 
   const openFormulario = () => {
@@ -40,20 +40,20 @@ const BandejaOrdenes = ({ cotizaciones, onRowClick, guardarCotizacion, modoEdici
         <button className="boton-accion" onClick={openFormulario}>+ Nuevo</button>
       </div>
 
-      {filteredCotizaciones.length > 0 ? (
-        filteredCotizaciones.map(cotizacion => (
-          <div key={cotizacion.id} className="mensaje-cotizacion" onClick={() => onRowClick(cotizacion.id)}>
+      {filteredOrdenes.length > 0 ? (
+        filteredOrdenes.map(orden => (
+          <div key={orden.id} className="mensaje-cotizacion" onClick={() => onRowClick(orden.id)}>
             <input type="checkbox" />
             <div className="info-container">
               <div className="info-column">
-                <p>Proveedor: {cotizacion.nombreCliente}</p>
-                <p>Importe: ${parseFloat(cotizacion?.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</p>
+                <p>Proveedor: {orden.nombreProveedor}</p>
+                <p>Importe: ${parseFloat(orden?.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</p>
               </div>
               <div className="info-column">
-                <p>No. Orden: {cotizacion.numeroCotizacion}</p>
-                <p>Fecha: {cotizacion.fechaCotizacion}</p>
-                <p>Estado: {cotizacion.estado}</p>
-                <p>Asunto: {cotizacion.asunto}</p>
+                <p>No. Orden: {orden.numeroOrden}</p>
+                <p>Fecha: {orden.fechaOrden}</p>
+                <p>Estado: {orden.estado}</p>
+                <p>Asunto: {orden.asunto}</p>
               </div>
             </div>
           </div>
@@ -65,7 +65,7 @@ const BandejaOrdenes = ({ cotizaciones, onRowClick, guardarCotizacion, modoEdici
       <Modal
         isOpen={showModal}
         onRequestClose={closeModal}
-        contentLabel="Nuevo Cotización"
+        contentLabel="Nueva Orden"
         style={{
           overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.5)'
@@ -86,9 +86,9 @@ const BandejaOrdenes = ({ cotizaciones, onRowClick, guardarCotizacion, modoEdici
         <button onClick={closeModal} className="cerrar-button">X</button>
         {/* Pasamos `guardarCotizacion` como prop a CotizacionForm */}
         <OrdenForm
-          clientes={clientes}
-          guardarCotizacion={guardarCotizacion}
-          cotizacion={cotizacion}
+          proveedores={proveedores}
+          guardarOrden={guardarOrden}
+          orden={orden}
         />
       </Modal>
     </div>

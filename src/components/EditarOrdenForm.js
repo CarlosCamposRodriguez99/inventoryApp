@@ -19,7 +19,7 @@ const customStyles = {
   },
 };
 
-const EditarOrdenForm = ({ cotizacion, clientes, productos, onClose }) => {
+const EditarOrdenForm = ({ orden, proveedores, productos, onClose }) => {
   const [modalIsOpen, setModalIsOpen] = useState(true);
   const [mostrarResumen] = useState(false);
 
@@ -38,14 +38,14 @@ const EditarOrdenForm = ({ cotizacion, clientes, productos, onClose }) => {
         <div className="editar-cotizacion-form">
           <h1 style={{ textAlign: "center" }}>Editar Orden de Compra</h1>
           <OrdenForm
-            cotizacion={cotizacion}
-            clientes={clientes}
+            orden={orden}
+            proveedores={proveedores}
             productos={productos}
           />
         </div>
       </Modal>
       {mostrarResumen && (
-        <ResumenOrden cotizacion={cotizacion} onClose={onClose} />
+        <ResumenOrden orden={orden} onClose={onClose} />
       )}
     </>
   );

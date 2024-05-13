@@ -3,11 +3,10 @@ import PreviaOrden from './PreviaOrden';
 import ResumenOrden from './ResumenOrden';
 import BandejaOrdenes from './BandejaOrdenes';
 import SearchBar from './SearchBar';
-import OrdenForm from './OrdenForm'; // Importa el componente CotizacionForm
+import OrdenForm from './OrdenForm';
 import { collection, deleteDoc, getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 import Modal from 'react-modal';
-
 
 const styleForm = {
   content: {
@@ -67,21 +66,21 @@ const customStyles = {
   },
 };
 
-function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizacion, modoEdicion, cotizacion }) {
+function TablaOrdenes({ ordenes, proveedores, setOrdenes, guardarOrden, modoEdicion, orden }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [cotizacionSeleccionada, setCotizacionSeleccionada] = useState(null);
+  const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loadingCotizaciones, setLoadingCotizaciones] = useState(false);
-  const [selectedCotizaciones, setSelectedCotizaciones] = useState([]);
-  const [ordenamiento, setOrdenamiento] = useState({ campo: 'fechaCotizacion', ascendente: true });
+  const [loadingOrdenes, setLoadingOrdenes] = useState(false);
+  const [selectedOrdenes, setSelectedOrdenes] = useState([]);
+  const [ordenamiento, setOrdenamiento] = useState({ campo: 'fechaOrden', ascendente: true });
   const [showOptions, setShowOptions] = useState(false);
-  const [selectedCotizacionId, setSelectedCotizacionId] = useState(null);
+  const [selectedOrdenId, setSelectedOrdenId] = useState(null);
   const [resumenVisible, setResumenVisible] = useState(false);
   const [showBandeja, setShowBandeja] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [showNuevoButton, setShowNuevoButton] = useState(true);
 
-  const setCotizacionesRef = useRef(setCotizaciones);
+  const setOrdenesRef = useRef(setOrdenes);
 
   const openFormulario = () => {
     setMostrarFormulario(true);
@@ -95,18 +94,18 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
 
 
   useEffect(() => {
-    setCotizacionesRef.current = setCotizaciones;
-  }, [setCotizaciones]);
+    setOrdenesRef.current = setOrdenes;
+  }, [setOrdenes]);
 
   useEffect(() => {
-    setLoadingCotizaciones(true);
+    setLoadingOrdenes(true);
     const firestore = getFirestore();
-    const cotizacionesRef = collection(firestore, 'cotizaciones');
+    const ordenesRef = collection(firestore, 'ordenes');
 
-    const unsubscribe = onSnapshot(cotizacionesRef, (snapshot) => {
-      const updatedCotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setCotizacionesRef.current(updatedCotizaciones);
-      setLoadingCotizaciones(false);
+    const unsubscribe = onSnapshot(ordenesRef, (snapshot) => {
+      const updatedOrdenes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setOrdenesRef.current(updatedOrdenes);
+      setLoadingOrdenes(false);
     });
 
     return () => unsubscribe();
@@ -117,18 +116,18 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
   };
 
   const handleDeselectAll = () => {
-    setSelectedCotizaciones([]);
+    setSelectedOrdenes([]);
   };
 
   const handleSelectAll = () => {
-    setSelectedCotizaciones(cotizaciones.map(cotizacion => cotizacion.id));
+    setSelectedOrdenes(ordenes.map(orden => orden.id));
   };
 
   const handleDeleteSelected = async () => {
     try {
       const confirmed = await Swal.fire({
         title: '¿Estás seguro?',
-        text: 'Esta acción eliminará las cotizaciones seleccionadas.',
+        text: 'Esta acción eliminará las ordenes seleccionadas.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -139,38 +138,38 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
 
       if (confirmed.isConfirmed) {
         const firestore = getFirestore();
-        const cotizacionesEliminadas = [];
-        const cotizacionesRef = collection(firestore, 'cotizaciones');
-        for (const cotizacionId of selectedCotizaciones) {
-          const cotizacionDocRef = doc(cotizacionesRef, cotizacionId);
-          await deleteDoc(cotizacionDocRef);
-          cotizacionesEliminadas.push(cotizacionId);
+        const ordenesEliminadas = [];
+        const ordenesRef = collection(firestore, 'ordenes');
+        for (const ordenId of selectedOrdenes) {
+          const ordenDocRef = doc(ordenesRef, ordenId);
+          await deleteDoc(ordenDocRef);
+          ordenesEliminadas.push(ordenId);
         }
-        const cotizacionesRestantes = cotizaciones.filter(cotizacion => !cotizacionesEliminadas.includes(cotizacion.id));
-        setCotizaciones(cotizacionesRestantes);
-        setSelectedCotizaciones([]);
+        const ordenesRestantes = ordenes.filter(orden => !ordenesEliminadas.includes(orden.id));
+        setOrdenes(ordenesRestantes);
+        setSelectedOrdenes([]);
       }
     } catch (error) {
-      console.error('Error al eliminar cotizaciones:', error);
+      console.error('Error al eliminar orden:', error);
     }
   };
 
-  const filterCotizaciones = () => {
-    const cotizacionesFiltradas = cotizaciones && cotizaciones.filter(cotizacion => {
+  const filterOrdenes = () => {
+    const ordenesFiltradas = ordenes && ordenes.filter(orden => {
       const searchableFields = [
-        cotizacion.fechaCotizacion,
-        cotizacion.numeroCotizacion?.toString(),
-        cotizacion.asunto?.toLowerCase(),
-        cotizacion.nombreCliente?.toLowerCase(),
-        cotizacion.total?.toString()
+        orden.fechaOrden,
+        orden.numeroOrden?.toString(),
+        orden.asunto?.toLowerCase(),
+        orden.nombreProveedor?.toLowerCase(),
+        orden.total?.toString()
       ];
       return searchableFields.some(field => field && field.includes(searchTerm.toLowerCase()));
     });
-    return cotizacionesFiltradas || []; // Devuelve un array vacío si cotizacionesFiltradas es undefined
+    return ordenesFiltradas || [];
   };
 
-  const abrirModalPrevia = (cotizacion) => {
-    setCotizacionSeleccionada(cotizacion);
+  const abrirModalPrevia = (orden) => {
+    setOrdenSeleccionada(orden);
     setModalIsOpen(true);
   };
 
@@ -178,18 +177,18 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
     setModalIsOpen(false);
   };
 
-  const handleRowClick = (cotizacionId) => {
-    setSelectedCotizacionId(cotizacionId);
+  const handleRowClick = (ordenId) => {
+    setSelectedOrdenId(ordenId);
     setResumenVisible(true);
     setShowBandeja(true);
   };
 
-  const handleSelectCotizacion = (cotizacionId) => {
-    setSelectedCotizaciones(prevSelected => {
-      if (prevSelected.includes(cotizacionId)) {
-        return prevSelected.filter(id => id !== cotizacionId);
+  const handleSelectOrden = (ordenId) => {
+    setSelectedOrdenes(prevSelected => {
+      if (prevSelected.includes(ordenId)) {
+        return prevSelected.filter(id => id !== ordenId);
       } else {
-        return [...prevSelected, cotizacionId];
+        return [...prevSelected, ordenId];
       }
     });
   };
@@ -201,35 +200,35 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
     }));
   };
 
-  const ordenarCotizaciones = (cotizaciones, { campo, ascendente }) => {
-    if (!cotizaciones || cotizaciones.length === 0) {
+  const ordenarOrdenes = (ordenes, { campo, ascendente }) => {
+    if (!ordenes || ordenes.length === 0) {
       return [];
     }
 
-    const sortedCotizaciones = [...cotizaciones];
+    const sortedOrdenes = [...ordenes];
     switch (campo) {
-      case 'fechaCotizacion':
-        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * (new Date(a.fechaCotizacion) - new Date(b.fechaCotizacion)));
+      case 'fechaOrden':
+        sortedOrdenes.sort((a, b) => (ascendente ? 1 : -1) * (new Date(a.fechaOrden) - new Date(b.fechaOrden)));
         break;
       case 'numeroCotizacion':
-        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * (a.numeroCotizacion - b.numeroCotizacion));
+        sortedOrdenes.sort((a, b) => (ascendente ? 1 : -1) * (a.numeroOrden - b.numeroOrden));
         break;
       case 'asunto':
-        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * a.asunto.localeCompare(b.asunto));
+        sortedOrdenes.sort((a, b) => (ascendente ? 1 : -1) * a.asunto.localeCompare(b.asunto));
         break;
-      case 'nombreCliente':
-        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * a.nombreCliente.localeCompare(b.nombreCliente));
+      case 'nombreProveedor':
+        sortedOrdenes.sort((a, b) => (ascendente ? 1 : -1) * a.nombreProveedor.localeCompare(b.nombreProveedor));
         break;
       case 'total':
-        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * (a.total - b.total));
+        sortedOrdenes.sort((a, b) => (ascendente ? 1 : -1) * (a.total - b.total));
         break;
       case 'fechaVencimiento':
-        sortedCotizaciones.sort((a, b) => (ascendente ? 1 : -1) * (new Date(a.fechaVencimiento) - new Date(b.fechaVencimiento)));
+        sortedOrdenes.sort((a, b) => (ascendente ? 1 : -1) * (new Date(a.fechaVencimiento) - new Date(b.fechaVencimiento)));
         break;
       default:
         break;
     }
-    return sortedCotizaciones;
+    return sortedOrdenes;
   };
 
   return (
@@ -237,11 +236,11 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
       <h2>Lista de Ordenes de Compra</h2>
       {showBandeja && (
         <BandejaOrdenes 
-          cotizaciones={cotizaciones} 
+          ordenes={ordenes} 
           onRowClick={handleRowClick}  
-          clientes={clientes}
-          guardarCotizacion={guardarCotizacion}
-          cotizacion={cotizacion}          
+          proveedores={proveedores}
+          guardarOrden={guardarOrden}
+          orden={orden}          
         />
       )}
       {!showBandeja && (
@@ -259,11 +258,11 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
             </div>
           )}
           <SearchBar handleSearch={setSearchTerm} />
-          {loadingCotizaciones ? (
+          {loadingOrdenes ? (
             <p style={{ textAlign: 'center' }}>Cargando...</p>
           ) : (
             <>
-              {filterCotizaciones().length > 0 ? (
+              {filterOrdenes().length > 0 ? (
                 <table>
                   <thead>
                     <tr>
@@ -278,24 +277,24 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
                     </tr>
                   </thead>
                   <tbody>
-                    {ordenarCotizaciones(filterCotizaciones(), ordenamiento).map((cotizacion, index) => (
-                      <tr key={index} onClick={() => handleRowClick(cotizacion.id)}>
+                    {ordenarOrdenes(filterOrdenes(), ordenamiento).map((orden, index) => (
+                      <tr key={index} onClick={() => handleRowClick(orden.id)}>
                         <td>
                           <input
                             type="checkbox"
-                            checked={selectedCotizaciones.includes(cotizacion.id)}
-                            onChange={() => handleSelectCotizacion(cotizacion.id)}
+                            checked={selectedOrdenes.includes(orden.id)}
+                            onChange={() => handleSelectOrden(orden.id)}
                             style={{ marginRight: '5px' }}
-                          />{cotizacion.estado}
+                          />{orden.estado}
                         </td>
-                        <td>{cotizacion.fechaCotizacion}</td>
-                        <td>{cotizacion.numeroCotizacion?.toString().padStart(4, '0')}</td>
-                        <td>{cotizacion.asunto}</td>
-                        <td>{cotizacion.nombreCliente}</td>
-                        <td>${parseFloat(cotizacion.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
-                        <td>{cotizacion.fechaVencimiento}</td>
+                        <td>{orden.fechaOrden}</td>
+                        <td>{orden.numeroOrden?.toString().padStart(4, '0')}</td>
+                        <td>{orden.asunto}</td>
+                        <td>{orden.nombreProveedor}</td>
+                        <td>${parseFloat(orden.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
+                        <td>{orden.fechaVencimiento}</td>
                         <td>
-                          <button className='btnPrevia' onClick={() => abrirModalPrevia(cotizacion)}>Ver</button>
+                          <button className='btnPrevia' onClick={() => abrirModalPrevia(orden)}>Ver</button>
                         </td>
                       </tr>
                     ))}
@@ -306,7 +305,7 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
               )}
             </>
           )}
-          {selectedCotizaciones.length > 0 && (
+          {selectedOrdenes.length > 0 && (
             <div className="delete-button-container">
               <img className="delete-button" onClick={handleDeleteSelected} src="/img/eliminar.svg" alt="Eliminar seleccionados" />
             </div>
@@ -314,15 +313,15 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
           <Modal
             isOpen={mostrarFormulario}
             onRequestClose={closeModal}
-            contentLabel="Nuevo Cotización"
+            contentLabel="Nueva Orden"
             style={styleForm}
           >
             <button onClick={closeModal} className="cerrar-button">X</button>
             <OrdenForm
-              clientes={clientes}
-              guardarCotizacion={guardarCotizacion}
+              proveedores={proveedores}
+              guardarOrden={guardarOrden}
               modoEdicion={modoEdicion}
-              cotizacion={cotizacion}
+              orden={orden}
             />
           </Modal>
 
@@ -340,27 +339,27 @@ function TablaOrdenes({ cotizaciones, clientes, setCotizaciones, guardarCotizaci
         contentLabel="Vista Previa"
         style={customStyles}
       >
-        {cotizacionSeleccionada && (
+        {ordenSeleccionada && (
           <PreviaOrden
-            cotizacion={cotizacionSeleccionada}
-            numeroCotizacion={cotizacionSeleccionada.numeroCotizacion}
-            clientes={clientes}
+            orden={ordenSeleccionada}
+            numeroOrden={ordenSeleccionada.numeroOrden}
+            proveedores={proveedores}
             cerrarPrevia={cerrarModalPrevia}
           />
         )}
       </Modal>
 
-      <div className={`resumen-container ${selectedCotizacionId ? 'active' : ''}`}>
+      <div className={`resumen-container ${selectedOrdenId ? 'active' : ''}`}>
         <ResumenOrden
-          cotizacion={cotizaciones && cotizaciones.find(cotizacion => cotizacion.id === selectedCotizacionId)}
+          orden={ordenes && ordenes.find(orden => orden.id === selectedOrdenId)}
           isOpen={resumenVisible}
           onClose={() => {
             setResumenVisible(false);
-            setSelectedCotizacionId(null);
+            setSelectedOrdenId(null);
             setShowBandeja(false);
           }}
-          numeroCotizacion={cotizacionSeleccionada ? cotizacionSeleccionada.numeroCotizacion : null}
-          clientes={clientes}
+          numeroOrden={ordenSeleccionada ? ordenSeleccionada.numeroOrden : null}
+          proveedores={proveedores}
           mostrarBotonNuevo={false}
         />
       </div>

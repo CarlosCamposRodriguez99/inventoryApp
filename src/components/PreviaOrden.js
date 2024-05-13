@@ -63,15 +63,15 @@ const styles = StyleSheet.create({
   },
 });
 
-function PreviaOrden({ cotizacion, numeroCotizacion, clientes, cerrarPrevia }) {
+function PreviaOrden({ orden, numeroOrden, proveedores, cerrarPrevia }) {
 
-  const { asunto, fechaCotizacion, productosSeleccionados } = cotizacion;
+  const { asunto, fechaOrden, productosSeleccionados } = orden;
 
   // Buscamos el cliente correspondiente en la lista de clientes
-  const clienteEncontrado = clientes.find(cliente => cliente.id === cotizacion.cliente);
+  const proveedorEncontrado = proveedores.find(proveedor => proveedor.id === orden.proveedor);
 
   // Verificamos si se encontró el cliente
-  const nombreCliente = clienteEncontrado ? clienteEncontrado.empresa : 'Cliente no encontrado';
+  const nombreProveedor = proveedorEncontrado ? proveedorEncontrado.empresa : 'Proveedor no encontrado';
 
   // Calcular subtotal
   const subtotal = productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.subtotal), 0);
@@ -91,13 +91,13 @@ function PreviaOrden({ cotizacion, numeroCotizacion, clientes, cerrarPrevia }) {
         <View style={styles.section}>
           <View style={styles.logoContainer}>
             <Image src="/img/logo-iciamex.png" style={styles.logo} />
-            <Text style={styles.title}>Cotización</Text>
+            <Text style={styles.title}>Orden de Compra</Text>
           </View>
-          <Text style={styles.title}>Previa de Cotización</Text>
-          <Text style={styles.details}>Cotización: {numeroCotizacion?.toString().padStart(4, '0')}</Text>
-          <Text style={styles.details}>Fecha de cotización: {fechaCotizacion}</Text>
+          <Text style={styles.title}>Previa de la Orden</Text>
+          <Text style={styles.details}>Orden: {numeroOrden?.toString().padStart(4, '0')}</Text>
+          <Text style={styles.details}>Fecha de orden: {fechaOrden}</Text>
           <Text style={styles.details}>Asunto: {asunto}</Text>
-          <Text style={styles.details}>Cliente: {nombreCliente}</Text>
+          <Text style={styles.details}>Proveedor: {nombreProveedor}</Text>
           <Text style={styles.subtitle}>DESCRIPCIÓN</Text>
           <View style={styles.table}>
             <View style={styles.tableRow}>
@@ -137,11 +137,11 @@ function PreviaOrden({ cotizacion, numeroCotizacion, clientes, cerrarPrevia }) {
           <h1 className="cotizacion-title">Orden de Compra</h1>
       </div>
       <h1>Previa</h1>
-      <h2>No. {numeroCotizacion?.toString().padStart(4, '0')}</h2>
+      <h2>No. {numeroOrden?.toString().padStart(4, '0')}</h2>
       <hr />
-      <p>Fecha de orden: {fechaCotizacion}</p>
+      <p>Fecha de orden: {fechaOrden}</p>
       <p>Asunto: {asunto}</p>
-      <p>Proveedor: {nombreCliente}</p>
+      <p>Proveedor: {nombreProveedor}</p>
       <h3>DESCRIPCIÓN</h3>
       <table className="productos-table">
         <thead>

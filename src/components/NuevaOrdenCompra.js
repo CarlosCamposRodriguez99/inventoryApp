@@ -10,64 +10,64 @@ import PreviaOrden from '../components/PreviaOrden';
 const MySwal = withReactContent(Swal);
 
 function NuevaOrdenCompra({ mostrarBotonNuevo }) {
-  const [cotizaciones, setCotizaciones] = useState([]);
+  const [ordenes, setOrdenes] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [mostrarPrevia, setMostrarPrevia] = useState(false);
-  const [cotizacionSeleccionada, setCotizacionSeleccionada] = useState(null);
-  const [clientes, setClientes] = useState([]);
-  const [numeroCotizacion, setNumeroCotizacion] = useState(null);
+  const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
+  const [proveedores, setProveedores] = useState([]);
+  const [numeroOrden, setNumeroOrden] = useState(null);
 
   useEffect(() => {
-    obtenerClientes();
-    obtenerUltimoNumeroCotizacion();
-    obtenerCotizaciones();
+    obtenerProvedores();
+    obtenerUltimoNumeroOrden();
+    obtenerOrdenes();
   }, []);
 
   const activarFormulario = () => {
     setMostrarFormulario(true);
   };
 
-  const obtenerUltimoNumeroCotizacion = async () => {
+  const obtenerUltimoNumeroOrden = async () => {
     try {
-      const cotizacionesRef = collection(db, 'cotizaciones');
-      const q = query(cotizacionesRef, orderBy('numeroCotizacion', 'desc'), limit(1));
+      const ordenesRef = collection(db, 'ordenes');
+      const q = query(ordenesRef, orderBy('numeroOrden', 'desc'), limit(1));
       const querySnapshot = await getDocs(q);
       let ultimoNumero = 1;
       if (!querySnapshot.empty) {
         querySnapshot.forEach((doc) => {
-          const ultimaCotizacion = doc.data();
-          ultimoNumero = ultimaCotizacion.numeroCotizacion + 1;
+          const ultimaOrden = doc.data();
+          ultimoNumero = ultimaOrden.numeroOrden + 1;
         });
       }
-      setNumeroCotizacion(ultimoNumero);
+      setNumeroOrden(ultimoNumero);
     } catch (error) {
-      console.error('Error al obtener el último número de cotización:', error);
+      console.error('Error al obtener el último número de orden:', error);
     }
   };
 
-  const obtenerCotizaciones = async () => {
+  const obtenerOrdenes = async () => {
     try {
-      const cotizacionesSnapshot = await getDocs(collection(db, 'cotizaciones'));
-      const listaCotizaciones = cotizacionesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setCotizaciones(listaCotizaciones);
+      const ordenesSnapshot = await getDocs(collection(db, 'ordenes'));
+      const listaOrdenes = ordenesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setOrdenes(listaOrdenes);
     } catch (error) {
-      console.error('Error al obtener las cotizaciones:', error);
+      console.error('Error al obtener las ordenes:', error);
     }
   };
 
-  const obtenerClientes = async () => {
+  const obtenerProvedores = async () => {
     try {
-      const clientesSnapshot = await getDocs(collection(db, 'clientes'));
-      const listaClientes = clientesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setClientes(listaClientes);
+      const proveedoresSnapshot = await getDocs(collection(db, 'proveedores'));
+      const listaProveedores = proveedoresSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProveedores(listaProveedores);
     } catch (error) {
-      console.error('Error al obtener los clientes:', error);
+      console.error('Error al obtener los proveedores:', error);
     }
   };
 
-  const guardarCotizacion = async (cotizacionData) => {
+  const guardarOrden = async (ordenData) => {
     try {
-      if (!cotizacionData.cliente || !cotizacionData.asunto || !cotizacionData.fechaVencimiento || cotizacionData.productosSeleccionados.length === 0) {
+      if (!ordenData.proveedor || !ordenData.asunto || !ordenData.fechaVencimiento || ordenData.productosSeleccionados.length === 0) {
         MySwal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -76,30 +76,30 @@ function NuevaOrdenCompra({ mostrarBotonNuevo }) {
         return;
       }
   
-      const cliente = clientes.find(cliente => cliente.id === cotizacionData.cliente);
-      if (!cliente) {
-        console.error('Cliente no encontrado');
+      const proveedor = proveedores.find(proveedor => proveedor.id === ordenData.proveedor);
+      if (!proveedor) {
+        console.error('Proveedor no encontrado');
         return;
       }
   
-      const cotizacion = {
-        ...cotizacionData,
-        nombreCliente: cliente.empresa,
-        numeroCotizacion,
+      const orden = {
+        ...ordenData,
+        nombreProveedor: proveedor.empresa,
+        numeroOrden,
       };
   
-      const docRef = await addDoc(collection(db, 'cotizaciones'), cotizacion);
-      console.log('Cotización guardada con ID: ', docRef.id);
-      obtenerCotizaciones();
+      const docRef = await addDoc(collection(db, 'ordenes'), orden);
+      console.log('Orden guardada con ID: ', docRef.id);
+      obtenerOrdenes();
       setMostrarFormulario(false);
-      setNumeroCotizacion(prevNumero => prevNumero + 1);
+      setNumeroOrden(prevNumero => prevNumero + 1);
     } catch (error) {
-      console.error('Error al guardar la cotización:', error);
+      console.error('Error al guardar la orden:', error);
     }
   };
 
-  const verPrevia = (cotizacion) => {
-    setCotizacionSeleccionada(cotizacion);
+  const verPrevia = (orden) => {
+    setOrdenSeleccionada(orden);
     setMostrarPrevia(true);
   };
 
@@ -111,11 +111,11 @@ function NuevaOrdenCompra({ mostrarBotonNuevo }) {
         </div>
       )}
       {mostrarFormulario ? (
-        <OrdenForm guardarCotizacion={guardarCotizacion} clientes={clientes} numeroCotizacion={numeroCotizacion}/> 
+        <OrdenForm guardarOrden={guardarOrden} proveedores={proveedores} numeroOrden={numeroOrden}/> 
       ) : mostrarPrevia ? (
-        <PreviaOrden cotizacion={cotizacionSeleccionada} cerrarPrevia={() => setMostrarPrevia(false)} clientes={clientes} guardarCotizacion={guardarCotizacion} numeroCotizacion={cotizacionSeleccionada.numeroCotizacion}/> 
+        <PreviaOrden orden={ordenSeleccionada} cerrarPrevia={() => setMostrarPrevia(false)} proveedores={proveedores} guardarOrden={guardarOrden} numeroOrden={ordenSeleccionada.numeroOrden}/> 
       ) : (
-        <TablaOrdenes cotizaciones={cotizaciones} verPrevia={verPrevia} setCotizaciones={setCotizaciones} clientes={clientes} guardarCotizacion={guardarCotizacion} numeroCotizacion={numeroCotizacion} />
+        <TablaOrdenes ordenes={ordenes} verPrevia={verPrevia} setOrdenes={setOrdenes} proveedores={proveedores} guardarOrden={guardarOrden} numeroOrden={numeroOrden} />
       )}
     </div>
   );

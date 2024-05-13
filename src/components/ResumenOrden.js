@@ -93,12 +93,12 @@ const styles = StyleSheet.create({
 });
 
 const ResumenOrden = ({ 
-  cotizacion, 
+  orden, 
   isOpen, 
   onClose,
-  clientes,
-  setCotizaciones,
-  cotizaciones
+  proveedores,
+  setOrdenes,
+  ordenes
 }) => {
   
   const [showOptions, setShowOptions] = useState(false);
@@ -114,13 +114,13 @@ const ResumenOrden = ({
 
   const generatePDF = () => {
     // Verificamos si la cotización está disponible
-    if (!cotizacion) {
+    if (!orden) {
       return null;
     }
 
     // Calcular subtotal, descuento total, IVA y total
-    const subtotal = cotizacion.productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.subtotal), 0);
-    const descuentoTotal = cotizacion.productosSeleccionados.reduce((acc, producto) => acc + (producto.descuento ? parseFloat(producto.descuento) : 0), 0);
+    const subtotal = orden.productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.subtotal), 0);
+    const descuentoTotal = orden.productosSeleccionados.reduce((acc, producto) => acc + (producto.descuento ? parseFloat(producto.descuento) : 0), 0);
     const iva = subtotal * 0.16; // Suponiendo que el IVA es del 16%
     const total = subtotal - descuentoTotal + iva;
 
@@ -130,13 +130,13 @@ const ResumenOrden = ({
           <View style={styles.section}>
             <View style={styles.logoContainer}>
               <Image src="/img/logo-iciamex.png" style={styles.logo} />
-              <Text style={styles.title}>Cotización</Text>
+              <Text style={styles.title}>Orden</Text>
             </View>
-            <Text style={styles.title}>Previa de Cotización</Text>
-            <Text style={styles.details}>Cotización: {cotizacion.numeroCotizacion?.toString().padStart(4, '0')}</Text>
-            <Text style={styles.details}>Fecha de cotización: {cotizacion.fechaCotizacion}</Text>
-            <Text style={styles.details}>Asunto: {cotizacion.asunto}</Text>
-            <Text style={styles.details}>Cliente: {cotizacion.nombreCliente}</Text>
+            <Text style={styles.title}>Previa de la Orden</Text>
+            <Text style={styles.details}>Orden: {orden.numeroOrden?.toString().padStart(4, '0')}</Text>
+            <Text style={styles.details}>Fecha de orden: {orden.fechaOrden}</Text>
+            <Text style={styles.details}>Asunto: {orden.asunto}</Text>
+            <Text style={styles.details}>Proveedor: {orden.nombreProveedor}</Text>
             <Text style={styles.subtitle}>DESCRIPCIÓN</Text>
             <View style={styles.table}>
               <View style={styles.tableRow}>
@@ -146,7 +146,7 @@ const ResumenOrden = ({
                 <Text style={styles.tableCell}>Precio</Text>
                 <Text style={styles.tableCell}>Subtotal</Text>
               </View>
-              {cotizacion.productosSeleccionados.map((producto) => (
+              {orden.productosSeleccionados.map((producto) => (
                 <View style={styles.tableRow} key={producto.id}>
                   <Text style={styles.tableCell}>{producto.cantidad}</Text>
                   <Text style={styles.tableCell}>{producto.productoIdEditado}</Text>
@@ -200,25 +200,25 @@ const ResumenOrden = ({
   if (editMode) {
     return (
       <EditarOrdenForm
-        cotizacion={cotizacion}
-        clientes={clientes}
-        productos={cotizacion && cotizacion.productosSeleccionados}
-        setCotizaciones={setCotizaciones}
-        cotizaciones={cotizaciones}
+        orden={orden}
+        proveedores={proveedores}
+        productos={orden && orden.productosSeleccionados}
+        setOrdenes={setOrdenes}
+        ordenes={ordenes}
         onClose={closeModal}
       />
     );
   }
 
   // Si el resumen debe mostrarse y la cotización y los productos están disponibles
-  if (showSummary && cotizacion && cotizacion.productosSeleccionados) {
-    const { asunto, fechaCotizacion, productosSeleccionados } = cotizacion;
+  if (showSummary && orden && orden.productosSeleccionados) {
+    const { asunto, fechaOrden, productosSeleccionados } = orden;
 
     // Buscamos el cliente correspondiente en la lista de clientes
-    const clienteEncontrado = clientes && clientes.find(cliente => cliente.id === cotizacion.cliente);
+    const proveedorEncontrado = proveedores && proveedores.find(proveedor => proveedor.id === orden.proveedor);
 
     // Verificamos si se encontró el cliente
-    const nombreCliente = clienteEncontrado ? clienteEncontrado.empresa : 'Cliente no encontrado';
+    const nombreProveedor = proveedorEncontrado ? proveedorEncontrado.empresa : 'Proveedor no encontrado';
 
     // Calcular subtotal, descuento total, IVA y total
     const subtotal = productosSeleccionados.reduce((acc, producto) => acc + parseFloat(producto.subtotal), 0);
@@ -253,11 +253,11 @@ const ResumenOrden = ({
           <h1 className="cotizacion-title">Orden de Compra</h1>
         </div>
         <div className="resumen-cotizacion-content">
-          <h2>No. {cotizacion.numeroCotizacion.toString().padStart(4, '0')}</h2>
+          <h2>No. {orden.numeroOrden.toString().padStart(4, '0')}</h2>
           <div style={{borderBottom: "2px solid #cecece"}}></div>
-          <p>Fecha de Orden: {fechaCotizacion}</p>
+          <p>Fecha de Orden: {fechaOrden}</p>
           <p>Asunto: {asunto}</p>
-          <p>Proveedor: {nombreCliente}</p>
+          <p>Proveedor: {nombreProveedor}</p>
           <h3>DESCRIPCIÓN</h3>
           <table className="productos-table">
             <thead>
