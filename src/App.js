@@ -2,6 +2,7 @@
 import './App.css';
 import Sidebar from './components/Sidebar';
 import { Routes, Route } from 'react-router-dom';
+import Home from "./pages/inicio"
 import ListadoArticulos from "./pages/articulos"
 import ListadoClientes from "./pages/clientes"
 import ListadoProveedores from "./pages/proveedores"
@@ -13,6 +14,7 @@ function App() {
   return (
     <div className="App">
     <Routes>
+      <Route path='/' element={<Home />}></Route>
       <Route path='/orden' element={<OrdenDeCompra />}></Route>
       <Route path='/cotizacion' element={<Cotizacion />}></Route>
       <Route path='/proveedores' element={<ListadoProveedores />}></Route>

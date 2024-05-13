@@ -80,9 +80,13 @@ function OrdenForm(props) {
       setModoEdicion(true);
       // Llenar el formulario con los datos de la cotización
       setProveedor(orden.proveedor);
+      setComprador(orden.comprador)
       setAsunto(orden.asunto);
       setFechaVencimiento(orden.fechaVencimiento);
       setEstado(orden.estado);
+      setInconterm(orden.incoterm);
+      setDivisas(orden.divisas);
+      setCondicion(orden.condicion);
       setProductosSeleccionados(orden.productosSeleccionados);
       // Resto de los campos...
     }

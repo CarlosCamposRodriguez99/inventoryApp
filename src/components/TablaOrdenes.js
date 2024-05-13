@@ -161,7 +161,8 @@ function TablaOrdenes({ ordenes, proveedores, setOrdenes, guardarOrden, modoEdic
         orden.numeroOrden?.toString(),
         orden.asunto?.toLowerCase(),
         orden.nombreProveedor?.toLowerCase(),
-        orden.total?.toString()
+        orden.total?.toString(),
+        orden.condicion?.toString()
       ];
       return searchableFields.some(field => field && field.includes(searchTerm.toLowerCase()));
     });

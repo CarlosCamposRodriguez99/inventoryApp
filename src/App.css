@@ -107,7 +107,7 @@
 .action-button {
   position: fixed;
   top: 20px;
-  right: 50px;
+  left: 100px;
   font-weight: 600;
   z-index: 9999;
   background-color: #007bff;
@@ -147,7 +147,7 @@
 .prices-button {
   position: fixed;
   top: 20px;
-  right: 250px;
+  left: 300px;
   font-weight: 600;
   z-index: 9999;
   background-color: #007bff;

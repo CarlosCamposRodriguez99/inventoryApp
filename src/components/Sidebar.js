@@ -20,6 +20,7 @@ const Sidebar = () => {
         </a>
         <nav id="primary-menu" className="navbar">
           <ul className="nav navbar-nav">
+            <li><Link className={location.pathname === '/' ? 'active' : ''} to="/"><span className="icon">🏠</span><span className="text">Inicio</span></Link></li>
             <li><Link className={location.pathname === '/orden' ? 'active' : ''} to="/orden"><span className="icon">📝</span><span className="text">Ordenes de Compra</span></Link></li>
             <li><Link className={location.pathname === '/cotizacion' ? 'active' : ''} to="/cotizacion"><span className="icon">📊</span><span className="text">Cotizaciones</span></Link></li>
             <li><Link className={location.pathname === '/facturas' ? 'active' : ''} to="/facturas"><span className="icon">📜</span><span className="text">Facturas</span></Link></li>
