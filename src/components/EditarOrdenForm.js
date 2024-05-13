@@ -19,7 +19,7 @@ const customStyles = {
   },
 };
 
-const EditarOrdenForm = ({ orden, proveedores, productos, onClose }) => {
+const EditarOrdenForm = ({ orden, proveedores, productos, onClose, condicion }) => {
   const [modalIsOpen, setModalIsOpen] = useState(true);
   const [mostrarResumen] = useState(false);
 
@@ -41,6 +41,7 @@ const EditarOrdenForm = ({ orden, proveedores, productos, onClose }) => {
             orden={orden}
             proveedores={proveedores}
             productos={productos}
+            condicion={condicion}
           />
         </div>
       </Modal>

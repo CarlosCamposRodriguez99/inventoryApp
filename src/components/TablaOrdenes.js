@@ -66,7 +66,7 @@ const customStyles = {
   },
 };
 
-function TablaOrdenes({ ordenes, proveedores, setOrdenes, guardarOrden, modoEdicion, orden }) {
+function TablaOrdenes({ ordenes, proveedores, setOrdenes, guardarOrden, modoEdicion, orden,  }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -210,7 +210,7 @@ function TablaOrdenes({ ordenes, proveedores, setOrdenes, guardarOrden, modoEdic
       case 'fechaOrden':
         sortedOrdenes.sort((a, b) => (ascendente ? 1 : -1) * (new Date(a.fechaOrden) - new Date(b.fechaOrden)));
         break;
-      case 'numeroCotizacion':
+      case 'numeroOrden':
         sortedOrdenes.sort((a, b) => (ascendente ? 1 : -1) * (a.numeroOrden - b.numeroOrden));
         break;
       case 'asunto':
@@ -292,7 +292,7 @@ function TablaOrdenes({ ordenes, proveedores, setOrdenes, guardarOrden, modoEdic
                         <td>{orden.asunto}</td>
                         <td>{orden.nombreProveedor}</td>
                         <td>${parseFloat(orden.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
-                        <td>{orden.fechaVencimiento}</td>
+                        <td>{orden.condicion}</td>
                         <td>
                           <button className='btnPrevia' onClick={() => abrirModalPrevia(orden)}>Ver</button>
                         </td>

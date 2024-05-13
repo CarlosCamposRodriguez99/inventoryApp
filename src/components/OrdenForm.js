@@ -55,6 +55,8 @@ const customStyles = {
 
 function OrdenForm(props) {
   const [comprador, setComprador] = useState('');
+  const [incoterm, setInconterm] = useState('');
+  const [divisas, setDivisas] = useState('');
   const [condicion, setCondicion] = useState('');
   const [proveedor, setProveedor] = useState('');
   const [proveedores, setProveedores] = useState([]);
@@ -249,6 +251,10 @@ function OrdenForm(props) {
         fechaOrden,
         fechaVencimiento,
         estado,
+        comprador,
+        incoterm,
+        divisas,
+        condicion,
         productosSeleccionados,
         total: calcularTotal(),
         createdAt: serverTimestamp()
@@ -339,7 +345,7 @@ function OrdenForm(props) {
         </div>
 
         <div className="cotizacion-body">
-          <label htmlFor="cliente">Proveedor:</label>
+          <label htmlFor="proveedor">Proveedor:</label>
           <select id="proveedor" name="proveedor" value={proveedor} onChange={(e) => setProveedor(e.target.value)}>
             <option value="">Seleccionar Proveedor</option>
             {proveedores.map((proveedor) => (
@@ -349,7 +355,7 @@ function OrdenForm(props) {
             ))}
           </select><br />
 
-          <label htmlFor="asunto">Comprador:</label>
+          <label htmlFor="comprador">Comprador:</label>
           <input type="text" id="comprador" name="comprador" value={comprador} onChange={(e) => setComprador(e.target.value)} /><br />
 
           <label htmlFor="asunto">Asunto:</label>
@@ -367,8 +373,8 @@ function OrdenForm(props) {
             <option value="completado">Completado</option>
           </select><br />
 
-          <label htmlFor="estado">Incoterms:</label>
-          <select id="estado" name="estado" value={estado} onChange={(e) => setEstado(e.target.value)}>
+          <label htmlFor="incoterm">Incoterms:</label>
+          <select id="incoterm" name="incoterm" value={incoterm} onChange={(e) => setInconterm(e.target.value)}>
             <option value="exw">EXW</option>
             <option value="fob">FOB</option>
             <option value="cif">CIF</option>
@@ -376,8 +382,8 @@ function OrdenForm(props) {
             <option value="ddp">DDP</option>
           </select><br />
 
-          <label htmlFor="estado">Divisas:</label>
-          <select id="estado" name="estado" value={estado} onChange={(e) => setEstado(e.target.value)}>
+          <label htmlFor="divisas">Divisas:</label>
+          <select id="divisas" name="divisas" value={divisas} onChange={(e) => setDivisas(e.target.value)}>
             <option value="exw">MX</option>
             <option value="fob">USD</option>
             <option value="jpy">JPY</option>
@@ -387,8 +393,8 @@ function OrdenForm(props) {
             <option value="cny">CNY</option>
           </select><br />
 
-          <label htmlFor="asunto">Condición de Pago:</label>
-          <input type="text" id="comprador" name="comprador" value={condicion} onChange={(e) => setCondicion(e.target.value)} /><br />
+          <label htmlFor="condicion">Condición de Pago:</label>
+          <input type="text" id="condicion" name="condicion" value={condicion} onChange={(e) => setCondicion(e.target.value)} /><br />
 
 
           <label htmlFor="productos">Agregar Producto:</label>

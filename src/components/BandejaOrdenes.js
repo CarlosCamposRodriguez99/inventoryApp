@@ -50,7 +50,7 @@ const BandejaOrdenes = ({ ordenes, onRowClick, guardarOrden, modoEdicion, orden,
                 <p>Importe: ${parseFloat(orden?.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</p>
               </div>
               <div className="info-column">
-                <p>No. Orden: {orden.numeroOrden}</p>
+                <p>No. Orden: {orden.numeroOrden.toString().padStart(4, '0')}</p>
                 <p>Fecha: {orden.fechaOrden}</p>
                 <p>Estado: {orden.estado}</p>
                 <p>Asunto: {orden.asunto}</p>
