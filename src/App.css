@@ -147,7 +147,7 @@
 .prices-button {
   position: fixed;
   top: 20px;
-  left: 300px;
+  left: 280px;
   font-weight: 600;
   z-index: 9999;
   background-color: #007bff;
@@ -866,9 +866,42 @@
   background-color: #0056b3;
 }
 
+/* Calendario */
 
+.rbc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
 
+.rbc-btn-group {
+  display: flex;
+}
 
+.rbc-btn-group button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 5px;
+  margin-right: 5px;
+  transition: #fff;
+}
+
+.rbc-btn-group button:hover {
+  color: #007bff;
+}
+
+.rbc-btn-group button.rbc-active {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.month-year-container {
+  display: flex;
+  justify-content: center;
+}
 
 
 
