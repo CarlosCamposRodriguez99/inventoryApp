@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import 'moment/locale/es'; // Importamos el idioma español
-import { v4 as uuidv4 } from 'uuid';
+import { getFirestore, collection, onSnapshot } from 'firebase/firestore'; // Importa las funciones necesarias de Firebase
 
 // Configura el localizador de fechas usando moment.js
 moment.locale('es');
@@ -11,39 +11,35 @@ const localizer = momentLocalizer(moment);
 
 const Calendario = () => {
   const [expanded, setExpanded] = useState(false);
-  const [events, setEvents] = useState(() => {
-    const storedEvents = localStorage.getItem('calendarEvents');
-    return storedEvents ? JSON.parse(storedEvents) : [];
-  });
+  const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(moment());
 
   const toggleExpand = () => {
     setExpanded(!expanded);
   };
 
-  const handleAddEvent = ({ start, end }) => {
-    const title = window.prompt('Ingrese el título del evento:');
-    if (title) {
-      const newEvent = {
-        id: uuidv4(),
-        title: title,
-        start: start.getTime(), // Convertir a timestamp
-        end: end.getTime(), // Convertir a timestamp
-      };
-      setEvents(prevEvents => [...prevEvents, newEvent]);
-    }
-  };
-
-  const handleDeleteEvent = event => {
-    const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar este evento?');
-    if (confirmDelete) {
-      setEvents(prevEvents => prevEvents.filter(e => e.id !== event.id));
-    }
-  };
-
   useEffect(() => {
-    localStorage.setItem('calendarEvents', JSON.stringify(events));
-  }, [events]);
+    const fetchCotizaciones = async () => {
+      const firestore = getFirestore();
+      const cotizacionesRef = collection(firestore, 'cotizaciones');
+      const unsubscribe = onSnapshot(cotizacionesRef, (snapshot) => {
+        const cotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const cotizacionesEvents = cotizaciones.map((cotizacion) => ({
+          id: cotizacion.id,
+          title: `Cotización #${cotizacion.numeroCotizacion}`,
+          start: moment(cotizacion.fechaVencimiento).startOf('day').toDate(), // Ajustar a la hora 0 del día
+          end: moment(cotizacion.fechaVencimiento).startOf('day').toDate(), // Ajustar a la hora 0 del día
+          allDay: true,
+          resource: 'cotizacion',
+        }));
+        setEvents(cotizacionesEvents);
+      });
+
+      return () => unsubscribe();
+    };
+
+    fetchCotizaciones();
+  }, []);
 
   const CustomToolbar = ({ expanded, onNavigate, onView, views, view }) => (
     <div className="rbc-toolbar" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
@@ -127,17 +123,11 @@ const Calendario = () => {
         <div style={{ height: 'calc(100% - 50px)', overflow: 'auto' }}> {/* Ajustamos la altura del calendario */}
           <Calendar
             localizer={localizer}
-            events={events.map(event => ({
-              ...event,
-              start: new Date(event.start), // Convertir a Date
-              end: new Date(event.end), // Convertir a Date
-            }))}
+            events={events}
             startAccessor="start"
             endAccessor="end"
             style={{ width: '100%', height: '100%' }}
             selectable={true}
-            onSelectSlot={handleAddEvent}
-            onSelectEvent={handleDeleteEvent}
             components={{
               toolbar: props => <CustomToolbar {...props} expanded={expanded} />,
             }}
