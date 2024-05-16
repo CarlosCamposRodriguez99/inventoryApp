@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import ProductTable from '../components/ProductTable';
-import Sidebar from '../components/Sidebar';
-import SearchBar from '../components/SearchBar';
-import ActionButton from '../components/ActionButton';
-import AddProductModal from '../components/AddProductModal';
-import ProductButton from '../components/ProductButton';
+import ProductTable from './ProductTable';
+import Sidebar from './Sidebar';
+import SearchBar from './SearchBar';
+import ActionButton from './ActionButton';
+import AddProductModal from './AddProductModal';
+import ProductButton from './ProductButton';
 import { db } from '../firebaseConfig';
 import { getDocs, addDoc, updateDoc, deleteDoc, collection, doc } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 
-const ListaArticulos = () => {
+const ArticulosCompra = () => {
 
     const [products, setProducts] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -114,7 +114,7 @@ const ListaArticulos = () => {
 
   return (
     <>
-    <h1>Lista de Artículos</h1>
+    <h1>Lista de Artículos de Compra</h1>
 
       <SearchBar handleSearch={handleSearch} />
       <Sidebar />
@@ -151,4 +151,4 @@ const ListaArticulos = () => {
   )
 }
 
-export default ListaArticulos;
+export default ArticulosCompra;

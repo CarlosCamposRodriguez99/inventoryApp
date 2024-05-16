@@ -3,7 +3,8 @@ import './App.css';
 import Sidebar from './components/Sidebar';
 import { Routes, Route } from 'react-router-dom';
 import Home from "./pages/inicio"
-import ListadoArticulos from "./pages/articulos"
+import ListadoArticulosVenta from "./pages/articulos-venta"
+import ListadoArticulosCompra from "./pages/articulos-compra"
 import ListadoClientes from "./pages/clientes"
 import ListadoProveedores from "./pages/proveedores"
 import Cotizacion from "./pages/cotizacion"
@@ -19,7 +20,8 @@ function App() {
       <Route path='/cotizacion' element={<Cotizacion />}></Route>
       <Route path='/proveedores' element={<ListadoProveedores />}></Route>
       <Route path='/clientes' element={<ListadoClientes />}></Route>
-      <Route path='/articulos' element={<ListadoArticulos />}></Route>
+      <Route path='/articulos-venta' element={<ListadoArticulosVenta />}></Route>
+      <Route path='/articulos-compra' element={<ListadoArticulosCompra />}></Route>
     </Routes>
     <Sidebar />
     

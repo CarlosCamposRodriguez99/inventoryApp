@@ -200,6 +200,7 @@
   background: #6B0202;
 }
 
+
 /* sidebar */
 
 .sidebar {
@@ -207,6 +208,7 @@
   background-color: #fff;
   height: 100%;
   position: fixed;
+  font-family: "Montserrat", sans-serif;
   top: 0;
   left: 0;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -220,16 +222,20 @@
 
 .logo {
   display: block;
-  width: 70%;
+  width: 50%;
   height: auto;
   margin: 0 auto;
 }
 
 .sidebar-header {
   display: flex;
-  align-items: center;
   padding: 10px 15px;
+}
 
+.menu-icon {
+  width: 20px;
+  cursor: pointer;
+  height: 20px;
 }
 
 .navbar {
@@ -268,6 +274,11 @@
   color: #fff;
 }
 
+.menu-item:hover,
+.menu-item:hover .dropdown-arrow {
+  color: #fff;
+}
+
 /* Estilos para ocultar texto cuando el sidebar está cerrado */
 .sidebar.closed .navbar-nav li a .text {
   display: none;
@@ -284,16 +295,45 @@
   text-align: center;
 }
 
-.menu-icon {
-  width: 20px;
-  cursor: pointer;
-  height: auto;
-}
 
 .sidebar.closed .centrar-logo,
 .sidebar.closed .sidebar-footer {
   display: none;
 }
+
+.dropdown-arrow {
+  margin-left: 5px;
+  font-weight: 800;
+  color: #000;
+}
+
+/* submenus*/
+.sub-menu {
+  position: relative;
+  top: 100%;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sub-menu li {
+  width: auto; /* Ajusta el ancho según sea necesario */
+  text-align: left; /* Alinea el texto a la izquierda */
+  margin-left: 10px;
+}
+
+.sub-menu li a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: #333;
+}
+
+
+
+
+
 
 /* */
 
