@@ -84,7 +84,7 @@ const Sidebar = () => {
           <ul className="nav navbar-nav">
             <li><Link className={location.pathname === '/' ? 'active' : ''} to="/"><span className="icon">🏠</span><span className="text">Inicio</span></Link></li>
             <li className={isOpenIngresos ? 'open' : ''}>
-              <Link className={`menu-item ${isOpenIngresos ? 'open' : ''}`} to="/cotizacion" onClick={toggleIngresos}>
+              <Link className={`menu-item ${isOpenIngresos ? 'open' : ''}`} to="#" onClick={toggleIngresos}>
                 <span className="icon">📈</span><span className="text">Ingresos</span> 
                 <span className={`dropdown-arrow ${isOpen && isOpenIngresos ? 'active' : ''}`}>{isOpen ? (isOpenIngresos ? '⌵' : '⌵') : ''}</span>
 
@@ -93,17 +93,12 @@ const Sidebar = () => {
                 <ul className="sub-menu">
                   <li>
                     <Link className="text" to="#">
-                      <span className="icon">🧾</span>Facturas
+                      <span className="icon">🧾</span>Facturación
                     </Link>
                   </li>
                   <li>
                     <Link className="text" to="#">
                       <span className="icon">💳</span>Pagos Recibidos
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="text" to="#">
-                      <span className="icon">📝</span>Notas de Crédito
                     </Link>
                   </li>
                   <li>
@@ -116,11 +111,16 @@ const Sidebar = () => {
                       <span className="icon">✉️</span>Remisiones
                     </Link>
                   </li>
+                  <li>
+                    <Link className="text" to="#">
+                      <span className="icon">🛎️</span>Pedidos
+                    </Link>
+                  </li>
                 </ul>
               )}
             </li>
             <li className={isOpenOrden ? 'open' : ''}>
-              <Link className={`menu-item ${isOpenOrden ? 'open' : ''}`} to="/orden" onClick={toggleOrdenMenu}>
+              <Link className={`menu-item ${isOpenOrden ? 'open' : ''}`} to="#" onClick={toggleOrdenMenu}>
                 <span className="icon">💸</span><span className="text">Gastos</span> 
                 <span className={`dropdown-arrow ${isOpen && isOpenOrden ? 'active' : ''}`}>{isOpen ? (isOpenOrden ? '⌵' : '⌵') : ''}</span>
 
