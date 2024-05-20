@@ -18,7 +18,7 @@ const customStyles = {
     padding: '20px',
     maxWidth: '400px',
     width: '100%',
-    height: '450px',
+    height: '550px',
     maxHeight: '90vh',
     overflow: 'auto',
     fontFamily: 'Roboto, sans-serif',
@@ -77,6 +77,31 @@ const ListaTodos = () => {
   const [editingProveedorId, setEditingProveedorId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortBy, setSortBy] = useState('tipo');
+
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+  };
+
+  const sortData = (data) => {
+    return data.sort((a, b) => {
+      const compareA = typeof a[sortBy] === 'string' ? a[sortBy].toLowerCase() : a[sortBy];
+      const compareB = typeof b[sortBy] === 'string' ? b[sortBy].toLowerCase() : b[sortBy];
+      if (compareA < compareB) {
+        return sortOrder === 'asc' ? -1 : 1;
+      }
+      if (compareA > compareB) {
+        return sortOrder === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  };
   
 
   const resetFormData = () => {
@@ -340,7 +365,7 @@ const ListaTodos = () => {
             {step === 1 && (
               <>
                 <h2 style={{ textAlign: 'center' }}>
-                  {editingClientId ? 'Editar Cliente' : editingProveedorId ? 'Editar Proveedor' : 'Agregar Nuevo Cliente o Proveedor'}
+                  {editingClientId ? 'Editar Cliente' : editingProveedorId ? 'Editar Proveedor' : 'Agregar Cliente o Proveedor'}
                 </h2>
                 <form className="client-form">
                   <label style={customStyles.label}>Tipo:</label>
@@ -395,41 +420,29 @@ const ListaTodos = () => {
             <table>
               <thead>
                 <tr>
-                  <th>Tipo</th>
-                  <th>Nombre</th>
-                  <th>RFC</th>
-                  <th>Telefono</th>
-                  <th>Correo</th>
+                  <th onClick={() => handleSort('tipo')}>Tipo</th>
+                  <th onClick={() => handleSort('empresa')}>Nombre</th>
+                  <th onClick={() => handleSort('rfc')}>RFC</th>
+                  <th onClick={() => handleSort('telefono')}>Telefono</th>
+                  <th onClick={() => handleSort('correo')}>Correo</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredClientes.map((cliente) => (
-                  <tr key={cliente.id}>
-                    <td>{cliente.tipo}</td>
-                    <td>{cliente.empresa}</td>
-                    <td>{cliente.rfc}</td>
-                    <td>{cliente.telefono}</td>
-                    <td>{cliente.correo}</td>
+              {sortData([...filteredClientes, ...filteredProveedores]).map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.tipo}</td>
+                    <td>{item.empresa}</td>
+                    <td>{item.rfc}</td>
+                    <td>{item.telefono}</td>
+                    <td>{item.correo}</td>
                     <td>
-                      <button className='btnEditar' onClick={() => handleEditClient(cliente.id)}>Editar</button>
-                      <button className='btnEliminar' onClick={() => handleDeleteClient(cliente.id)}>Eliminar</button>
+                    <button className='btnEditar' onClick={() => item.tipo === 'Cliente' ? handleEditClient(item.id) : handleEditProveedor(item.id)}>Editar</button>
+                    <button className='btnEliminar' onClick={() => item.tipo === 'Cliente' ? handleDeleteClient(item.id) : handleDeleteProveedor(item.id)}>Eliminar</button>
                     </td>
                   </tr>
                 ))}
-                {filteredProveedores.map((proveedor) => (
-                  <tr key={proveedor.id}>
-                    <td>{proveedor.tipo}</td>
-                    <td>{proveedor.empresa}</td>
-                    <td>{proveedor.rfc}</td>
-                    <td>{proveedor.telefono}</td>
-                    <td>{proveedor.correo}</td>
-                    <td>
-                      <button className='btnEditar' onClick={() => handleEditProveedor(proveedor.id)}>Editar</button>
-                      <button className='btnEliminar' onClick={() => handleDeleteProveedor(proveedor.id)}>Eliminar</button>
-                    </td>
-                  </tr>
-                ))}
+            
               </tbody>
             </table>
           ) : (

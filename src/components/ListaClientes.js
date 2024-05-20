@@ -20,7 +20,7 @@ const customStyles = {
     maxWidth: '400px',
     width: '100%',
     maxHeight: '90vh',
-    height: '450px',
+    height: '550px',
     overflow: 'auto',
     fontFamily: 'Roboto, sans-serif',
   },
@@ -253,7 +253,7 @@ const ListaClientes = () => {
             <h2 style={{ textAlign: 'center' }}>{editingClienteId ? 'Editar Cliente' : 'Agregar Nuevo Cliente'}</h2>
             <form onSubmit={handleSubmit} className="client-form">
               <label style={customStyles.label}>
-                Nombre de la Empresa:
+                Nombre:
                 <input type="text" name="empresa" placeholder="Nombre de la Empresa" value={formData.empresa} onChange={handleChange} />
               </label>
               <label style={customStyles.label}>
