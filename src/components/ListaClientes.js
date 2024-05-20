@@ -3,7 +3,8 @@ import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase
 import { db } from '../firebaseConfig';
 import Swal from 'sweetalert2';
 import Modal from 'react-modal';
-import ClientsTable from '../components/ClientsTable';
+import ClientsTable from './ClientsTable';
+import SearchBar from './SearchBar';
 
 Modal.setAppElement('#root');
 
@@ -57,16 +58,33 @@ const ListaClientes = () => {
   });
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [step, setStep] = useState(1);
-  const [editingClientId, setEditingClientId] = useState(null);
-
+  const [editingClienteId, setEditingClienteId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  
   useEffect(() => {
     obtenerClientes();
   }, []);
+
+  const searchClientes = (term) => {
+    return clientes.filter((cliente) =>
+      cliente.empresa.toLowerCase().includes(term.toLowerCase()) ||
+      cliente.rfc.toLowerCase().includes(term.toLowerCase()) ||
+      cliente.regimenFiscal.toLowerCase().includes(term.toLowerCase())
+      // Agrega más campos de búsqueda según tus necesidades
+    );
+  };
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
+
 
   const obtenerClientes = async () => {
     const clientesSnapshot = await getDocs(collection(db, 'clientes'));
     const listaClientes = clientesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     setClientes(listaClientes);
+    setIsLoading(false);
   };
 
   const handleChange = (e) => {
@@ -78,88 +96,88 @@ const ListaClientes = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     // Validar campos obligatorios para el primer paso
-    if (step === 1 && formData.empresa.trim() === '') {
-        Swal.fire({
+    if (step === 1) {
+      const requiredFields = ['empresa', 'rfc', 'regimenFiscal', 'moneda', 'telefono', 'correo'];
+      for (let field of requiredFields) {
+        if (formData[field].trim() === '') {
+          Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'El campo "Nombre de la Empresa" es obligatorio!',
-        });
-        return;
+            text: `El campo "${field}" es obligatorio!`,
+          });
+          return;
+        }
+      }
+      setStep(2);
+      return;
     }
 
     // Validar campos obligatorios para el segundo paso
-    if (step === 2 &&
-        (formData.domicilio.trim() === '' ||
-        formData.numeroExt.trim() === '' ||
-        formData.colonia.trim() === '' ||
-        formData.codigoPostal.trim() === '' ||
-        formData.ciudad.trim() === '' ||
-        formData.estado.trim() === '')) {
-        Swal.fire({
+    if (step === 2) {
+      const requiredFields = ['domicilio', 'numeroExt', 'colonia', 'codigoPostal', 'ciudad', 'estado'];
+      for (let field of requiredFields) {
+        if (formData[field].trim() === '') {
+          Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Todos los campos son obligatorios!',
-        });
-        return;
-    }
-
-    // Paso 1 completado, avanzar al paso 2
-    if (step === 1) {
-        setStep(2);
-        return;
+            text: `El campo "${field}" es obligatorio!`,
+          });
+          return;
+        }
+      }
     }
 
     // Procesar el envío del formulario
     try {
-        const clienteData = { ...formData };
-        if (editingClientId) {
-            await updateDoc(doc(db, 'clientes', editingClientId), clienteData);
-            setEditingClientId(null);
-            Swal.fire({
-                icon: 'success',
-                title: '¡Cliente actualizado con éxito!',
-                showConfirmButton: false,
-                timer: 1000,
-            });
-        } else {
-            await addDoc(collection(db, 'clientes'), clienteData);
-            Swal.fire({
-                icon: 'success',
-                title: '¡Cliente registrado con éxito!',
-                showConfirmButton: false,
-                timer: 1000,
-            });
-        }
-        setFormData({
-            empresa: '',
-            rfc: '',
-            regimenFiscal: '',
-            moneda: '',
-            telefono: '',
-            correo: '',
-            imagenURL: null,
-            domicilio: '',
-            numeroExt: '',
-            numeroInt: '',
-            colonia: '',
-            codigoPostal: '',
-            ciudad: '',
-            estado: '',
+      const clienteData = { ...formData };
+      if (editingClienteId) {
+        await updateDoc(doc(db, 'clientes', editingClienteId), clienteData);
+        setEditingClienteId(null);
+        Swal.fire({
+          icon: 'success',
+          title: '¡Cliente actualizado con éxito!',
+          showConfirmButton: false,
+          timer: 1000,
         });
-        setStep(1);
-        obtenerClientes();
-        setModalIsOpen(false);
+      } else {
+        await addDoc(collection(db, 'clientes'), clienteData);
+        Swal.fire({
+          icon: 'success',
+          title: '¡Cliente registrado con éxito!',
+          showConfirmButton: false,
+          timer: 1000,
+        });
+      }
+      setFormData({
+        empresa: '',
+        rfc: '',
+        regimenFiscal: '',
+        moneda: '',
+        telefono: '',
+        correo: '',
+        imagenURL: null,
+        domicilio: '',
+        numeroExt: '',
+        numeroInt: '',
+        colonia: '',
+        codigoPostal: '',
+        ciudad: '',
+        estado: '',
+      });
+      setStep(1);
+      obtenerClientes();
+      setModalIsOpen(false);
     } catch (error) {
-        console.error('Error al agregar cliente:', error);
+      console.error('Error al agregar cliente:', error);
     }
-};
-
+  };
 
   const handleEditClient = (id) => {
     const clientToEdit = clientes.find((cliente) => cliente.id === id);
     setFormData(clientToEdit);
-    setEditingClientId(id);
+    setEditingClienteId(id);
     setStep(1);
     setModalIsOpen(true);
   };
@@ -191,10 +209,37 @@ const ListaClientes = () => {
     });
   };
 
+  const resetFormData = () => {
+    setFormData({
+      empresa: '',
+      rfc: '',
+      regimenFiscal: '',
+      moneda: '',
+      telefono: '',
+      correo: '',
+      imagenURL: null,
+      domicilio: '',
+      numeroExt: '',
+      numeroInt: '',
+      colonia: '',
+      codigoPostal: '',
+      ciudad: '',
+      estado: '',
+    });
+  };
+
+  const handleOpenModal = () => {
+    resetFormData(); // Limpia los campos del formulario
+    setEditingClienteId(null); // Restablece el estado de edición del proveedor
+    setModalIsOpen(true); // Abre el modal
+  };
+
   return (
     <div>
       <h1>Lista de Clientes</h1>
-      <button style={{ fontWeight: '700' }} className="prices-button" onClick={() => setModalIsOpen(true)}>+ Nuevo</button>
+      <SearchBar handleSearch={handleSearch} />
+
+      <button style={{ fontWeight: '700' }} className="prices-button" onClick={handleOpenModal}>+ Nuevo</button>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
@@ -205,7 +250,7 @@ const ListaClientes = () => {
         </div>
         {step === 1 && (
           <>
-            <h2 style={{ textAlign: 'center' }}>Agregar Nuevo Cliente</h2>
+            <h2 style={{ textAlign: 'center' }}>{editingClienteId ? 'Editar Cliente' : 'Agregar Nuevo Cliente'}</h2>
             <form onSubmit={handleSubmit} className="client-form">
               <label style={customStyles.label}>
                 Nombre de la Empresa:
@@ -271,13 +316,20 @@ const ListaClientes = () => {
                 Estado:
                 <input type="text" name="estado" placeholder="Estado" value={formData.estado} onChange={handleChange} />
               </label>
-              <button type="submit">Agregar Cliente</button>
+              <button type="button" onClick={() => setStep(1)}>Anterior</button>
+              <br/>
+              <button type="submit">Guardar</button>
             </form>
           </>
         )}
       </Modal>
-      <ClientsTable clientes={clientes} onEditClient={handleEditClient} onDeleteClient={handleDeleteClient} />
-      
+      {isLoading ? (
+        <p>Cargando...</p>
+      ) : searchTerm !== '' && searchClientes(searchTerm).length === 0 ? (
+        <p>No hay búsquedas disponibles</p>
+      ) : (
+        <ClientsTable clientes={searchClientes(searchTerm)} onEditClient={handleEditClient} onDeleteClient={handleDeleteClient} />
+      )}
     </div>
   );
 };

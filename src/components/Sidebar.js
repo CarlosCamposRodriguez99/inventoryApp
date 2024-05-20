@@ -222,7 +222,7 @@ const Sidebar = () => {
               {isOpenContacto && (
                 <ul className="sub-menu">
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="/todos">
                       <span className="icon">👥</span>Todos
                     </Link>
                   </li>

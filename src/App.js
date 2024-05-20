@@ -7,6 +7,7 @@ import ListadoArticulosVenta from "./pages/articulos-venta"
 import ListadoArticulosCompra from "./pages/articulos-compra"
 import ListadoClientes from "./pages/clientes"
 import ListadoProveedores from "./pages/proveedores"
+import ListadoTodos from "./pages/todos"
 import Cotizacion from "./pages/cotizacion"
 import OrdenDeCompra from "./pages/orden"
 
@@ -20,6 +21,7 @@ function App() {
       <Route path='/cotizacion' element={<Cotizacion />}></Route>
       <Route path='/proveedores' element={<ListadoProveedores />}></Route>
       <Route path='/clientes' element={<ListadoClientes />}></Route>
+      <Route path='/todos' element={<ListadoTodos />}></Route>
       <Route path='/articulos-venta' element={<ListadoArticulosVenta />}></Route>
       <Route path='/articulos-compra' element={<ListadoArticulosCompra />}></Route>
     </Routes>
