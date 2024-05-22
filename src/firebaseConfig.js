@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 // Importa Firestore
 // TODO: Add SDKs for Firebase products that you want to use
@@ -20,6 +20,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+// Function to get documents from Firestore (POSIBLE SOLUCIÓN A ERROR CUANDO DEJABAS SIN UTILIZAR LA APP)
+async function getItems() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "items"));
+    querySnapshot.forEach((doc) => {
+      console.log(`${doc.id} => ${doc.data()}`);
+    });
+  } catch (error) {
+    console.error("Error fetching documents: ", error);
+  }
+}
+
+// Call the function to get items
+getItems();
 
 // Exporta db para su uso en otras partes de la aplicación
 export { db, storage };

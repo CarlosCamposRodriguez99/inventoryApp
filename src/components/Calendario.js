@@ -3,7 +3,8 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import 'moment/locale/es'; // Importamos el idioma español
-import { getFirestore, collection, onSnapshot } from 'firebase/firestore'; // Importa las funciones necesarias de Firebase
+import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
+import Notificaciones from './Notificaciones';
 
 // Configura el localizador de fechas usando moment.js
 moment.locale('es');
@@ -13,6 +14,7 @@ const Calendario = () => {
   const [expanded, setExpanded] = useState(false);
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(moment());
+  const [proximasAVencer, setProximasAVencer] = useState([]);
 
   const toggleExpand = () => {
     setExpanded(!expanded);
@@ -24,7 +26,16 @@ const Calendario = () => {
       const cotizacionesRef = collection(firestore, 'cotizaciones');
       const unsubscribe = onSnapshot(cotizacionesRef, (snapshot) => {
         const cotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        const cotizacionesEvents = cotizaciones.map((cotizacion) => ({
+  
+        // Filtrar las cotizaciones que tienen fecha de vencimiento a partir de hoy y ordenarlas
+        const proximas = cotizaciones
+          .filter(cotizacion => moment(cotizacion.fechaVencimiento) >= moment().startOf('day'))
+          .sort((a, b) => moment(a.fechaVencimiento) - moment(b.fechaVencimiento));
+          
+        setProximasAVencer(proximas.slice(0, 6)); // Limitar la lista a 6 fechas próximas
+  
+        // Crear los eventos solo para las cotizaciones próximas a vencer
+        const cotizacionesEvents = proximas.map((cotizacion) => ({
           id: cotizacion.id,
           title: `Cotización #${cotizacion.numeroCotizacion}`,
           start: moment(cotizacion.fechaVencimiento).startOf('day').toDate(), // Ajustar a la hora 0 del día
@@ -34,22 +45,22 @@ const Calendario = () => {
         }));
         setEvents(cotizacionesEvents);
       });
-
+  
       return () => unsubscribe();
     };
-
+  
     fetchCotizaciones();
   }, []);
 
   const CustomToolbar = ({ expanded, onNavigate, onView, views, view }) => (
-    <div className="rbc-toolbar" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+    <div className="rbc-toolbar">
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
         <span style={{ marginRight: 'auto' }}>
           <button type="button" onClick={() => onNavigate('PREV')} style={{ fontSize: '1rem', padding: '5px' }}>
             {'⬅️'}
           </button>
         </span>
-        <div className="month-year-container" style={{ textAlign: 'center', flex: 1, marginLeft: '10px', marginRight: '10px' }}>
+        <div className="month-year-container">
           <h2 style={{ margin: '0', display: 'inline-block', fontSize: '1rem' }}>
             {currentDate.format('MMMM')}
           </h2>
@@ -84,12 +95,14 @@ const Calendario = () => {
   );
 
   return (
-    <div style={{ position: 'fixed', top: 80, right: 20, zIndex: 999 }}>
+  <>
+    <Notificaciones proximasAVencer={proximasAVencer} />
+    <div style={{ position: 'fixed', top: 100, right: 20,  }}>
       <div
         style={{
-          width: expanded ? '500px' : '250px', // Ajustamos el ancho cuando está expandido
+          width: expanded ? '400px' : '200px', // Ajustamos el ancho cuando está expandido
           minWidth: '250px', // Establecemos un ancho mínimo
-          height: expanded ? '400px' : '350px', // Ajustamos la altura cuando está expandido
+          height: expanded ? '320px' : '300px', // Ajustamos la altura cuando está expandido
           backgroundColor: '#fff', // Fondo blanco
           borderRadius: '10px',
           boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
@@ -120,7 +133,7 @@ const Calendario = () => {
             {expanded ? '_' : '+'}
           </button>
         </div>
-        <div style={{ height: 'calc(100% - 50px)', overflow: 'auto' }}> {/* Ajustamos la altura del calendario */}
+        <div style={{ height: 'calc(100% - 50px)', overflow: 'auto' }}>
           <Calendar
             localizer={localizer}
             events={events}
@@ -138,7 +151,19 @@ const Calendario = () => {
           />
         </div>
       </div>
+
+      <div style={{ position: 'fixed', bottom: 10, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
+        <h3>Tareas Pendientes:</h3>
+        <ul>
+          {proximasAVencer.map(cotizacion => (
+            <li key={cotizacion.id}>
+              Cotización #{cotizacion.numeroCotizacion} - {moment(cotizacion.fechaVencimiento).format('DD/MM/YYYY')}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
+  </>
   );
 };
 

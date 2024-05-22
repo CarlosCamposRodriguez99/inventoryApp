@@ -202,39 +202,63 @@
 
 /* sidebar */
 
+.sidebar-content {
+  overflow-y: auto; /* Permitir desplazamiento */
+  height: calc(100vh - 145px); /* Ajustar según la altura del header y footer */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer y Edge */
+}
+
+.sidebar-content::-webkit-scrollbar {
+  display: none; /* Ocultar scrollbar en WebKit (Chrome, Safari) */
+}
+
+/* Ajustar la transición para una animación más suave */
 .sidebar {
   width: 250px;
   background-color: #fff;
-  height: 100%;
   position: fixed;
   font-family: "Montserrat", sans-serif;
   top: 0;
   left: 0;
+  height: 100%; /* Hacer que ocupe toda la altura de la pantalla */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  transition: width 0.3s; /* Agregar transición para el ancho */
+  transition: width 0.3s, height 0.3s, padding 0.3s; /* Agregar transición para padding */
 }
 
 .sidebar.closed {
-  width: 50px; /* Ancho reducido cuando está cerrado */
+  width: 50px;
 }
 
+/* Restante del CSS que ya tienes */
 .logo {
-  display: block;
-  width: 50%;
+  width: 80px;
   height: auto;
-  margin: 0 auto;
+  transition: margin-top 0.3s;
 }
 
 .sidebar-header {
   display: flex;
-  padding: 10px 15px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
 }
 
 .menu-icon {
   width: 20px;
+  height: auto;
   cursor: pointer;
-  height: 20px;
+  margin-bottom: 15px;
+  transition: margin-top 0.3s;
+}
+
+.sidebar.closed .menu-icon {
+  margin: 0 auto;
+  padding-top: 10px;
+}
+
+.sidebar.closed .logo {
+  margin-top: 10px; /* Ajustar el margen superior cuando el sidebar está cerrado */
 }
 
 .navbar {
@@ -278,7 +302,6 @@
   color: #fff;
 }
 
-/* Estilos para ocultar texto cuando el sidebar está cerrado */
 .sidebar.closed .navbar-nav li a .text {
   display: none;
 }
@@ -289,12 +312,6 @@
   margin-top: auto;
 }
 
-.sidebar-copyright {
-  color: #666;
-  text-align: center;
-}
-
-
 .sidebar.closed .centrar-logo,
 .sidebar.closed .sidebar-footer {
   display: none;
@@ -302,23 +319,17 @@
 
 .dropdown-arrow {
   margin-left: 5px;
-  font-weight: 800;
-  color: #000;
+  color: #777;
+  font-weight: 600;
 }
 
-/* submenus*/
 .sub-menu {
-  position: relative;
-  top: 100%;
-  left: 0;
-  margin: 0;
-  padding: 0;
   list-style: none;
+  padding: 0;
 }
 
 .sub-menu li {
-  width: auto; /* Ajusta el ancho según sea necesario */
-  text-align: left; /* Alinea el texto a la izquierda */
+  text-align: left; 
   margin-left: 10px;
 }
 
@@ -329,7 +340,19 @@
   color: #333;
 }
 
+.sidebar-copyright {
+  font-family: "Montserrat", sans-serif;
+}
 
+.main-text {
+  font-size: 12px; /* Tamaño de fuente más pequeño */
+  display: block; /* Hacer que el texto ocupe toda la anchura */
+  text-align: left; /* Justificar a la izquierda */
+  margin-left: 10px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  color: #080000;
+}
 
 
 
@@ -912,6 +935,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  flex-direction: column;
 }
 
 .rbc-btn-group {
@@ -940,6 +964,10 @@
 .month-year-container {
   display: flex;
   justify-content: center;
+  text-align: center;
+  flex: 1;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 
