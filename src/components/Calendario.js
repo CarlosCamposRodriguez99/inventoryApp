@@ -102,7 +102,7 @@ const Calendario = () => {
         style={{
           width: expanded ? '400px' : '200px', // Ajustamos el ancho cuando está expandido
           minWidth: '250px', // Establecemos un ancho mínimo
-          height: expanded ? '320px' : '300px', // Ajustamos la altura cuando está expandido
+          height: expanded ? '300px' : '300px', // Ajustamos la altura cuando está expandido
           backgroundColor: '#fff', // Fondo blanco
           borderRadius: '10px',
           boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',

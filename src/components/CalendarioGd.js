@@ -5,6 +5,7 @@ import moment from 'moment';
 import 'moment/locale/es'; // Importamos el idioma español
 import { getFirestore, collection, onSnapshot, addDoc, getDocs } from 'firebase/firestore';
 import Notificaciones from './Notificaciones';
+import Swal from 'sweetalert2'; // Importamos SweetAlert2
 
 Modal.setAppElement('#root'); // Ajusta esto según el id del elemento root de tu aplicación
 
@@ -95,7 +96,7 @@ const CalendarioGd = () => {
                 const eventosRef = collection(firestore, 'eventos');
                 const snapshot = await getDocs(eventosRef);
                 const eventos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
+
                 // Mapear eventos y asignar solo la fecha de finalización como fecha del evento
                 const eventosWithColor = eventos.map((event, index) => ({
                     ...event,
@@ -104,22 +105,57 @@ const CalendarioGd = () => {
                     to: event.to, // Asigna la fecha de finalización como fecha del evento
                     key: `evento_${event.id}_${index}`, // Usar un identificador único del evento junto con el índice
                 }));
-    
+
+                // Definir fechas festivas base
+                const fechasFestivasBase = [
+                    { title: 'Año Nuevo', month: '01', day: '01', color: '#ffcc00' },
+                    { title: 'Día de la Constitución', month: '02', day: '05', color: '#ffcc00' },
+                    { title: 'Natalicio de Benito Juárez', month: '03', day: '21', color: '#ffcc00' },
+                    { title: 'Día del Trabajo', month: '05', day: '01', color: '#ffcc00' },
+                    { title: 'Independencia de México', month: '09', day: '16', color: '#ffcc00' },
+                    { title: 'Transición del Poder Ejecutivo', month: '10', day: '01', color: '#ffcc00' },
+                    { title: 'Revolución Mexicana', month: '11', day: '20', color: '#ffcc00' },
+                    { title: 'Navidad', month: '12', day: '25', color: '#ffcc00' },
+                ];
+
+                // Función para generar fechas festivas para un rango de años
+                const generarFechasFestivas = (años) => {
+                    const fechasFestivas = [];
+
+                    años.forEach(año => {
+                        fechasFestivasBase.forEach(festivo => {
+                            fechasFestivas.push({
+                                title: festivo.title,
+                                from: `${año}-${festivo.month}-${festivo.day}`,
+                                to: `${año}-${festivo.month}-${festivo.day}`,
+                                color: festivo.color,
+                            });
+                        });
+                    });
+
+                    return fechasFestivas;
+                };
+
+                // Generar fechas festivas desde el año actual hasta 5 años en el futuro
+                const años = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() + i);
+                const fechasFestivas = generarFechasFestivas(años);
+
+                // Fusionar eventos con fechas festivas
+                const allEvents = [...eventosWithColor, ...fechasFestivas];
+
                 // Filtrar y fusionar los eventos ya existentes con los nuevos eventos
                 setEvents(prevEvents => {
                     const existingEventIds = prevEvents.map(event => event.id);
-                    const newEvents = eventosWithColor.filter(event => !existingEventIds.includes(event.id));
+                    const newEvents = allEvents.filter(event => !existingEventIds.includes(event.id));
                     return [...prevEvents, ...newEvents];
                 });
             } catch (error) {
                 console.error('Error al cargar eventos:', error);
             }
         };
-    
+
         fetchEvents();
     }, []);
-
-    
 
     const handleAddEvent = async () => {
         try {
@@ -127,11 +163,19 @@ const CalendarioGd = () => {
             const firestore = getFirestore();
             const eventosRef = collection(firestore, 'eventos');
             const docRef = await addDoc(eventosRef, newEvent);
-    
+
             // Agregar el nuevo evento al estado local con el id generado por Firestore
             const eventWithId = { ...newEvent, id: docRef.id, key: `evento_${docRef.id}`, from: newEvent.to };
             setEvents(prevEvents => [...prevEvents, eventWithId]);
-    
+
+            // Mostrar alerta de éxito
+            Swal.fire({
+                title: 'Evento Registrado',
+                text: 'El evento ha sido registrado exitosamente.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+
             // Cerrar el modal
             closeModal();
         } catch (error) {
@@ -171,7 +215,7 @@ const CalendarioGd = () => {
             border: 'none',
             backgroundColor: '#007bff',
             color: 'white',
-            fontSize: '14px',
+            fontSize: '12px',
             cursor: 'pointer',
             position: 'fixed',
             top: '20px',
@@ -204,7 +248,7 @@ const CalendarioGd = () => {
         <div className='calendario-gd'>
             <button onClick={openModal} style={customStyles.buttonAgregar}>Agregar evento</button>
             <Calendar events={events} />
-    
+
             <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}
@@ -243,7 +287,7 @@ const CalendarioGd = () => {
                     </div>
                 </form>
             </Modal>
-    
+
             <Notificaciones proximasAVencer={proximasAVencer} />
         </div>
     );
