@@ -49,6 +49,9 @@ const customStyles = {
     backgroundColor: '#fff', /* Color de fondo */
     color: '#333', /* Color del texto */
   },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 };
 
 const ListaTodos = () => {

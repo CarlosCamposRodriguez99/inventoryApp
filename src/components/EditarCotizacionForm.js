@@ -17,6 +17,9 @@ const customStyles = {
     overflow: 'auto',
     fontFamily: 'Roboto, sans-serif',
   },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 };
 
 const EditarCotizacionForm = ({ cotizacion, clientes, productos, onClose }) => {

@@ -36,6 +36,9 @@ const customStyles = {
     border: '1px solid #ccc',
     boxSizing: 'border-box',
   },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 };
 
 const ListaClientes = () => {

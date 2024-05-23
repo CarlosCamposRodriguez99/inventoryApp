@@ -18,7 +18,7 @@ const customStyles = {
     padding: '20px',
     maxWidth: '450px',
     width: '100%',
-    maxHeight: '90vh',
+    maxHeight: '250px',
     overflow: 'auto',
     fontFamily: 'Roboto, sans-serif', // Aplica la fuente Roboto
   },
@@ -33,6 +33,9 @@ const customStyles = {
     borderRadius: '5px',
     border: '1px solid #ccc',
     boxSizing: 'border-box',
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 };
 

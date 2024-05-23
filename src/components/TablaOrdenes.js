@@ -20,6 +20,9 @@ const styleForm = {
     overflow: 'auto',
     fontFamily: 'Roboto, sans-serif',
   },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 };
 
 const customStyles = {
@@ -63,6 +66,9 @@ const customStyles = {
     justifyContent: 'center',
     margin: '0 auto',
     fontWeight: '700',
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 };
 

@@ -215,6 +215,7 @@
 
 /* Ajustar la transición para una animación más suave */
 .sidebar {
+  z-index: 9999;
   width: 250px;
   background-color: #fff;
   position: fixed;
@@ -255,6 +256,7 @@
 .sidebar.closed .menu-icon {
   margin: 0 auto;
   padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .sidebar.closed .logo {
@@ -351,11 +353,8 @@
   margin-left: 10px;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  color: #080000;
+  color: #6a6e73;
 }
-
-
-
 
 /* */
 
@@ -423,7 +422,6 @@
 }
 
 /* estilos para pagina cotizacion */
-
 
 .cotizacion-form {
   font-family: Arial, sans-serif;
@@ -934,31 +932,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
   flex-direction: column;
 }
 
 .rbc-btn-group {
   display: flex;
-}
-
-.rbc-btn-group button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 5px;
-  margin-right: 5px;
-  transition: #fff;
-}
-
-.rbc-btn-group button:hover {
-  color: #007bff;
-}
-
-.rbc-btn-group button.rbc-active {
-  color: #007bff;
-  font-weight: bold;
 }
 
 .month-year-container {
@@ -970,7 +948,15 @@
   margin-right: 10px;
 }
 
+/* CALENDARIO GRANDE */
 
+.calendario-gd {
+  margin: 0 auto;
+  padding: 35px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
 
 

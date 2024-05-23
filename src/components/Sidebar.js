@@ -65,14 +65,16 @@ const Sidebar = () => {
 
             <br/>
 
-            {isOpen && (
+            
               <li>
-                <span className="main-text">Main</span>
+                {isOpen && (
+                  <span className="main-text">Main</span>
+                )}
                 <Link className={location.pathname === '/' ? 'active' : ''} to="/">
                   <span className="icon">🏠</span><span className="text">Inicio</span>
                 </Link>
               </li>
-            )}
+            
 
             <li className={isOpenIngresos ? 'open' : ''}>
               <Link className={`menu-item ${isOpenIngresos ? 'open' : ''}`} to="#" onClick={toggleIngresos}>
@@ -124,9 +126,11 @@ const Sidebar = () => {
 
             <br/>
             
-            {isOpen && (
+            
             <li className={isOpenContacto ? 'open' : ''}>
+            {isOpen && (
               <span className="main-text">Registros</span>
+            )}
               <Link className={`menu-item ${isOpenContacto ? 'open' : ''}`} to="#" onClick={toggleContactos}>
                 <span className="icon">📞</span><span className="text">Contactos</span> 
                 <span className={`dropdown-arrow ${isOpen && isOpenContacto ? 'active' : ''}`}>{isOpen ? (isOpenContacto ? '∧' : '∨') : ''}</span>
@@ -139,7 +143,7 @@ const Sidebar = () => {
                 </ul>
               )}
             </li>
-            )}
+            
             
             <br/>
             <li><Link className={location.pathname === '#' ? 'active' : ''} to="#"><span className="icon">⚙️</span><span className="text">Configuración</span></Link></li>

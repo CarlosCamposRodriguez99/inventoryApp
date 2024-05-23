@@ -48,6 +48,9 @@ const customStyles = {
     margin: "0 auto",
     fontWeight: "700"
   },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
 };
 
 const AddProductModal = ({ isOpen, onClose, onSubmit, editingProduct }) => {

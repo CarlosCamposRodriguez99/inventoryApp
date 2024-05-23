@@ -55,11 +55,11 @@ const Calendario = () => {
   const CustomToolbar = ({ expanded, onNavigate, onView, views, view }) => (
     <div className="rbc-toolbar">
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-        <span style={{ marginRight: 'auto' }}>
-          <button type="button" onClick={() => onNavigate('PREV')} style={{ fontSize: '1rem', padding: '5px' }}>
-            {'⬅️'}
-          </button>
-        </span>
+        <div style={{ marginRight: 'auto' }}>
+          <span onClick={() => onNavigate('PREV')} style={{ fontSize: '1rem', padding: '5px', cursor: "pointer", color: '#007bff' }}>
+            {'❮'}
+          </span>
+        </div>
         <div className="month-year-container">
           <h2 style={{ margin: '0', display: 'inline-block', fontSize: '1rem' }}>
             {currentDate.format('MMMM')}
@@ -68,11 +68,11 @@ const Calendario = () => {
             {currentDate.format('YYYY')} {/* Formato de fecha para mostrar el año */}
           </h2>
         </div>
-        <span style={{ marginLeft: 'auto' }}>
-          <button type="button" onClick={() => onNavigate('NEXT')} style={{ fontSize: '1rem', padding: '5px' }}>
-            {'➡️'}
-          </button>
-        </span>
+        <div style={{ marginLeft: 'auto' }}>
+          <span type="button" onClick={() => onNavigate('NEXT')} style={{ fontSize: '1rem', padding: '5px', cursor: "pointer", color: '#007bff' }}>
+            {'❯'}
+          </span>
+        </div>
       </div>
       {expanded && (
         <span className="rbc-btn-group">
@@ -152,7 +152,7 @@ const Calendario = () => {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 10, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
+      <div style={{ position: 'fixed', bottom: 30, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
         <h3>Tareas Pendientes:</h3>
         <ul>
           {proximasAVencer.map(cotizacion => (
