@@ -11,6 +11,7 @@ import ListadoTodos from "./pages/todos"
 import Cotizacion from "./pages/cotizacion"
 import OrdenDeCompra from "./pages/orden"
 import CalendarioGd from "./pages/calendario"
+import Tareas from "./pages/tareas"
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
       <Route path='/articulos-venta' element={<ListadoArticulosVenta />}></Route>
       <Route path='/articulos-compra' element={<ListadoArticulosCompra />}></Route>
       <Route path='/calendario' element={<CalendarioGd />}></Route>
+      <Route path='/tareas' element={<Tareas />}></Route>
     </Routes>
     <Sidebar />
     

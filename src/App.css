@@ -959,6 +959,260 @@
 }
 
 
+/* Tareas */
+.kanban__main {
+  background-color: #fff;
+  grid-area: main;
+  position: relative;
+}
+
+.kanban__main-wrapper {
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 0 50px 0 50px;
+}
+
+.card-wrapper {
+  margin-bottom: 30px;
+  box-shadow: 0px 0px 10px 0px #d2d7e0;
+  width: 280px;
+  height: 100%;
+  border-top: double 4px transparent;
+  border-radius: 5px;
+  background-color: #eef2f9;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.backlog-color {
+  background-image: linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, #c781ff, #e57373);
+}
+
+.backlog-name {
+  color: #000;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.card-wrapper__header {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 10px;
+}
+
+.card-wrapper__footer {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0 15px 0;
+  color: #000;
+}
+
+.iconoTarea {
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+.backlog-dots {
+  color: var(--colorName);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Estilos para las tarjetas dentro de cada sección */
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card {
+  border-radius: 5px;
+  border: 1px dashed #ccc;
+  background-color: #fff;
+  width: 260px;
+  height: auto;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: url(https://ssl.gstatic.com/ui/v1/icons/mail/images/2/openhand.cur), default !important;  
+}
+
+.card__header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card__header-priority {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.card__header-clear {
+  color: #000;
+  font-weight: 600;
+  margin: 10px 10px 0 0;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.backlog-color {
+  background-color: #fff; /* Ejemplo de color para el backlog */
+}
+
+.en-proceso-color {
+  background-image: linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, #ff9985, #ffb74e);
+}
+
+.revision-color {
+  background-image: linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, #9ea7fc, #6eb4f7);
+}
+
+.hecho-color {
+  background-image: linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, #81d5ee, #7ed492);
+}
+
+.card__text {
+  color: #000;
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0 10px;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.card-container-color {
+  border-radius: 3px;
+  height: 20px;
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 15px 10px;
+}
+
+.card__fecha {
+  color: #000;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+  margin: 0 10px;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+.card__menu {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0 10px 10px;
+}
+
+.comments-wrapper, .attach-wrapper {
+  display: flex;
+}
+
+.comments-num, .attach-num {
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.comments-ico, .comments-num, .attach-ico, .attach-num {
+  color: #000;
+  display: flex;
+  align-items: center;
+}
+
+.card__menu-left {
+  width: 65px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.card__menu-right {
+  display: flex;
+  align-items: center;
+}
+
+.img-avatar {
+  width: 40px;
+  height: 40px;
+  margin: 0 10px 0 5px;
+  border-radius: 50%;
+}
+
+.usuario {
+  color: #000;
+  font-size: 12px;
+  margin-right: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.add-peoples {
+  color: var(--colorBarW);
+  width: 28px;
+  height: 28px;
+  border: 1px dashed var(--colorBarW);
+  border-radius: 50px;
+  position: relative;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+/* Estilos para el botón "Add Task" */
+
+.add-task {
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.add-task-ico {
+  margin-left: 7px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+/* Estilos para el botón de cerrar modal */
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* */
+
+
+
 
 
 

@@ -5,7 +5,7 @@ import moment from 'moment';
 import 'moment/locale/es'; // Importamos el idioma español
 import { getFirestore, collection, onSnapshot, addDoc, getDocs } from 'firebase/firestore';
 import Notificaciones from './Notificaciones';
-import Swal from 'sweetalert2'; // Importamos SweetAlert2
+import Swal from 'sweetalert2';
 
 Modal.setAppElement('#root'); // Ajusta esto según el id del elemento root de tu aplicación
 
