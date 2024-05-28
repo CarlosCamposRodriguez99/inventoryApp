@@ -108,14 +108,14 @@ const CalendarioGd = () => {
 
                 // Definir fechas festivas base
                 const fechasFestivasBase = [
-                    { title: 'Año Nuevo', month: '01', day: '01', color: '#ffcc00' },
-                    { title: 'Día de la Constitución', month: '02', day: '05', color: '#ffcc00' },
-                    { title: 'Natalicio de Benito Juárez', month: '03', day: '21', color: '#ffcc00' },
-                    { title: 'Día del Trabajo', month: '05', day: '01', color: '#ffcc00' },
-                    { title: 'Independencia de México', month: '09', day: '16', color: '#ffcc00' },
-                    { title: 'Transición del Poder Ejecutivo', month: '10', day: '01', color: '#ffcc00' },
-                    { title: 'Revolución Mexicana', month: '11', day: '20', color: '#ffcc00' },
-                    { title: 'Navidad', month: '12', day: '25', color: '#ffcc00' },
+                    { title: 'Año Nuevo', month: '01', day: '01', color: '#de2e03' },
+                    { title: 'Día de la Constitución', month: '02', day: '05', color: '#de2e03' },
+                    { title: 'Natalicio de Benito Juárez', month: '03', day: '21', color: '#de2e03' },
+                    { title: 'Día del Trabajo', month: '05', day: '01', color: '#de2e03' },
+                    { title: 'Independencia de México', month: '09', day: '16', color: '#de2e03' },
+                    { title: 'Transición del Poder Ejecutivo', month: '10', day: '01', color: '#de2e03' },
+                    { title: 'Revolución Mexicana', month: '11', day: '20', color: '#de2e03' },
+                    { title: 'Navidad', month: '12', day: '25', color: '#de2e03' },
                 ];
 
                 // Función para generar fechas festivas para un rango de años

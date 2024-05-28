@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import SearchBar from './SearchBar';
 import Notificaciones from './Notificaciones';
@@ -106,14 +106,132 @@ const customStyles = {
   }
 };
 
+const customStyles2 = {
+  content: {
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '50%',
+    maxWidth: '600px',
+    maxHeight: '80%',
+    overflowY: 'auto',
+    padding: '40px',
+    borderRadius: '10px',
+    boxShadow: '0 10px 50px rgba(0, 0, 0, 0.2)',
+    border: 'none',
+    background: '#ffffff',
+    position: 'relative',
+    fontFamily: 'Roboto, sans-serif',
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: '20px',
+    right: '20px',
+    background: 'none',
+    border: 'none',
+    fontSize: '24px',
+    cursor: 'pointer',
+    color: '#888',
+    transition: 'color 0.3s',
+  },
+  closeButtonHover: {
+    color: '#555',
+  },
+  title: {
+    fontSize: '36px',
+    marginBottom: '30px',
+    fontWeight: 'bold',
+    color: '#333',
+    borderBottom: '2px solid #ccc',
+    paddingBottom: '20px',
+  },
+  subtitle: {
+    fontSize: '24px',
+    marginBottom: '20px',
+    color: '#666',
+  },
+  comment: {
+    fontSize: '20px',
+    marginBottom: '20px',
+    color: '#777',
+  },
+  attachmentLink: {
+    color: '#007bff',
+    textDecoration: 'none',
+    marginRight: '15px',
+    cursor: 'pointer',
+    fontSize: '20px',
+    transition: 'color 0.3s',
+  },
+  attachmentLinkHover: {
+    color: '#00468c',
+  },
+  attachmentImage: {
+    maxWidth: '200px',
+    maxHeight: '200px',
+    marginRight: '15px',
+    marginBottom: '15px',
+  },
+  attachmentsList: {
+    listStyleType: 'none',
+    padding: '0',
+    marginBottom: '20px',
+  },
+  addButton: {
+    padding: '20px 40px',
+    borderRadius: '30px',
+    border: 'none',
+    backgroundColor: '#007bff',
+    color: '#ffffff',
+    fontSize: '24px',
+    cursor: 'pointer',
+    boxShadow: '0 5px 20px rgba(0, 123, 255, 0.3)',
+    transition: 'background-color 0.3s, transform 0.2s',
+  },
+  addButtonHover: {
+    backgroundColor: '#0056b3',
+    transform: 'scale(1.05)',
+  },
+};
+
 const Tareas = () => {
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isDetailModalOpen, setDetailModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'));
   const [user, setUser] = useState('');
   const [priority, setPriority] = useState('baja');
   const [proximasAVencer, setProximasAVencer] = useState([]);
+  const [comment, setComment] = useState('');
+  const [newAttachment, setNewAttachment] = useState(null);
+  const [editCommentIndex, setEditCommentIndex] = useState(-1);
+  const [editedComment, setEditedComment] = useState('');
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  const editCommentRef = useRef(null);
+
+  const updateTime = () => {
+    setCurrentTime(Date.now());
+  };
+
+  // Efecto para actualizar el tiempo cada segundo
+  useEffect(() => {
+    const intervalId = setInterval(updateTime, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (editCommentIndex !== -1 && editCommentRef.current) {
+      editCommentRef.current.focus();
+      editCommentRef.current.setSelectionRange(editCommentRef.current.value.length, editCommentRef.current.value.length);
+    }
+  }, [editCommentIndex]);
 
   useEffect(() => {
     const fetchTareas = async () => {
@@ -122,7 +240,12 @@ const Tareas = () => {
         const tareasRef = collection(firestore, 'tareas');
   
         const unsubscribe = onSnapshot(tareasRef, (snapshot) => {
-          const tareas = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+          const tareas = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            comments: doc.data().comments || [],
+            attachments: doc.data().attachments || []
+          }));
           setTasks(tareas);
         });
   
@@ -166,13 +289,18 @@ const Tareas = () => {
     setPriority('baja');
   };
 
+  const closeDetailModal = () => {
+    setDetailModalOpen(false);
+    setSelectedTask(null);
+    setComment('');
+    setNewAttachment(null);
+  };
+
   const handleAddTask = async () => {
-    const newTask = { title, date, user, priority, status: 'backlog' };
+    const newTask = { title, date, user, priority, status: 'backlog', comments: [], attachments: [] };
     try {
       const firestore = getFirestore();
-      console.time('addDoc');
       const docRef = await addDoc(collection(firestore, 'tareas'), newTask);
-      console.timeEnd('addDoc');
       setTasks([...tasks, { id: docRef.id, ...newTask }]);
       closeModal();
       Swal.fire({
@@ -190,6 +318,11 @@ const Tareas = () => {
   const openModal = () => {
     setDate(moment().format('YYYY-MM-DD'));
     setModalOpen(true);
+  };
+
+  const openDetailModal = (task) => {
+    setSelectedTask(task);
+    setDetailModalOpen(true);
   };
 
   const getBackgroundColor = (priority) => {
@@ -268,6 +401,93 @@ const Tareas = () => {
     });
   };
 
+  const handleAddComment = async () => {
+    if (!selectedTask) return;
+    const updatedTask = { ...selectedTask, comments: [...selectedTask.comments, comment] };
+    if (newAttachment) {
+      const attachmentURL = URL.createObjectURL(newAttachment);
+      updatedTask.attachments.push({ name: newAttachment.name, url: attachmentURL });
+    }
+    try {
+      const firestore = getFirestore();
+      const taskRef = doc(firestore, 'tareas', selectedTask.id);
+      await updateDoc(taskRef, { comments: updatedTask.comments, attachments: updatedTask.attachments });
+      setTasks(tasks.map(task => task.id === selectedTask.id ? updatedTask : task));
+      closeDetailModal();
+      Swal.fire({
+        icon: 'success',
+        title: 'Comentario agregado',
+        text: 'El comentario se ha agregado correctamente.',
+        timer: 1500,
+        showConfirmButton: false
+      });
+    } catch (error) {
+      console.error('Error al agregar comentario:', error);
+    }
+  };
+
+  const handleSaveEditedComment = async (index) => {
+    // Evita editar si no hay tarea seleccionada o si no hay comentarios
+    if (!selectedTask || !selectedTask.comments) {
+      console.error('Error: selectedTask or comments are undefined.');
+      return;
+    }
+  
+    // Crea una copia actualizada de los comentarios
+    const updatedComments = [...selectedTask.comments];
+    updatedComments[index] = editedComment;
+  
+    try {
+      // Actualiza la base de datos
+      const firestore = getFirestore();
+      const taskRef = doc(firestore, 'tareas', selectedTask.id);
+      await updateDoc(taskRef, { comments: updatedComments });
+  
+      // Actualiza el estado local y restablece los estados de edición de comentarios
+      setSelectedTask({
+        ...selectedTask,
+        comments: updatedComments
+      });
+      setEditCommentIndex(-1);
+      setEditedComment('');
+    } catch (error) {
+      console.error('Error al guardar el comentario editado en la base de datos:', error);
+      // Manejar el error según sea necesario
+    }
+  };
+
+  const handleEditCommentToggle = (index) => {
+    setEditCommentIndex(index);
+    setEditedComment(selectedTask.comments[index]);
+  };
+
+  
+  const handleDeleteComment = (index) => {
+    const updatedComments = [...selectedTask.comments];
+    updatedComments.splice(index, 1);
+  
+    // Actualizar la base de datos
+    try {
+      const firestore = getFirestore();
+      const taskRef = doc(firestore, 'tareas', selectedTask.id);
+      updateDoc(taskRef, { comments: updatedComments });
+    } catch (error) {
+      console.error('Error al eliminar el comentario en la base de datos:', error);
+      // Manejar el error según sea necesario
+    }
+  
+    // Actualizar el estado local
+    setSelectedTask({
+      ...selectedTask,
+      comments: updatedComments
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditCommentIndex(-1);
+    setEditedComment('');
+  };
+
   return (
     <>
       <SearchBar />
@@ -303,20 +523,22 @@ const Tareas = () => {
                           <div className="card-container-color" style={{ background: getBackgroundColor(task.priority) }}>
                             <div className="card__header-priority">{task.priority}</div>
                           </div>
-                          <div className="card__header-clear" onClick={() => handleDeleteTask(task.id)}><i className="iconoTarea">x</i></div>
+                          <div className="card__header-clear" onClick={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}>
+                            <i className="iconoTarea">x</i>
+                          </div>
                         </div>
                         <div className="card__fecha">{moment(task.date).format('DD-MM-YY')}</div>
                         <br />
                         <div className="card__text">{task.title}</div>
                         <div className="card__menu">
                           <div className="card__menu-left">
-                            <div className="comments-wrapper">
+                            <div className="comments-wrapper" onClick={() => openDetailModal(task)}>
                               <div className="comments-ico"><img src='/img/comentario.png' style={{ width: "20px", height: "20px" }} alt='comentario' /></div>
-                              <div className="comments-num">1</div>
+                              <div className="comments-num">{task.comments.length}</div>
                             </div>
                             <div className="attach-wrapper">
                               <div className="attach-ico"><img src='/img/adjuntar.png' style={{ width: "20px", height: "20px" }} alt='adjuntar' /></div>
-                              <div className="attach-num">2</div>
+                              <div className="attach-num">{task.attachments.length}</div>
                             </div>
                           </div>
                           <div className="card__menu-right">
@@ -340,7 +562,6 @@ const Tareas = () => {
           })}
         </div>
       </section>
-  
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
@@ -369,6 +590,92 @@ const Tareas = () => {
           <button style={customStyles.button} onClick={handleAddTask}>Guardar</button>
         </div>
       </Modal>
+
+      <Modal
+        isOpen={isDetailModalOpen}
+        onRequestClose={closeDetailModal}
+        style={customStyles2}
+        contentLabel="Detalles de la Tarea"
+      > 
+      <div className="modal-header">
+        <button className='closeButton' onClick={closeDetailModal}>x</button>
+      </div>
+      {selectedTask && (
+        <div className="task-details">
+          <div className="user-comment-container">
+            <div className="user">
+              <img src="/img/avatar.jpg" alt="Avatar" />
+              <div className="user-info">
+                <div className="name">{selectedTask.user}</div>
+                <div className="time">
+                  {moment(comment.timestamp).fromNow()}
+                </div>
+              </div>
+            </div>
+            <div className="comments-container">
+              <h4 style={{ fontFamily: 'Montserrat, sans-serif' }}>Comentarios:</h4>
+              {selectedTask.comments?.length > 0 ? (
+              selectedTask.comments.map((comment, index) => (
+                <div key={index} className="comment">
+                  <div className="user">
+                    <img src="/img/avatar.jpg" alt="Avatar" />
+                    <div className="name">{selectedTask.user}</div>
+                    <div className="time">
+                      {moment(comment.timestamp).fromNow()}
+                    </div>
+                  </div>
+                  {editCommentIndex === index ? (
+                    <input
+                      type="text"
+                      value={editedComment}
+                      onChange={(e) => setEditedComment(e.target.value)}
+                      className="custom-input"
+                      ref={editCommentRef}
+                    />
+                  ) : (
+                    <div className="comentario">
+                      {comment}
+                    </div>
+                  )}
+                  {
+                    editCommentIndex === index ? (
+                      <div className="comment-buttons-container">
+                        <button className="comment-button" onClick={() => handleSaveEditedComment(index)}>Guardar</button>
+                        <button className="comment-button" onClick={handleCancelEdit}>Cancelar</button>
+                      </div>
+                    ) : (
+                      <div className="comment-buttons-container">
+                        <button className="comment-button" onClick={() => handleEditCommentToggle(index)}>Editar</button>
+                        <button className="comment-button" onClick={() => handleDeleteComment(index)}>Eliminar</button>
+                      </div>
+                    )
+                  }
+                </div>
+              ))
+            ) : (
+              <p>No hay comentarios.</p>
+            )}
+
+              <div className="write-comment">
+                <input
+                  type="text"
+                  placeholder="Haz un comentario..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleAddComment();
+                    }
+                  }}
+                />
+                <button className="send-button" onClick={handleAddComment}>Enviar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </Modal>
+
     </>
   );
 };

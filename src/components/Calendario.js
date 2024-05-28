@@ -97,17 +97,17 @@ const Calendario = () => {
   return (
   <>
     <Notificaciones proximasAVencer={proximasAVencer} />
-    <div style={{ position: 'fixed', top: 100, right: 20,  }}>
+    <div style={{ position: 'fixed', top: 80, right: 20 }}>
       <div
         style={{
-          width: expanded ? '400px' : '200px', // Ajustamos el ancho cuando está expandido
-          minWidth: '250px', // Establecemos un ancho mínimo
-          height: expanded ? '300px' : '300px', // Ajustamos la altura cuando está expandido
-          backgroundColor: '#fff', // Fondo blanco
+          width: expanded ? '400px' : '200px',
+          minWidth: '250px',
+          height: expanded ? '250px' : '250px',
+          backgroundColor: '#fff',
           borderRadius: '10px',
           boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
           padding: '20px',
-          transition: 'width 0.3s ease', // Animación de transición para el ancho
+          transition: 'width 0.3s ease',
           overflow: 'hidden',
         }}
       >
@@ -152,7 +152,7 @@ const Calendario = () => {
         </div>
       </div>
 
-      <div style={{ position: 'fixed', bottom: 30, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
+      <div style={{ position: 'fixed', bottom: 25, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
         <h3>Tareas Pendientes:</h3>
         <ul>
           {proximasAVencer.map(cotizacion => (
