@@ -1319,10 +1319,111 @@
   color: #007bff;
 }
 
-
-
-
 /* */
+
+/* Subir archivos en Tareas */
+
+input[type="file"] {
+  display: none;
+}
+
+.dropzone {
+  border: 2px dashed #007bff;
+  padding: 60px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.dropzone p {
+  margin-top: 0;
+}
+
+.file-info {
+  margin-top: 20px;
+  margin-bottom: 15px;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  overflow: hidden; /* Para que los bordes redondeados se apliquen correctamente */
+}
+
+.file-container {
+  display: flex;
+}
+
+.file-image {
+  padding: 10px;
+  justify-content: center;
+  display: flex;
+}
+
+.file-image img {
+  width: 40px; /* Ajusta el tamaño de la imagen según sea necesario */
+  height: auto;
+}
+
+.file-content {
+  flex: 1 1 auto; /* El contenido puede crecer, pero no encoger */
+  padding: 10px;
+}
+
+.file-actions {
+  position: relative;
+  left: 230px;
+}
+
+.file-actions button {
+  margin-right: 10px;
+}
+
+.file-actions button:hover {
+  color: #007bff;
+}
+
+.file-name {
+  margin-bottom: 10px;
+}
+
+.progress-container {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+}
+
+progress {
+  width: 100%;
+  height: 15px;
+  background-color: #cecece;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+
+progress::-webkit-progress-value {
+  background: rgb(34,193,195);
+  background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(0,123,255,1) 100%);
+  border-radius: 10px;
+}
+
+
+progress::-webkit-progress-bar {
+  background-color: #cecece;
+  border-radius: 10px;
+  
+}
+
+.file-preview {
+  margin-top: 20px;
+  border: none;
+  width: 100%;
+  height: 400px;
+}
+
+button {
+  margin-right: 10px;
+}
 
 
 

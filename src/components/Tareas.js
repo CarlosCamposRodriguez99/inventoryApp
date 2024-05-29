@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import SearchBar from './SearchBar';
 import Notificaciones from './Notificaciones';
+import FileUpload from './FileUpload';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
@@ -212,8 +213,18 @@ const Tareas = () => {
   const [editCommentIndex, setEditCommentIndex] = useState(-1);
   const [editedComment, setEditedComment] = useState('');
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [isAttachModalOpen, setAttachModalOpen] = useState(false);
 
   const editCommentRef = useRef(null);
+
+  const openAttachModal = () => {
+    setAttachModalOpen(true);
+  };
+
+  // Función para cerrar el modal de adjuntos
+  const closeAttachModal = () => {
+    setAttachModalOpen(false);
+  };
 
   const updateTime = () => {
     setCurrentTime(Date.now());
@@ -536,7 +547,7 @@ const Tareas = () => {
                               <div className="comments-ico"><img src='/img/comentario.png' style={{ width: "20px", height: "20px" }} alt='comentario' /></div>
                               <div className="comments-num">{task.comments.length}</div>
                             </div>
-                            <div className="attach-wrapper">
+                            <div className="attach-wrapper" onClick={openAttachModal}>
                               <div className="attach-ico"><img src='/img/adjuntar.png' style={{ width: "20px", height: "20px" }} alt='adjuntar' /></div>
                               <div className="attach-num">{task.attachments.length}</div>
                             </div>
@@ -674,6 +685,21 @@ const Tareas = () => {
           </div>
         </div>
       )}
+    </Modal>
+
+    <Modal
+      isOpen={isAttachModalOpen}
+      onRequestClose={closeAttachModal}
+      contentLabel="Adjuntos"
+      style={customStyles2}
+    >
+    <div className="modal-header">
+        <button className='closeButton' onClick={closeAttachModal}>x</button>
+    </div>
+      <h2>Sube y Adjunta Archivos</h2>
+
+      <FileUpload />
+
     </Modal>
 
     </>
