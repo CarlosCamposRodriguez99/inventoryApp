@@ -93,10 +93,39 @@ const styles = StyleSheet.create({
   textArea: {
     borderWidth: 1,
     borderColor: '#000',
-    padding: 5,
+    padding: 10,
     fontSize: 14,
-    marginTop: 20
+    marginTop: 20,
+    minHeight: 100, // Altura mínima del cuadro de observaciones
+    maxHeight: 200, // Altura máxima del cuadro de observaciones
+    overflowY: 'auto', // Agrega barra de desplazamiento vertical si el contenido es demasiado largo
+    textAlign: 'justify', // Alinea el texto justificado para un aspecto más profesional
   },
+  signatureContainer: {
+    marginTop: 100,
+    borderTop: 1,
+    borderColor: '#000',
+    paddingTop: 10,
+    width: '80%', // Ancho fijo para el contenedor de firma
+    alignSelf: 'center', // Centra horizontalmente el contenedor de firma
+  },
+  signatureLine: {
+    marginTop: 20,
+    borderTop: 1,
+    borderColor: '#000',
+    width: '100%', // Ancho fijo para la línea de firma
+  },
+  signatureText: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 5,
+    marginBottom: 30,
+  },
+  nombreClienteText: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 15,
+  }
 });
 
 const ResumenRemision = ({ 
@@ -169,6 +198,13 @@ const ResumenRemision = ({
             <Text style={styles.text}>Total: ${parseFloat(total).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</Text>
 
             <Text style={styles.textArea}>Observaciones:{remision.observacion}</Text>
+
+            <View style={styles.signatureContainer}>
+              <Text style={styles.signatureText}>Firma del Cliente:</Text>
+              <Text style={styles.nombreClienteText}>{remision.nombreCliente}</Text>
+              <View style={styles.signatureLine} />
+              <Text style={styles.nombreClienteText}>Nombre del Cliente:</Text>
+            </View>
           </View>
         </Page>
       </Document>

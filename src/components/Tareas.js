@@ -206,7 +206,7 @@ const Tareas = () => {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(moment().format('YYYY-MM-DD'));
   const [user, setUser] = useState('');
-  const [priority, setPriority] = useState('baja');
+  const [priority, setPriority] = useState('Baja');
   const [proximasAVencer, setProximasAVencer] = useState([]);
   const [comment, setComment] = useState('');
   const [newAttachment, setNewAttachment] = useState(null);
@@ -297,7 +297,7 @@ const Tareas = () => {
     setTitle('');
     setDate(moment().format('YYYY-MM-DD'));
     setUser('');
-    setPriority('baja');
+    setPriority('Baja');
   };
 
   const closeDetailModal = () => {

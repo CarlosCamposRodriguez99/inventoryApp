@@ -50,7 +50,7 @@ const BandejaCotizaciones = ({ cotizaciones, onRowClick, guardarCotizacion, modo
                 <p>Importe: ${parseFloat(cotizacion?.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</p>
               </div>
               <div className="info-column">
-                <p>No. Cotización: {cotizacion.numeroCotizacion}</p>
+                <p>No. Cotización: {cotizacion.numeroCotizacion.toString().padStart(4, '0')}</p>
                 <p>Fecha: {cotizacion.fechaCotizacion}</p>
                 <p>Estado: {cotizacion.estado}</p>
                 <p>Asunto: {cotizacion.asunto}</p>

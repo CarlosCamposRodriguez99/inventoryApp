@@ -50,7 +50,7 @@ const BandejaRemisiones = ({ remisiones, onRowClick, guardarRemision, modoEdicio
                 <p>Importe: ${parseFloat(remision?.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</p>
               </div>
               <div className="info-column">
-                <p>No. Remisión: {remision.numeroRemision}</p>
+                <p>No. Remisión: {remision.numeroRemision.toString().padStart(4, '0')}</p>
                 <p>Fecha: {remision.fechaRemision}</p>
                 <p>Estado: {remision.estado}</p>
                 <p>Asunto: {remision.asunto}</p>
