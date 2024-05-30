@@ -86,7 +86,7 @@ const Sidebar = () => {
                   <li><Link className="text" to="#"><span className="icon">🧾</span>Facturación</Link></li>
                   <li><Link className="text" to="#"><span className="icon">💳</span>Pagos Recibidos</Link></li>
                   <li><Link className="text" to="/cotizacion"><span className="icon">💼</span>Cotizaciones</Link></li>
-                  <li><Link className="text" to="#"><span className="icon">✉️</span>Remisiones</Link></li>
+                  <li><Link className="text" to="/remisiones"><span className="icon">✉️</span>Remisiones</Link></li>
                   <li><Link className="text" to="#"><span className="icon">🛎️</span>Pedidos</Link></li>
                 </ul>
               )}

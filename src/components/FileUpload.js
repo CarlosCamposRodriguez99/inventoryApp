@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getFirestore, collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useDropzone } from 'react-dropzone';
@@ -32,20 +32,7 @@ function FileUpload() {
     loadFiles();
   }, []);
 
-  const onDrop = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    // Verificar si el tamaño del archivo es menor o igual a 5MB (5 * 1024 * 1024 bytes)
-    if (file && file.size <= 5 * 1024 * 1024) {
-      setSelectedFile(file);
-      handleUpload(); // Llamar a handleUpload después de asignar el archivo seleccionado
-    } else {
-      setError('El archivo excede el tamaño máximo permitido (5MB)');
-    }
-  };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-  const handleUpload = async () => {
+  const handleUpload = useCallback(async () => {
     if (!selectedFile) return;
 
     setUploading(true);
@@ -67,13 +54,33 @@ function FileUpload() {
 
       setUploading(false);
       setProgress(0); // Restablecer el progreso después de cargar el archivo
+      setSelectedFile(null); // Restablecer el archivo seleccionado
     } catch (error) {
       console.error('Error al subir el archivo:', error);
       setError('Error al subir el archivo. Inténtelo de nuevo.');
       setUploading(false);
       setProgress(0); // Restablecer el progreso en caso de error
     }
+  }, [selectedFile, fileInfo]);
+
+  // Observar cambios en selectedFile y manejar la carga del archivo
+  useEffect(() => {
+    if (selectedFile) {
+      handleUpload();
+    }
+  }, [selectedFile, handleUpload]);
+
+  const onDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    // Verificar si el tamaño del archivo es menor o igual a 5MB (5 * 1024 * 1024 bytes)
+    if (file && file.size <= 5 * 1024 * 1024) {
+      setSelectedFile(file);
+    } else {
+      setError('El archivo excede el tamaño máximo permitido (5MB)');
+    }
   };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const uploadFileToStorage = async (file) => {
     const storageRef = ref(storage, 'carpeta_en_tu_bucket/' + file.name);
@@ -166,10 +173,12 @@ function FileUpload() {
           </div>
         </div>
       )}
-      <div className="progress-container">
-        <progress value={progress} max="100" />
-        <span style={{ marginLeft: "10px" }}>{`${Math.round(progress)}%`}</span>
-      </div>
+      {uploading && (
+        <div className="progress-container">
+          <progress value={progress} max="100" />
+          <span style={{ marginLeft: "10px" }}>{`${Math.round(progress)}%`}</span>
+        </div>
+      )}
       {fileInfo.map((file) => (
       <div key={file.id} className="file-info">
         <div className="file-container">
@@ -178,7 +187,7 @@ function FileUpload() {
           </div>
           <div className="file-content">
             <div className="file-comment">
-              <p>Archivo: {file.name}</p>
+              <p style={{fontSize: "14px", marginBottom: "20px"}}>Archivo: {file.name}</p>
             </div>
             <div className="file-actions">
               <button onClick={() => handleDownload(file.url, file.name)}>Descargar</button>

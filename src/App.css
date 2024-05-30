@@ -1350,10 +1350,11 @@ input[type="file"] {
 
 .file-container {
   display: flex;
+  align-items: flex-start;
 }
 
 .file-image {
-  padding: 10px;
+  padding: 20px;
   justify-content: center;
   display: flex;
 }
@@ -1365,12 +1366,15 @@ input[type="file"] {
 
 .file-content {
   flex: 1 1 auto; /* El contenido puede crecer, pero no encoger */
-  padding: 10px;
+  padding: 20px;
+  position: relative;
 }
 
+
 .file-actions {
-  position: relative;
-  left: 230px;
+  bottom: 10px;
+  right: 10px;
+  position: absolute;
 }
 
 .file-actions button {

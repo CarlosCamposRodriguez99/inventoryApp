@@ -12,6 +12,7 @@ import Cotizacion from "./pages/cotizacion"
 import OrdenDeCompra from "./pages/orden"
 import CalendarioGd from "./pages/calendario"
 import Tareas from "./pages/tareas"
+import Remisiones from "./pages/remisiones"
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
       <Route path='/articulos-compra' element={<ListadoArticulosCompra />}></Route>
       <Route path='/calendario' element={<CalendarioGd />}></Route>
       <Route path='/tareas' element={<Tareas />}></Route>
+      <Route path='/remisiones' element={<Remisiones />}></Route>
     </Routes>
     <Sidebar />
     
