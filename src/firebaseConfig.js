@@ -39,4 +39,4 @@ async function getItems() {
 getItems();
 
 // Exporta db para su uso en otras partes de la aplicación
-export { db, storage, firebaseConfig, auth  };
+export { app, db, storage, auth, firebaseConfig };

@@ -238,7 +238,7 @@ const ListaProveedores = () => {
   };
 
   return (
-    <div>
+    <div className='centrar'>
       <h1>Lista de Proveedores</h1>
       <SearchBar handleSearch={handleSearch} />
       <button style={{ fontWeight: '700' }} className="prices-button" onClick={handleOpenModal}>+ Nuevo</button>

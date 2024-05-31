@@ -48,10 +48,12 @@ function App() {
         <Route path='/tareas' element={<Tareas />}></Route>
         <Route path='/remisiones' element={<Remisiones />}></Route>
         <Route path='/login' element={<Login onLogin={handleLogin} />} />
-        <Route path='/register' element={<Register />} />
+        <Route path='/registro' element={<Register />} />
         <Route path='/' element={<PrivateRoute loggedIn={loggedIn} />} />
+
       </Routes>
-      {location.pathname !== '/login' && <Sidebar />}
+      {location.pathname !== '/login' && location.pathname !== '/registro' && <Sidebar />}
+
     </div>
   );
 }

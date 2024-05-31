@@ -501,9 +501,9 @@ const Tareas = () => {
 
   return (
     <>
-      <SearchBar />
-      <Notificaciones proximasAVencer={proximasAVencer} />
       <section className="kanban__main">
+      <Notificaciones proximasAVencer={proximasAVencer} />
+      <SearchBar />
         <div className="kanban__main-wrapper">
           {['backlog', 'en-proceso', 'revision', 'hecho'].map((status, index) => {
             const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');

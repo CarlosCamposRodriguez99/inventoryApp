@@ -349,7 +349,7 @@ const ListaTodos = () => {
   };
 
   return (
-    <div>
+    <div className='centrar'>
       <h1>Lista de Clientes y Proveedores</h1>
       <SearchBar handleSearch={handleSearch} />
       {isLoading ? ( // Mostrar mensaje de carga si isLoading es true

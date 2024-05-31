@@ -127,7 +127,7 @@ th {
 .action-button2 {
   position: absolute;
   top: 20px;
-  left: 15%; /* Posiciona el botón en el centro horizontal */
+  left: 10%; /* Posiciona el botón en el centro horizontal */
   transform: translateX(-50%); /* Lo desplaza hacia la izquierda la mitad de su propio ancho */
   font-weight: 600;
   background-color: #007bff;
@@ -135,6 +135,7 @@ th {
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
+  z-index: 9999;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
@@ -148,7 +149,7 @@ th {
   position: fixed;
   z-index: 9999;
   top: 20px;
-  left: 100px;
+  left: 280px;
   font-weight: 600;
   background-color: #007bff;
   color: #fff;
@@ -232,9 +233,8 @@ th {
   width: 50px;
 }
 
-/* Restante del CSS que ya tienes */
 .logo {
-  width: 80px;
+  width: 90px !important;
   height: auto;
   transition: margin-top 0.3s;
 }
@@ -644,8 +644,8 @@ th {
 .image-button {
   cursor: pointer;
   position: absolute;
-  top: 100px;
-  left: 0;
+  top: 130px;
+  left: -10px;
   margin-left: 85px;
   width: 30px;
 }
@@ -889,7 +889,8 @@ th {
 }
 
 .cotizaciones-table {
-  text-align: center;
+  padding-right: 0 !important;
+  padding: 30px;
 }
 
 /**/
@@ -952,10 +953,9 @@ th {
 /* CALENDARIO GRANDE */
 
 .calendario-gd {
-  margin: 0 auto;
-  padding: 35px;
+  padding: 60px;
+  padding-right: 0;
   background-color: #ffffff;
-  border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -965,6 +965,8 @@ th {
   background-color: #fff;
   grid-area: main;
   position: relative;
+  padding: 30px;
+  padding-right: 0;
 }
 
 .kanban__main-wrapper {
@@ -1536,8 +1538,9 @@ html, body, #root, .App {
 
 .logo-container {
   position: absolute;
-  top: -10px;
-  left: 500px;
+  top: 0; /* Asegura que el logotipo esté en la parte superior */
+  left: 0; /* Asegura que el logotipo esté en la parte izquierda */
+  padding: 10px; /* Añade un poco de espacio desde el borde si es necesario */
 }
 
 .logo {
@@ -1545,12 +1548,101 @@ html, body, #root, .App {
   height: auto;
 }
 
+.containerLoginBottom {
+  text-align: center;
+  margin-left: 70px;
+}
+
+.loginBoton {
+  margin-top: 10px; /* Ajusta el margen superior según sea necesario */
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.loginBoton:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* registro */
+
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: rgb(34,193,195);
+  background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(0,123,255,1) 100%);
+}
+
+.register-form {
+  width: 450px;
+  height: 500px;
+  background-color: #fff; /* Fondo blanco para el formulario */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5); /* Sombra suave */
+}
+
+.register-form h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.register-form p {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.register-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.register-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.register-form button:hover {
+  background-color: #0056b3;
+}
+
+.register-containerLogin {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.register-link {
+  color: #000;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+  color: #0056b3;
+  font-weight: 600;
+}
 
 
-/**/
-
-
-
-
-
-
+/* CLASE PARA CENTRAR CONTENIDO */
+.centrar {
+  padding: 30px;
+  padding-right: 0;
+}

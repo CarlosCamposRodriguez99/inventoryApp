@@ -238,7 +238,7 @@ const ListaClientes = () => {
   };
 
   return (
-    <div>
+    <div className='centrar'>
       <h1>Lista de Clientes</h1>
       <SearchBar handleSearch={handleSearch} />
 
