@@ -234,7 +234,7 @@ th {
 }
 
 .logo {
-  width: 90px !important;
+  width: 80px;
   height: auto;
   transition: margin-top 0.3s;
 }
@@ -1543,7 +1543,7 @@ html, body, #root, .App {
   padding: 10px; /* Añade un poco de espacio desde el borde si es necesario */
 }
 
-.logo {
+.logo-login {
   width: 150px; /* Ajusta el tamaño del logotipo según sea necesario */
   height: auto;
 }
@@ -1624,7 +1624,7 @@ html, body, #root, .App {
 
 .register-containerLogin {
   text-align: center;
-  margin-top: 50px;
+  margin-top: 40px;
 }
 
 .register-link {
@@ -1639,6 +1639,10 @@ html, body, #root, .App {
   color: #0056b3;
   font-weight: 600;
 }
+
+
+
+
 
 
 /* CLASE PARA CENTRAR CONTENIDO */

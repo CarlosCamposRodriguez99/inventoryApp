@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword, sendSignInLinkToEmail, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendSignInLinkToEmail, updateProfile, sendEmailVerification } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -12,22 +13,65 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!displayName || !email || !password || !confirmPassword) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Todos los campos son obligatorios',
+      });
+      return;
+    }
+    if (password.length > 6) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'La contraseña debe tener como máximo 6 caracteres',
+      });
+      return;
+    }
+    if (password.length < 6) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'La contraseña debe tener al menos 6 caracteres',
+      });
+      return;
+    }
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Las contraseñas no coinciden',
+      });
       return;
     }
     try {
-      // Enviar enlace de inicio de sesión por correo electrónico
-      await sendSignInLinkToEmail(auth, email, {
-        url: 'http://localhost:3000', // URL temporal para entorno de desarrollo local
-        handleCodeInApp: true,
+      // Crear usuario con correo y contraseña
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Actualizar el perfil del usuario
+      await updateProfile(userCredential.user, {
+        displayName: displayName.trim(),
       });
+  
+      // Enviar enlace de verificación por correo electrónico
+      await sendEmailVerification(userCredential.user);
+  
       // Redireccionar al usuario a la página de tareas después del registro exitoso
       navigate('/tareas');
     } catch (error) {
-      console.error("Error sending email verification:", error);
+      if (error.code === "auth/email-already-in-use") {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Estas credenciales ya existen. Por favor, intenta con otras.',
+        });
+      } else {
+        console.error("Error registrando usuario:", error);
+      }
     }
   };
+  
   
 
   const handleLogin = () => {

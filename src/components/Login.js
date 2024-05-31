@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -26,7 +26,7 @@ const Login = () => {
       Swal.fire({
         icon: 'error',
         title: 'Error en el inicio de sesión',
-        text: error.message,
+        text: "Las credenciales son incorrectas",
       });
     }
   };
@@ -40,7 +40,7 @@ const Login = () => {
       <div className="login-container">
         <div className="login-form">
           <div className="logo-container">
-            <img src="/img/logo-iciamex.png" alt="Logotipo" className="logo" />
+            <img src="/img/logo-iciamex.png" alt="Logotipo" className="logo-login" />
           </div>
           <h1>¡Bienvenido!</h1>
           <p className="login-description">Ingrese su correo electrónico y contraseña para iniciar sesión en esta aplicación</p>
