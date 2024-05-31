@@ -11,10 +11,16 @@ const Sidebar = () => {
   const [isOpenIngresos, setIsOpenIngresos] = useState(false);
   const [isOpenInventario, setIsOpenInventario] = useState(false);
   const [isOpenContacto, setIsOpenContacto] = useState(false);
+  const [isOpenLogout, setIsOpenLogout] = useState(false);
   const location = useLocation();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const toggleLogout = () => {
+    if (!isOpen) setIsOpen(true);
+    setIsOpenLogout(!isOpenLogout);
   };
 
   const toggleContactos = () => {
@@ -43,6 +49,7 @@ const Sidebar = () => {
       setIsOpenIngresos(false);
       setIsOpenInventario(false);
       setIsOpenContacto(false);
+      setIsOpenLogout(false)
     }
   }, [isOpen]);
 
@@ -144,9 +151,19 @@ const Sidebar = () => {
               )}
             </li>
             
-            
             <br/>
-            <li><Link className={location.pathname === '#' ? 'active' : ''} to="#"><span className="icon">⚙️</span><span className="text">Configuración</span></Link></li>
+            <li className={isOpenLogout ? 'open' : ''}>
+              <Link className={`menu-item ${isOpenLogout ? 'open' : ''}`} to="#" onClick={toggleLogout}>
+                <span className="icon">⚙️</span><span className="text">Configuración</span> 
+                <span className={`dropdown-arrow ${isOpen && isOpenLogout ? 'active' : ''}`}>{isOpen ? (isOpenLogout ? '∧' : '∨') : ''}</span>
+              </Link>
+              {isOpenLogout && (
+                <ul className="sub-menu">
+                  <li><Link className="text" to="/login"><span className="icon">🚪</span>Logout</Link></li>
+                </ul>
+              )}
+            </li>
+
             <li><Link className={location.pathname === '#' ? 'active' : ''} to="#"><span className="icon">🛠️</span><span className="text">Soporte</span></Link></li>
           </ul>
         </nav>

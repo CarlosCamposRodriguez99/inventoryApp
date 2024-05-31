@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAuth } from 'firebase/auth';
 // Importa Firestore
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -20,6 +21,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
 
 // Function to get documents from Firestore (POSIBLE SOLUCIÓN A ERROR CUANDO DEJABAS SIN UTILIZAR LA APP)
 async function getItems() {
@@ -37,4 +39,4 @@ async function getItems() {
 getItems();
 
 // Exporta db para su uso en otras partes de la aplicación
-export { db, storage, firebaseConfig  };
+export { db, storage, firebaseConfig, auth  };

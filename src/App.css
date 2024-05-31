@@ -7,68 +7,68 @@
   font-size: 16px; /* Establece el tamaño de la fuente */
 }
   
-  h1 {
-    margin-bottom: 20px;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th, td {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  th {
-    background-color: #f2f2f2;
-  }
+h1 {
+  margin-bottom: 20px;
+}
 
-  .SearchBar {
-    margin-bottom: 20px;
-  }
-  
-  .ActionButton {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .ActionButton:hover {
-    background-color: #0056b3;
-  }
-  
-  .ActionButton:active {
-    background-color: #004080;
-  }
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
-  /* modal */
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
 
-  .modal-close {
-    cursor: pointer;
-    position: absolute;
-    top: 5px;
-    right: 15px;
-    padding: 5px;
-    background-color: transparent;
-    border: none;
-    font-size: 25px;
-    color: #555; /* Color inicial de la X */
-  }
-  
-  .modal-close:hover {
-    color: #007bff; /* Cambia este color al deseado para el efecto hover */
-    transition: color 0.3s ease-in-out;
-  }
-  
-  .modal-close:focus {
-    outline: none;
-  }
+th {
+  background-color: #f2f2f2;
+}
+
+.SearchBar {
+  margin-bottom: 20px;
+}
+
+.ActionButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ActionButton:hover {
+  background-color: #0056b3;
+}
+
+.ActionButton:active {
+  background-color: #004080;
+}
+
+/* modal */
+
+.modal-close {
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  right: 15px;
+  padding: 5px;
+  background-color: transparent;
+  border: none;
+  font-size: 25px;
+  color: #555; /* Color inicial de la X */
+}
+
+.modal-close:hover {
+  color: #007bff; /* Cambia este color al deseado para el efecto hover */
+  transition: color 0.3s ease-in-out;
+}
+
+.modal-close:focus {
+  outline: none;
+}
 
 
 /* SearchBar.css */
@@ -146,8 +146,9 @@
 
 .prices-button {
   position: fixed;
+  z-index: 9999;
   top: 20px;
-  left: 260px;
+  left: 100px;
   font-weight: 600;
   background-color: #007bff;
   color: #fff;
@@ -1428,6 +1429,125 @@ progress::-webkit-progress-bar {
 button {
   margin-right: 10px;
 }
+
+/* login */
+
+html, body, #root, .App {
+  margin: 0;
+  padding: 0;
+}
+
+.login-container {
+  display: flex;
+  height: 100vh;
+}
+
+.login-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center; /* Añadir esta línea para centrar todo el contenido */
+}
+
+.login-form h1 {
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+  margin-left: 65px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  width: 100%; /* Cambia esto a 100% para evitar el desplazamiento */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.form-group input {
+  width: 130%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc; /* Color del borde */
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.login-button {
+  width: 130%; /* Cambia esto a 100% para evitar el desplazamiento */
+  padding: 10px;
+  margin-top: 20px; /* Agrega un margen superior para separar el botón de los campos de entrada */
+  background-color: #007bff; /* Color del botón */
+  color: #fff; /* Color del texto del botón */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.login-button:hover {
+  background-color: #0056b3; /* Color del botón al pasar el ratón */
+}
+
+.login-background {
+  flex: 1;
+  background: rgb(34,193,195);
+  background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(0,123,255,1) 100%);
+}
+
+.input-container {
+  position: relative;
+  width: 130%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px; /* Ajusta el tamaño del ícono según sea necesario */
+  height: 20px; /* Ajusta el tamaño del ícono según sea necesario */
+}
+
+.input-container input {
+  width: 100%;
+  padding: 10px 10px 10px 40px; /* Añadir espacio a la izquierda para el ícono */
+  font-size: 16px;
+  border: 1px solid #ccc; /* Color del borde */
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.login-description {
+  max-width: 350px; /* Limita el ancho del párrafo */
+  margin-bottom: 20px;
+  margin-left: 65px;
+  color: #555;
+  text-align: center; /* Centrar el texto */
+  word-wrap: break-word; /* Permitir que las palabras largas se rompan */
+}
+
+.logo-container {
+  position: absolute;
+  top: -10px;
+  left: 500px;
+}
+
+.logo {
+  width: 150px; /* Ajusta el tamaño del logotipo según sea necesario */
+  height: auto;
+}
+
+
+
+/**/
 
 
 
