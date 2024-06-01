@@ -21,14 +21,6 @@ const Register = () => {
       });
       return;
     }
-    if (password.length > 6) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'La contraseña debe tener como máximo 6 caracteres',
-      });
-      return;
-    }
     if (password.length < 6) {
       Swal.fire({
         icon: 'error',
@@ -71,6 +63,7 @@ const Register = () => {
       }
     }
   };
+  
   
   
 
