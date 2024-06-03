@@ -108,7 +108,7 @@ const Register = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Repetir Contraseña"
           />
-          <button type="submit">Continuar</button>
+          <button style={{borderRadius: "30px", marginTop: "10px"}} type="submit">Continuar</button>
         </form>
         <div className='register-containerLogin'>
           <p style={{ display: 'inline-block', marginRight: '5px' }}>¿Ya tienes una cuenta?</p>

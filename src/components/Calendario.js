@@ -102,7 +102,7 @@ const Calendario = () => {
         style={{
           width: expanded ? '400px' : '200px',
           minWidth: '250px',
-          height: expanded ? '250px' : '250px',
+          height: expanded ? '300px' : '250px',
           backgroundColor: '#fff',
           borderRadius: '10px',
           boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
