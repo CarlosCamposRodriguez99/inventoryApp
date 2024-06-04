@@ -230,12 +230,11 @@ const Tareas = () => {
   const handleUpload = async (taskId, files) => {
     const updatedTasks = tasks.map(task => {
       if (task.id === taskId) {
-        const updatedAttachments = [...task.attachments, ...files.map(file => ({ ...file, taskId }))];
-        return { ...task, attachments: updatedAttachments };
+        return { ...task, attachments: [...task.attachments, ...files] };
       }
       return task;
     });
-  
+
     setTasks(updatedTasks);
     
     try {
@@ -248,7 +247,7 @@ const Tareas = () => {
       console.error('Error al actualizar los archivos adjuntos:', error);
     }
   };
-  
+
   const updateTime = () => {
     setCurrentTime(Date.now());
   };

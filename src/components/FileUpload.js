@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getFirestore, collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, serverTimestamp, deleteDoc, doc, query, where, getDocs } from 'firebase/firestore';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useDropzone } from 'react-dropzone';
 
@@ -7,74 +7,72 @@ import { useDropzone } from 'react-dropzone';
 const firestore = getFirestore();
 const storage = getStorage();
 
-function FileUpload() {
-  const [selectedFile, setSelectedFile] = useState(null);
+const FileUpload = ({ taskId, onUpload }) => {
   const [fileInfo, setFileInfo] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
+  const [fileCount, setFileCount] = useState(0);
 
-  // Cargar archivos existentes al iniciar el componente
+  // Cargar archivos existentes para la tarea actual al iniciar el componente
   useEffect(() => {
     const loadFiles = async () => {
       try {
-        const querySnapshot = await getDocs(collection(firestore, 'files'));
-        const files = [];
-        querySnapshot.forEach((doc) => {
-          files.push({ id: doc.id, ...doc.data() });
-        });
-        setFileInfo(files);
+        if (taskId) {
+          const q = query(collection(firestore, 'files'), where('taskId', '==', taskId));
+          const querySnapshot = await getDocs(q);
+          const files = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setFileInfo(files);
+          setFileCount(files.length);
+        }
       } catch (error) {
         console.error('Error al cargar archivos:', error);
       }
     };
-
+  
     loadFiles();
-  }, []);
+  }, [taskId]);
 
-  const handleUpload = useCallback(async () => {
-    if (!selectedFile) return;
+  const handleUpload = useCallback(async (file) => {
+    if (!file) return;
 
     setUploading(true);
 
     try {
       // Subir archivo a Firebase Storage
-      const fileURL = await uploadFileToStorage(selectedFile);
-      const fileName = selectedFile.name;
+      const fileURL = await uploadFileToStorage(file);
+      const fileName = file.name;
 
       // Guardar la información del archivo en Firestore
       const docRef = await addDoc(collection(firestore, 'files'), {
         url: fileURL,
         name: fileName,
+        taskId: taskId,
         createdAt: serverTimestamp()
       });
 
       // Actualizar el estado con el nuevo archivo
-      setFileInfo([...fileInfo, { id: docRef.id, url: fileURL, name: fileName }]);
+      const newFile = { id: docRef.id, url: fileURL, name: fileName };
+      setFileInfo([...fileInfo, newFile]);
+      setFileCount(fileInfo.length + 1);
 
+      // Llamar a la función de callback para actualizar los archivos adjuntos de la tarea
+      onUpload(taskId, [newFile]);
+
+      setProgress(0);
       setUploading(false);
-      setProgress(0); // Restablecer el progreso después de cargar el archivo
-      setSelectedFile(null); // Restablecer el archivo seleccionado
     } catch (error) {
       console.error('Error al subir el archivo:', error);
       setError('Error al subir el archivo. Inténtelo de nuevo.');
       setUploading(false);
-      setProgress(0); // Restablecer el progreso en caso de error
+      setProgress(0);
     }
-  }, [selectedFile, fileInfo]);
-
-  // Observar cambios en selectedFile y manejar la carga del archivo
-  useEffect(() => {
-    if (selectedFile) {
-      handleUpload();
-    }
-  }, [selectedFile, handleUpload]);
+  }, [fileInfo, taskId, onUpload]);
 
   const onDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
-    // Verificar si el tamaño del archivo es menor o igual a 5MB (5 * 1024 * 1024 bytes)
     if (file && file.size <= 5 * 1024 * 1024) {
-      setSelectedFile(file);
+      handleUpload(file);
     } else {
       setError('El archivo excede el tamaño máximo permitido (5MB)');
     }
@@ -84,67 +82,47 @@ function FileUpload() {
 
   const uploadFileToStorage = async (file) => {
     const storageRef = ref(storage, 'carpeta_en_tu_bucket/' + file.name);
-  
-    try {
-      // Subir el archivo a Firebase Storage con seguimiento de progreso
+
+    return new Promise((resolve, reject) => {
       const uploadTask = uploadBytesResumable(storageRef, file);
 
-      // Manejar el evento de estado cambiado para obtener el progreso
-      uploadTask.on('state_changed', 
+      uploadTask.on('state_changed',
         (snapshot) => {
-          // Calcular el progreso y actualizar el estado
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setProgress(progress);
         },
         (error) => {
-          // Manejar errores durante la carga
           console.error('Error al subir el archivo:', error);
-          throw new Error('Error al subir el archivo: ' + error.message); // Lanzar el error con un mensaje más detallado
+          reject(error);
         },
-        () => {
-          // Manejar la carga completada
-          console.log('Carga completada');
+        async () => {
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadURL);
+          } catch (error) {
+            console.error('Error al obtener la URL de descarga:', error);
+            reject(error);
+          }
         }
       );
-
-      // Esperar a que se complete la carga
-      await uploadTask;
-
-      // Obtener la URL de descarga del archivo
-      const downloadURL = await getDownloadURL(storageRef);
-      console.log('Archivo subido:', downloadURL);
-      return downloadURL;
-
-    } catch (error) {
-      console.error('Error al subir el archivo:', error);
-      throw new Error('Error al subir el archivo: ' + error.message); // Lanzar el error con un mensaje más detallado
-    }
+    });
   };
 
-  const handleDownload = async (fileURL, fileName) => {
-    try {
-      // Descargar el archivo
-      const link = document.createElement('a');
-      link.href = fileURL;
-      link.setAttribute('download', fileName);
-      link.setAttribute('target', '_blank');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error('Error al descargar el archivo:', error);
-      setError('Error al descargar el archivo. Inténtelo de nuevo.');
-    }
+  const handleDownload = (fileURL, fileName) => {
+    const link = document.createElement('a');
+    link.href = fileURL;
+    link.setAttribute('download', fileName);
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleDelete = async (fileId) => {
     try {
-      // Eliminar el archivo de Firestore
       await deleteDoc(doc(firestore, 'files', fileId));
-
-      // Actualizar el estado para reflejar los cambios
-      const updatedFiles = fileInfo.filter((file) => file.id !== fileId);
-      setFileInfo(updatedFiles);
+      setFileInfo(fileInfo.filter(file => file.id !== fileId));
+      setFileCount(fileInfo.length - 1);
     } catch (error) {
       console.error('Error al eliminar el archivo:', error);
       setError('Error al eliminar el archivo. Inténtelo de nuevo.');
@@ -153,7 +131,7 @@ function FileUpload() {
 
   return (
     <div style={{ maxWidth: '600px', margin: 'auto' }}>
-      <h4 style={{fontWeight: "400", color: "#757575"}}>Cargar un archivo</h4>
+      <h4 style={{ fontWeight: "400", color: "#757575" }}>Cargar un archivo</h4>
       <div {...getRootProps()} className="dropzone">
         <input {...getInputProps()} />
         {isDragActive ? (
@@ -161,42 +139,35 @@ function FileUpload() {
         ) : (
           <>
             <p>Arrastra y suelta un archivo aquí, o haz clic para seleccionar un archivo</p>
-            <p style={{color: "#007bff"}}>(Max. File size: 5MB)</p>
+            <p style={{ color: "#007bff" }}>(Max. File size: 5MB)</p>
           </>
         )}
       </div>
-      {selectedFile && (
-        <div>
-          <div className="file-name">
-            <p>Archivo seleccionado: {selectedFile.name}</p>
-            <button onClick={handleUpload} disabled={uploading}>{uploading ? 'Cargando...' : 'Cargar'}</button>
-          </div>
-        </div>
-      )}
       {uploading && (
         <div className="progress-container">
           <progress value={progress} max="100" />
           <span style={{ marginLeft: "10px" }}>{`${Math.round(progress)}%`}</span>
         </div>
       )}
+      {fileCount === 0 && <p>No hay archivos</p>}
       {fileInfo.map((file) => (
-      <div key={file.id} className="file-info">
-        <div className="file-container">
-          <div className="file-image">
-            <img src="/img/file.svg" alt="Archivo Subido" />
-          </div>
-          <div className="file-content">
-            <div className="file-comment">
-              <p style={{fontSize: "14px", marginBottom: "20px"}}>Archivo: {file.name}</p>
+        <div key={file.id} className="file-info">
+          <div className="file-container">
+            <div className="file-image">
+              <img src="/img/file.svg" alt="Archivo Subido" />
             </div>
-            <div className="file-actions">
-              <button onClick={() => handleDownload(file.url, file.name)}>Descargar</button>
-              <button onClick={() => handleDelete(file.id)}>Eliminar</button>
+            <div className="file-content">
+              <div className="file-comment">
+                <p style={{ fontSize: "14px", marginBottom: "20px" }}>Archivo: {file.name}</p>
+              </div>
+              <div className="file-actions">
+                <button onClick={() => handleDownload(file.url, file.name)}>Descargar</button>
+                <button onClick={() => handleDelete(file.id)}>Eliminar</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    ))}
+      ))}
 
       {error && <p>{error}</p>}
     </div>
