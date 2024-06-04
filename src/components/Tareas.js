@@ -217,15 +217,38 @@ const Tareas = () => {
 
   const editCommentRef = useRef(null);
 
-  const openAttachModal = () => {
+  const openAttachModal = (task) => {
+    setSelectedTask(task);
     setAttachModalOpen(true);
   };
-
   // Función para cerrar el modal de adjuntos
   const closeAttachModal = () => {
     setAttachModalOpen(false);
+    setSelectedTask(null);
   };
 
+  const handleUpload = async (taskId, files) => {
+    const updatedTasks = tasks.map(task => {
+      if (task.id === taskId) {
+        const updatedAttachments = [...task.attachments, ...files.map(file => ({ ...file, taskId }))];
+        return { ...task, attachments: updatedAttachments };
+      }
+      return task;
+    });
+  
+    setTasks(updatedTasks);
+    
+    try {
+      const firestore = getFirestore();
+      const taskRef = doc(firestore, 'tareas', taskId);
+      await updateDoc(taskRef, {
+        attachments: updatedTasks.find(task => task.id === taskId).attachments
+      });
+    } catch (error) {
+      console.error('Error al actualizar los archivos adjuntos:', error);
+    }
+  };
+  
   const updateTime = () => {
     setCurrentTime(Date.now());
   };
@@ -547,7 +570,7 @@ const Tareas = () => {
                               <div className="comments-ico"><img src='/img/comentario.png' style={{ width: "20px", height: "20px" }} alt='comentario' /></div>
                               <div className="comments-num">{task.comments.length}</div>
                             </div>
-                            <div className="attach-wrapper" onClick={openAttachModal}>
+                            <div className="attach-wrapper" onClick={() => openAttachModal(task)}>
                               <div className="attach-ico"><img src='/img/adjuntar.png' style={{ width: "20px", height: "20px" }} alt='adjuntar' /></div>
                               <div className="attach-num">{task.attachments.length}</div>
                             </div>
@@ -698,7 +721,9 @@ const Tareas = () => {
     </div>
       <h2>Sube y Adjunta Archivos</h2>
 
-      <FileUpload />
+      {selectedTask && (
+        <FileUpload taskId={selectedTask.id} onUpload={handleUpload} />
+      )}
 
     </Modal>
 
