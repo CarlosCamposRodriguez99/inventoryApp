@@ -13,6 +13,7 @@ const FileUpload = ({ taskId, onUpload, onDeleteAttachment }) => {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
   const [fileCount, setFileCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   // Cargar archivos existentes para la tarea actual al iniciar el componente
   useEffect(() => {
@@ -27,6 +28,8 @@ const FileUpload = ({ taskId, onUpload, onDeleteAttachment }) => {
         }
       } catch (error) {
         console.error('Error al cargar archivos:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -152,26 +155,28 @@ const FileUpload = ({ taskId, onUpload, onDeleteAttachment }) => {
           <span style={{ marginLeft: "10px" }}>{`${Math.round(progress)}%`}</span>
         </div>
       )}
-      {fileCount === 0 && <p>No hay archivos</p>}
-      {fileInfo.map((file) => (
-        <div key={file.id} className="file-info">
-          <div className="file-container">
-            <div className="file-image">
-              <img src="/img/file.svg" alt="Archivo Subido" />
-            </div>
-            <div className="file-content">
-              <div className="file-comment">
-                <p style={{ fontSize: "14px", marginBottom: "20px" }}>Archivo: {file.name}</p>
+      {loading ? (
+        <p>Cargando...</p>
+      ) : (
+        fileCount === 0 ? <p>No hay archivos</p> : fileInfo.map((file) => (
+          <div key={file.id} className="file-info">
+            <div className="file-container">
+              <div className="file-image">
+                <img src="/img/file.svg" alt="Archivo Subido" />
               </div>
-              <div className="file-actions">
-                <button onClick={() => handleDownload(file.url, file.name)}>Descargar</button>
-                <button onClick={() => handleDelete(file.id)}>Eliminar</button>
+              <div className="file-content">
+                <div className="file-comment">
+                  <p style={{ fontSize: "14px", marginBottom: "20px" }}>Archivo: {file.name}</p>
+                </div>
+                <div className="file-actions">
+                  <button onClick={() => handleDownload(file.url, file.name)}>Descargar</button>
+                  <button onClick={() => handleDelete(file.id)}>Eliminar</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
-
+        ))
+      )}
       {error && <p>{error}</p>}
     </div>
   );
