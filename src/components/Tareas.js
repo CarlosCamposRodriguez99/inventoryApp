@@ -212,8 +212,8 @@ const Tareas = () => {
   const [newAttachment, setNewAttachment] = useState(null);
   const [editCommentIndex, setEditCommentIndex] = useState(-1);
   const [editedComment, setEditedComment] = useState('');
-  const [currentTime, setCurrentTime] = useState(Date.now());
   const [isAttachModalOpen, setAttachModalOpen] = useState(false);
+  const [commentDates, setCommentDates] = useState({});
 
   const editCommentRef = useRef(null);
 
@@ -274,17 +274,6 @@ const Tareas = () => {
     }
   };
 
-  const updateTime = () => {
-    setCurrentTime(Date.now());
-  };
-
-  // Efecto para actualizar el tiempo cada segundo
-  useEffect(() => {
-    const intervalId = setInterval(updateTime, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
   useEffect(() => {
     if (editCommentIndex !== -1 && editCommentRef.current) {
       editCommentRef.current.focus();
@@ -306,6 +295,17 @@ const Tareas = () => {
             attachments: doc.data().attachments || []
           }));
           setTasks(tareas);
+          // Guardar las fechas y horas de los comentarios en el estado
+          const commentDatesMap = {};
+          tareas.forEach(task => {
+            task.comments.forEach((comment, index) => {
+              if (!commentDatesMap[task.id]) {
+                commentDatesMap[task.id] = {};
+              }
+              commentDatesMap[task.id][index] = moment(comment.timestamp).format('DD/MM/YYYY HH:mm');
+            });
+          });
+          setCommentDates(commentDatesMap);
         });
   
         return () => unsubscribe();
@@ -462,28 +462,55 @@ const Tareas = () => {
 
   const handleAddComment = async () => {
     if (!selectedTask) return;
-    const updatedTask = { ...selectedTask, comments: [...selectedTask.comments, comment] };
+  
+    // Crear un objeto de comentario con el texto y la fecha y hora actual
+    const newComment = {
+      text: comment,
+      timestamp: new Date().toISOString() // Usar la fecha y hora actual en formato ISO
+    };
+  
+    // Crear una copia de los comentarios existentes y agregar el nuevo comentario
+    const updatedComments = [...selectedTask.comments, newComment];
+  
+    // Crear una copia de los adjuntos existentes
+    const updatedAttachments = [...selectedTask.attachments];
+  
+    // Si hay un nuevo adjunto, agregarlo a la lista de adjuntos actualizada
     if (newAttachment) {
       const attachmentURL = URL.createObjectURL(newAttachment);
-      updatedTask.attachments.push({ name: newAttachment.name, url: attachmentURL });
+      updatedAttachments.push({ name: newAttachment.name, url: attachmentURL });
     }
+  
+    // Crear una copia de la tarea actualizada con los comentarios y adjuntos actualizados
+    const updatedTask = {
+      ...selectedTask,
+      comments: updatedComments,
+      attachments: updatedAttachments
+    };
+  
     try {
+      // Actualizar la tarea en la base de datos
       const firestore = getFirestore();
       const taskRef = doc(firestore, 'tareas', selectedTask.id);
-      await updateDoc(taskRef, { comments: updatedTask.comments, attachments: updatedTask.attachments });
+      await updateDoc(taskRef, { comments: updatedComments, attachments: updatedAttachments });
+  
+      // Actualizar la lista de tareas en el estado local
       setTasks(tasks.map(task => task.id === selectedTask.id ? updatedTask : task));
+  
+      // Cerrar el modal de detalles y mostrar una notificación de éxito
       closeDetailModal();
       Swal.fire({
         icon: 'success',
         title: 'Comentario agregado',
         text: 'El comentario se ha agregado correctamente.',
-        timer: 1500,
+        timer: 1000,
         showConfirmButton: false
       });
     } catch (error) {
       console.error('Error al agregar comentario:', error);
     }
   };
+  
 
   const handleSaveEditedComment = async (index) => {
     // Evita editar si no hay tarea seleccionada o si no hay comentarios
@@ -494,7 +521,7 @@ const Tareas = () => {
   
     // Crea una copia actualizada de los comentarios
     const updatedComments = [...selectedTask.comments];
-    updatedComments[index] = editedComment;
+    updatedComments[index].text = editedComment; // Actualiza el texto del comentario
   
     try {
       // Actualiza la base de datos
@@ -517,7 +544,7 @@ const Tareas = () => {
 
   const handleEditCommentToggle = (index) => {
     setEditCommentIndex(index);
-    setEditedComment(selectedTask.comments[index]);
+    setEditedComment(selectedTask.comments[index].text);
   };
 
   
@@ -667,53 +694,52 @@ const Tareas = () => {
               <div className="user-info">
                 <div className="name">{selectedTask.user}</div>
                 <div className="time">
-                  {moment(comment.timestamp).fromNow()}
+                  {moment(selectedTask.date).format('DD-MM-YY')}
                 </div>
               </div>
             </div>
             <div className="comments-container">
               <h4 style={{ fontFamily: 'Montserrat, sans-serif' }}>Comentarios:</h4>
-              {selectedTask.comments?.length > 0 ? (
-              selectedTask.comments.map((comment, index) => (
-                <div key={index} className="comment">
-                  <div className="user">
-                    <img src="/img/avatar.jpg" alt="Avatar" />
-                    <div className="name">{selectedTask.user}</div>
-                    <div className="time">
-                      {moment(comment.timestamp).fromNow()}
-                    </div>
+              {selectedTask.comments?.length > 0 ? (selectedTask.comments.map((comment, index) => (
+              <div key={index} className="comment">
+                <div className="user">
+                  <img src="/img/avatar.jpg" alt="Avatar" />
+                  <div className="name">{selectedTask.user}</div>
+                  <div className="time">
+                    {commentDates[selectedTask.id] && commentDates[selectedTask.id][index]}
                   </div>
-                  {editCommentIndex === index ? (
-                    <input
-                      type="text"
-                      value={editedComment}
-                      onChange={(e) => setEditedComment(e.target.value)}
-                      className="custom-input"
-                      ref={editCommentRef}
-                    />
-                  ) : (
-                    <div className="comentario">
-                      {comment}
-                    </div>
-                  )}
-                  {
-                    editCommentIndex === index ? (
-                      <div className="comment-buttons-container">
-                        <button className="comment-button" onClick={() => handleSaveEditedComment(index)}>Guardar</button>
-                        <button className="comment-button" onClick={handleCancelEdit}>Cancelar</button>
-                      </div>
-                    ) : (
-                      <div className="comment-buttons-container">
-                        <button className="comment-button" onClick={() => handleEditCommentToggle(index)}>Editar</button>
-                        <button className="comment-button" onClick={() => handleDeleteComment(index)}>Eliminar</button>
-                      </div>
-                    )
-                  }
                 </div>
-              ))
-            ) : (
-              <p>No hay comentarios.</p>
-            )}
+                {editCommentIndex === index ? (
+                  <input
+                    type="text"
+                    value={editedComment}
+                    onChange={(e) => setEditedComment(e.target.value)}
+                    className="custom-input"
+                    ref={editCommentRef}
+                  />
+                ) : (
+                  <div className="comentario">
+                    {comment.text}
+                  </div>
+                )}
+                {
+                  editCommentIndex === index ? (
+                    <div className="comment-buttons-container">
+                      <button className="comment-button" onClick={() => handleSaveEditedComment(index)}>Guardar</button>
+                      <button className="comment-button" onClick={handleCancelEdit}>Cancelar</button>
+                    </div>
+                  ) : (
+                    <div className="comment-buttons-container">
+                      <button className="comment-button" onClick={() => handleEditCommentToggle(index)}>Editar</button>
+                      <button className="comment-button" onClick={() => handleDeleteComment(index)}>Eliminar</button>
+                    </div>
+                  )
+                }
+              </div>
+            ))
+          ) : (
+            <p>No hay comentarios.</p>
+          )}
 
               <div className="write-comment">
                 <input
