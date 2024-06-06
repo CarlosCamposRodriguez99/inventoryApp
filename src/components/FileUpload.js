@@ -7,7 +7,7 @@ import { useDropzone } from 'react-dropzone';
 const firestore = getFirestore();
 const storage = getStorage();
 
-const FileUpload = ({ taskId, onUpload }) => {
+const FileUpload = ({ taskId, onUpload, onDeleteAttachment }) => {
   const [fileInfo, setFileInfo] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -29,7 +29,7 @@ const FileUpload = ({ taskId, onUpload }) => {
         console.error('Error al cargar archivos:', error);
       }
     };
-  
+
     loadFiles();
   }, [taskId]);
 
@@ -123,6 +123,9 @@ const FileUpload = ({ taskId, onUpload }) => {
       await deleteDoc(doc(firestore, 'files', fileId));
       setFileInfo(fileInfo.filter(file => file.id !== fileId));
       setFileCount(fileInfo.length - 1);
+
+      // Llamar a la función de callback para actualizar los archivos adjuntos de la tarea
+      onDeleteAttachment(taskId, fileId);
     } catch (error) {
       console.error('Error al eliminar el archivo:', error);
       setError('Error al eliminar el archivo. Inténtelo de nuevo.');

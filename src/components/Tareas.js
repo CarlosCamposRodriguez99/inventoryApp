@@ -217,6 +217,32 @@ const Tareas = () => {
 
   const editCommentRef = useRef(null);
 
+  const handleDeleteAttachment = async (taskId, fileId) => {
+    try {
+      const firestore = getFirestore();
+      const tareaRef = doc(firestore, 'tareas', taskId);
+      const task = tasks.find(t => t.id === taskId);
+
+      if (!task) {
+        console.error('Task not found');
+        return;
+      }
+
+      const updatedAttachments = task.attachments.filter(attachment => attachment.id !== fileId);
+
+      await updateDoc(tareaRef, { attachments: updatedAttachments });
+
+      setTasks(prevTasks =>
+        prevTasks.map(t =>
+          t.id === taskId ? { ...t, attachments: updatedAttachments } : t
+        )
+      );
+    } catch (error) {
+      console.error('Error deleting attachment:', error);
+    }
+  };
+  
+
   const openAttachModal = (task) => {
     setSelectedTask(task);
     setAttachModalOpen(true);
@@ -721,7 +747,7 @@ const Tareas = () => {
       <h2>Sube y Adjunta Archivos</h2>
 
       {selectedTask && (
-        <FileUpload taskId={selectedTask.id} onUpload={handleUpload} />
+        <FileUpload taskId={selectedTask.id} onUpload={handleUpload} onDeleteAttachment={handleDeleteAttachment} />
       )}
 
     </Modal>
