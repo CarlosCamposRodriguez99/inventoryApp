@@ -522,6 +522,7 @@ const Tareas = () => {
     // Crea una copia actualizada de los comentarios
     const updatedComments = [...selectedTask.comments];
     updatedComments[index].text = editedComment; // Actualiza el texto del comentario
+    updatedComments[index].timestamp = new Date().toISOString(); // Actualiza la marca de tiempo
   
     try {
       // Actualiza la base de datos

@@ -1574,8 +1574,10 @@ html, body, #root, .App {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: rgb(34,193,195);
-  background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(0,123,255,1) 100%);
+  background-image: url("../public/img/waves.svg");
+  background-size: cover; /* Ajusta el tamaño de la imagen para cubrir todo el contenedor */
+  background-position: center; /* Centra la imagen dentro del contenedor */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
 }
 
 .register-form {
