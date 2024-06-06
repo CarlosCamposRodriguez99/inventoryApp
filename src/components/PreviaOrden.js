@@ -174,7 +174,7 @@ function PreviaOrden({ orden, numeroOrden, proveedores, cerrarPrevia }) {
       <div className="modal-buttons">
         <button onClick={cerrarPrevia} className='eliminarBtnModal'>Cerrar</button>
         <button>Enviar por Correo</button>
-        <PDFDownloadLink document={generatePDF()} fileName="previa_cotizacion.pdf">
+        <PDFDownloadLink document={generatePDF()} fileName="previa_orden.pdf">
           {({ loading }) => (loading ? <button disabled>Descargando...</button> : <button>Descargar</button>)}
         </PDFDownloadLink>
       </div>

@@ -282,7 +282,7 @@ const ResumenRemision = ({
             {showOptions && (
               <div className="dropdown-content">
                 <button onClick={handlePrint}>Imprimir</button>
-                <PDFDownloadLink style={{textDecoration: "none"}} document={generatePDF()} fileName="previa_cotizacion.pdf">
+                <PDFDownloadLink style={{textDecoration: "none"}} document={generatePDF()} fileName="previa_remision.pdf">
                   {({ loading }) => (loading ? <button disabled>Descargando...</button> : <button>Descargar PDF</button>)}
                 </PDFDownloadLink>
               </div>
