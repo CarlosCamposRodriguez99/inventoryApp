@@ -75,18 +75,20 @@ const Sidebar = () => {
             <li className={isMenuOpen('Ingresos') ? 'open' : ''}>
               <Link className={`menu-item ${isMenuOpen('Ingresos') ? 'open' : ''}`} to="#" onClick={() => toggleMenu('Ingresos')}>
                 <span className="icon"><i className="bi bi-graph-up-arrow"></i></span><span className="text">Ingresos</span> 
-                <span className={`dropdown-arrow ${isOpen && isMenuOpen('Ingresos') ? 'active' : ''}`}>
-                  {isOpen ? (
-                    isMenuOpen('Ingresos') ? (
-                      <i className="bi bi-chevron-up"></i>
-                    ) : (
-                      <i className="bi bi-chevron-right"></i>
-                    )
-                  ) : ''}
-                </span>
+                <div className="dropdown-arrow-container">
+                  <span className={`dropdown-arrow ${isOpen && isMenuOpen('Ingresos') ? 'active' : ''}`}>
+                    {isOpen ? (
+                      isMenuOpen('Ingresos') ? (
+                        <i className="bi bi-chevron-up"></i>
+                      ) : (
+                        <i className="bi bi-chevron-right"></i>
+                      )
+                    ) : ''}
+                  </span>
+                </div>
               </Link>
               {isMenuOpen('Ingresos') && (
-                <ul className="sub-menu">
+                <ul className={`sub-menu ${isMenuOpen('Ingresos') ? 'open' : 'closed'}`}>
                   <li>
                     <Link className="text" to="#">
                       <span className="icon"><i className="bi bi-file-earmark-text"></i></span>Facturación
@@ -116,21 +118,23 @@ const Sidebar = () => {
               )}
             </li>
 
-            <li className={isMenuOpen('Orden') ? 'open' : ''}>
-              <Link className={`menu-item ${isMenuOpen('Orden') ? 'open' : ''}`} to="#" onClick={() => toggleMenu('Orden')}>
+            <li className={isMenuOpen('Gastos') ? 'open' : ''}>
+              <Link className={`menu-item ${isMenuOpen('Gastos') ? 'open' : ''}`} to="#" onClick={() => toggleMenu('Gastos')}>
                 <span className="icon"><i className="bi bi-currency-dollar"></i></span><span className="text">Gastos</span> 
-                <span className={`dropdown-arrow ${isOpen && isMenuOpen('Gastos') ? 'active' : ''}`}>
-                  {isOpen ? (
-                    isMenuOpen('Gastos') ? (
-                      <i className="bi bi-chevron-up"></i>
-                    ) : (
-                      <i className="bi bi-chevron-right"></i>
-                    )
-                  ) : ''}
-                </span>
+                <div className="dropdown-arrow-container">
+                  <span className={`dropdown-arrow ${isOpen && isMenuOpen('Gastos') ? 'active' : ''}`}>
+                    {isOpen ? (
+                      isMenuOpen('Gastos') ? (
+                        <i className="bi bi-chevron-up"></i>
+                      ) : (
+                        <i className="bi bi-chevron-right"></i>
+                      )
+                    ) : ''}
+                  </span>
+                </div>
               </Link>
-              {isMenuOpen('Orden') && (
-                <ul className="sub-menu">
+              {isMenuOpen('Gastos') && (
+                <ul className={`sub-menu ${isMenuOpen('Gastos') ? 'open' : 'closed'}`}>
                   <li>
                     <Link className="text" to="/orden">
                       <span className="icon"><i className="bi bi-receipt-cutoff"></i></span>Órdenes de Compra
@@ -158,18 +162,20 @@ const Sidebar = () => {
             <li className={isMenuOpen('Inventario') ? 'open' : ''}>
               <Link className={`menu-item ${isMenuOpen('Inventario') ? 'open' : ''}`} to="#" onClick={() => toggleMenu('Inventario')}>
                 <span className="icon"><i className="bi bi-box"></i></span><span className="text">Inventario</span> 
-                <span className={`dropdown-arrow ${isOpen && isMenuOpen('Inventario') ? 'active' : ''}`}>
-                  {isOpen ? (
-                    isMenuOpen('Inventario') ? (
-                      <i className="bi bi-chevron-up"></i>
-                    ) : (
-                      <i className="bi bi-chevron-right"></i>
-                    )
-                  ) : ''}
-                </span>
+                <div className="dropdown-arrow-container">
+                  <span className={`dropdown-arrow ${isOpen && isMenuOpen('Inventario') ? 'active' : ''}`}>
+                    {isOpen ? (
+                      isMenuOpen('Inventario') ? (
+                        <i className="bi bi-chevron-up"></i>
+                      ) : (
+                        <i className="bi bi-chevron-right"></i>
+                      )
+                    ) : ''}
+                  </span>
+                </div>
               </Link>
               {isMenuOpen('Inventario') && (
-                <ul className="sub-menu">
+                <ul className={`sub-menu ${isMenuOpen('Inventario') ? 'open' : 'closed'}`}>
                   <li>
                     <Link className="text" to="/articulos-venta">
                       <span className="icon"><i className="bi bi-bag"></i></span>Productos de Venta
@@ -207,18 +213,20 @@ const Sidebar = () => {
             <li className={isMenuOpen('Reportes') ? 'open' : ''}>
               <Link className={`menu-item ${isMenuOpen('Reportes') ? 'open' : ''}`} to="#" onClick={() => toggleMenu('Reportes')}>
                 <span className="icon"><i className="bi bi-file-earmark-bar-graph"></i></span><span className="text">Reportes</span> 
-                <span className={`dropdown-arrow ${isOpen && isMenuOpen('Reportes') ? 'active' : ''}`}>
-                  {isOpen ? (
-                    isMenuOpen('Reportes') ? (
-                      <i className="bi bi-chevron-up"></i>
-                    ) : (
-                      <i className="bi bi-chevron-right"></i>
-                    )
-                  ) : ''}
-                </span>
+                <div className="dropdown-arrow-container">
+                  <span className={`dropdown-arrow ${isOpen && isMenuOpen('Reportes') ? 'active' : ''}`}>
+                    {isOpen ? (
+                      isMenuOpen('Reportes') ? (
+                        <i className="bi bi-chevron-up"></i>
+                      ) : (
+                        <i className="bi bi-chevron-right"></i>
+                      )
+                    ) : ''}
+                  </span>
+                </div>
               </Link>
               {isMenuOpen('Reportes') && (
-                <ul className="sub-menu">
+                <ul className={`sub-menu ${isMenuOpen('Reportes') ? 'open' : 'closed'}`}>
                 <li>
                   <Link className="text" to="#">
                     <span className="icon"><i className="bi bi-question-diamond"></i></span>Opción 1
@@ -241,18 +249,20 @@ const Sidebar = () => {
             <li className={isMenuOpen('Contactos') ? 'open' : ''}>
               <Link className={`menu-item ${isMenuOpen('Contactos') ? 'open' : ''}`} to="#" onClick={() => toggleMenu('Contactos')}>
                 <span className="icon"><i className="bi bi-telephone"></i></span><span className="text">Contactos</span> 
-                <span className={`dropdown-arrow ${isOpen && isMenuOpen('Contactos') ? 'active' : ''}`}>
-                  {isOpen ? (
-                    isMenuOpen('Contactos') ? (
-                      <i className="bi bi-chevron-up"></i>
-                    ) : (
-                      <i className="bi bi-chevron-right"></i>
-                    )
-                  ) : ''}
-                </span>
+                <div className="dropdown-arrow-container">
+                  <span className={`dropdown-arrow ${isOpen && isMenuOpen('Contactos') ? 'active' : ''}`}>
+                    {isOpen ? (
+                      isMenuOpen('Contactos') ? (
+                        <i className="bi bi-chevron-up"></i>
+                      ) : (
+                        <i className="bi bi-chevron-right"></i>
+                      )
+                    ) : ''}
+                  </span>
+                </div>
               </Link>
               {isMenuOpen('Contactos') && (
-                <ul className="sub-menu">
+                <ul className={`sub-menu ${isMenuOpen('Contactos') ? 'open' : 'closed'}`}>
                   <li>
                     <Link className="text" to="/todos">
                       <span className="icon"><i className="bi bi-people"></i></span>Todos
@@ -280,18 +290,20 @@ const Sidebar = () => {
             <li className={isMenuOpen('Configuracion') ? 'open' : ''}>
               <Link className={`menu-item ${isMenuOpen('Configuracion') ? 'open' : ''}`} to="#" onClick={() => toggleMenu('Configuracion')}>
                 <span className="icon"><i className="bi bi-gear"></i></span><span className="text">Configuración</span> 
-                <span className={`dropdown-arrow ${isOpen && isMenuOpen('Configuracion') ? 'active' : ''}`}>
-                  {isOpen ? (
-                    isMenuOpen('Configuracion') ? (
-                      <i className="bi bi-chevron-up"></i>
-                    ) : (
-                      <i className="bi bi-chevron-right"></i>
-                    )
-                  ) : ''}
-                </span>
+                <div className="dropdown-arrow-container">
+                  <span className={`dropdown-arrow ${isOpen && isMenuOpen('Configuracion') ? 'active' : ''}`}>
+                    {isOpen ? (
+                      isMenuOpen('Configuracion') ? (
+                        <i className="bi bi-chevron-up"></i>
+                      ) : (
+                        <i className="bi bi-chevron-right"></i>
+                      )
+                    ) : ''}
+                  </span>
+                </div>
               </Link>
               {isMenuOpen('Configuracion') && (
-                <ul className="sub-menu">
+                <ul className={`sub-menu ${isMenuOpen('Configuracion') ? 'open' : 'closed'}`}>
                   <li>
                     <Link className="text" to="/login">
                       <span className="icon"><i className="bi bi-box-arrow-right"></i></span>Logout
