@@ -215,13 +215,13 @@ th {
   display: none; /* Ocultar scrollbar en WebKit (Chrome, Safari) */
 }
 
-/* Ajustar la transición para una animación más suave */
 .sidebar {
   z-index: 9999;
   width: 250px;
   background-color: #fff;
   position: fixed;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
   top: 0;
   left: 0;
   height: 100%; /* Hacer que ocupe toda la altura de la pantalla */
@@ -282,7 +282,7 @@ th {
 .navbar-nav li a {
   display: flex; /* Mostrar íconos y texto en línea */
   align-items: center; /* Alinear íconos y texto verticalmente */
-  padding: 12px;
+  padding: 14px;
   text-decoration: none;
   font-size: 14px;
   color: #333;
@@ -296,7 +296,7 @@ th {
 
 .navbar-nav li a.active,
 .navbar-nav li a:hover {
-  background-color: #0056b3;
+  background-color: #007bff;
   color: #fff;
 }
 
@@ -309,10 +309,27 @@ th {
   display: none;
 }
 
+.sidebar.closed .navbar-nav li a {
+  justify-content: center; /* Centrar íconos cuando el sidebar está cerrado */
+}
+
+.sidebar.closed .navbar-nav li a .icon {
+  margin-right: 0; /* Quitar margen cuando el sidebar está cerrado */
+}
+
+.sidebar.open .navbar-nav li a {
+  padding-left: 30px; /* Añadir padding-left cuando el sidebar está abierto */
+}
+
 .sidebar-footer {
   padding: 20px;
   border-top: 1px solid #eee;
-  margin-top: auto;
+}
+
+.sidebar-copyright {
+  text-align: center; /* Centrar el texto */
+  font-size: 14px;
+  color: #777;
 }
 
 .sidebar.closed .centrar-logo,
@@ -343,19 +360,24 @@ th {
   color: #333;
 }
 
-.sidebar-copyright {
-  font-family: "Montserrat", sans-serif;
+.sidebar-content,
+.sidebar-header,
+.sidebar-copyright,
+.navbar-nav li a,
+.sidebar-footer,
+.main-text {
+  font-family: "Inter", sans-serif;
 }
 
 .main-text {
   font-size: 12px; /* Tamaño de fuente más pequeño */
   display: block; /* Hacer que el texto ocupe toda la anchura */
   text-align: left; /* Justificar a la izquierda */
-  margin-left: 10px;
-  font-family: "Montserrat", sans-serif;
+  margin-left: 30px;
   font-weight: 600;
   color: #6a6e73;
 }
+
 
 /* */
 
