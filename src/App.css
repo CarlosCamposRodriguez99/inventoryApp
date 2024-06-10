@@ -387,7 +387,7 @@ th {
 
 .sub-menu li {
   text-align: left; 
-  margin-left: 10px;
+
 }
 
 .sub-menu li a {
@@ -395,6 +395,11 @@ th {
   padding: 10px;
   text-decoration: none;
   color: #333;
+}
+
+.sub-menu li a:hover {
+  background-color: #004080;
+ 
 }
 
 .sidebar-content,
