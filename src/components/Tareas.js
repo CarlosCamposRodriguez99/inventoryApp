@@ -214,6 +214,7 @@ const Tareas = () => {
   const [editedComment, setEditedComment] = useState('');
   const [isAttachModalOpen, setAttachModalOpen] = useState(false);
   const [commentDates, setCommentDates] = useState({});
+  const [isDragging, setIsDragging] = useState(false);
 
   const editCommentRef = useRef(null);
 
@@ -399,6 +400,11 @@ const Tareas = () => {
 
   const handleDragStart = (e, taskId) => {
     e.dataTransfer.setData('taskId', taskId);
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
   };
 
   const handleDragOver = (e) => {
@@ -415,7 +421,7 @@ const Tareas = () => {
       return task;
     });
     setTasks(updatedTasks); // Actualiza localmente primero para una experiencia de usuario más receptiva
-  
+    setIsDragging(false);
     try {
       const firestore = getFirestore();
       const taskRef = doc(firestore, 'tareas', taskId);
@@ -587,8 +593,9 @@ const Tareas = () => {
               <div 
                 key={index}
                 className={`${status.replace(/ /g, '-')}-color card-wrapper`} 
-                onDragOver={(e) => handleDragOver(e)} 
+                onDragOver={(e) => handleDragOver(e)}
                 onDrop={(e) => handleDrop(e, status)}
+                style={{ border: isDragging ? '2px dashed #e9e9e9' : '' }}
               >
                 <div className="card-wrapper__header">
                   <div className="backlog-name">{statusCapitalized}</div>
@@ -605,6 +612,7 @@ const Tareas = () => {
                         key={task.id} 
                         draggable="true" 
                         onDragStart={(e) => handleDragStart(e, task.id)}
+                        onDragEnd={handleDragEnd}
                       >
                         <div className="card__header">
                           <div className="card-container-color" style={{ background: getBackgroundColor(task.priority) }}>
