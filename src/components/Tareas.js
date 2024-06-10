@@ -590,7 +590,7 @@ const Tareas = () => {
           {['backlog', 'en-proceso', 'revision', 'hecho'].map((status, index) => {
             const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');
             return (
-              <div 
+              <div
                 key={index}
                 className={`${status.replace(/ /g, '-')}-color card-wrapper`} 
                 onDragOver={(e) => handleDragOver(e)}
