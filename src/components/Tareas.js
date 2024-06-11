@@ -5,6 +5,7 @@ import Notificaciones from './Notificaciones';
 import FileUpload from './FileUpload';
 import moment from 'moment';
 import Swal from 'sweetalert2';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 
 Modal.setAppElement('#root');
@@ -214,7 +215,6 @@ const Tareas = () => {
   const [editedComment, setEditedComment] = useState('');
   const [isAttachModalOpen, setAttachModalOpen] = useState(false);
   const [commentDates, setCommentDates] = useState({});
-  const [isDragging, setIsDragging] = useState(false);
 
   const editCommentRef = useRef(null);
 
@@ -243,7 +243,6 @@ const Tareas = () => {
     }
   };
   
-
   const openAttachModal = (task) => {
     setSelectedTask(task);
     setAttachModalOpen(true);
@@ -398,39 +397,31 @@ const Tareas = () => {
     }
   };
 
-  const handleDragStart = (e, taskId) => {
-    e.dataTransfer.setData('taskId', taskId);
-    setIsDragging(true);
-  };
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return;
 
-  const handleDragEnd = () => {
-    setIsDragging(false);
-  };
+    const { source, destination } = result;
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
+    if (source.droppableId !== destination.droppableId) {
+      const updatedTasks = tasks.map(task => {
+        if (task.id === result.draggableId) {
+          return { ...task, status: destination.droppableId };
+        }
+        return task;
+      });
 
-  const handleDrop = async (e, status) => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData('taskId');
-    const updatedTasks = tasks.map(task => {
-      if (task.id === taskId) {
-        return { ...task, status };
+      setTasks(updatedTasks);
+
+      try {
+        const firestore = getFirestore();
+        const taskRef = doc(firestore, 'tareas', result.draggableId);
+        await updateDoc(taskRef, { status: destination.droppableId });
+      } catch (error) {
+        console.error('Error al actualizar la tarea en la base de datos:', error);
       }
-      return task;
-    });
-    setTasks(updatedTasks); // Actualiza localmente primero para una experiencia de usuario más receptiva
-    setIsDragging(false);
-    try {
-      const firestore = getFirestore();
-      const taskRef = doc(firestore, 'tareas', taskId);
-      await updateDoc(taskRef, { status }); // Actualiza en la base de datos
-    } catch (error) {
-      console.error('Error al actualizar la tarea en la base de datos:', error);
-      // Maneja el error según tus necesidades
     }
   };
+  
 
   const handleDeleteTask = async (taskId) => {
     Swal.fire({
@@ -584,79 +575,95 @@ const Tareas = () => {
   return (
     <>
       <section className="kanban__main">
-      <Notificaciones proximasAVencer={proximasAVencer} />
-      <SearchBar />
+        <Notificaciones proximasAVencer={proximasAVencer} />
+        <SearchBar />
         <div className="kanban__main-wrapper">
-          {['backlog', 'en-proceso', 'revision', 'hecho'].map((status, index) => {
-            const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');
-            return (
-              <div
-                key={index}
-                className={`${status.replace(/ /g, '-')}-color card-wrapper`} 
-                onDragOver={(e) => handleDragOver(e)}
-                onDrop={(e) => handleDrop(e, status)}
-                style={{ border: isDragging ? '2px dashed #e9e9e9' : '' }}
-              >
-                <div className="card-wrapper__header">
-                  <div className="backlog-name">{statusCapitalized}</div>
-                  <div className="backlog-dots">
-                    <i className='iconoTarea'>⌵</i>
-                  </div>
-                </div>
-                <div className="cards">
-                  {tasks
-                    .filter(task => task.status === status)
-                    .map(task => (
-                      <div 
-                        className="card" 
-                        key={task.id} 
-                        draggable="true" 
-                        onDragStart={(e) => handleDragStart(e, task.id)}
-                        onDragEnd={handleDragEnd}
-                      >
-                        <div className="card__header">
-                          <div className="card-container-color" style={{ background: getBackgroundColor(task.priority) }}>
-                            <div className="card__header-priority">{task.priority}</div>
-                          </div>
-                          <div className="card__header-clear" onClick={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}>
-                            <i className="iconoTarea">x</i>
-                          </div>
-                        </div>
-                        <div className="card__fecha">{moment(task.date).format('DD-MM-YY')}</div>
-                        <br />
-                        <div className="card__text">{task.title}</div>
-                        <div className="card__menu">
-                          <div className="card__menu-left">
-                            <div className="comments-wrapper" onClick={() => openDetailModal(task)}>
-                              <div className="comments-ico"><img src='/img/comentario.png' style={{ width: "20px", height: "20px" }} alt='comentario' /></div>
-                              <div className="comments-num">{task.comments.length}</div>
-                            </div>
-                            <div className="attach-wrapper" onClick={() => openAttachModal(task)}>
-                              <div className="attach-ico"><img src='/img/adjuntar.png' style={{ width: "20px", height: "20px" }} alt='adjuntar' /></div>
-                              <div className="attach-num">{task.attachments.length}</div>
-                            </div>
-                          </div>
-                          <div className="card__menu-right">
-                            <div className="usuario">{task.user}</div>
-                            <div className="img-avatar">
-                              <img style={{ borderRadius: "50%" }} src="/img/avatar.jpg" alt="Avatar" />
-                            </div>
-                          </div>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            {['backlog', 'en-proceso', 'revision', 'hecho'].map((status, index) => {
+              const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');
+
+              return (
+                <Droppable key={index} droppableId={status}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className={`${status.replace(/ /g, '-')}-color card-wrapper`}
+                      style={{ border: snapshot.isDraggingOver ? '2px dashed #e9e9e9' : '' }}
+                    >
+                      <div className="card-wrapper__header">
+                        <div className="backlog-name">{statusCapitalized}</div>
+                        <div className="backlog-dots">
+                          <i className='iconoTarea'>⌵</i>
                         </div>
                       </div>
-                    ))}
-                </div>
-                <div className="card-wrapper__footer">
-                  <div className="add-task" onClick={openModal}>Add task</div>
-                  <div className="add-task-ico">
-                    <i className="iconoTarea">+</i>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                      <div className="cards">
+                        {tasks
+                          .filter(task => task.status === status)
+                          .map((task, index) => (
+                            <Draggable key={task.id} draggableId={task.id} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="card"
+                                  style={{
+                                    ...provided.draggableProps.style,
+                                    backgroundColor: snapshot.isDragging ? '#f4f4f4' : '#fff'
+                                  }}
+                                >
+                                  <div className="card__header">
+                                    <div className="card-container-color" style={{ background: getBackgroundColor(task.priority) }}>
+                                      <div className="card__header-priority">{task.priority}</div>
+                                    </div>
+                                    <div className="card__header-clear" onClick={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}>
+                                      <i className="iconoTarea">x</i>
+                                    </div>
+                                  </div>
+                                  <div className="card__fecha">{moment(task.date).format('DD-MM-YY')}</div>
+                                  <br />
+                                  <div className="card__text">{task.title}</div>
+                                  <div className="card__menu">
+                                    <div className="card__menu-left">
+                                      <div className="comments-wrapper" onClick={() => openDetailModal(task)}>
+                                        <div className="comments-ico"><img src='/img/comentario.png' style={{ width: "20px", height: "20px" }} alt='comentario' /></div>
+                                        <div className="comments-num">{task.comments.length}</div>
+                                      </div>
+                                      <div className="attach-wrapper" onClick={() => openAttachModal(task)}>
+                                        <div className="attach-ico"><img src='/img/adjuntar.png' style={{ width: "20px", height: "20px" }} alt='adjuntar' /></div>
+                                        <div className="attach-num">{task.attachments.length}</div>
+                                      </div>
+                                    </div>
+                                    <div className="card__menu-right">
+                                      <div className="usuario">{task.user}</div>
+                                      <div className="img-avatar">
+                                        <img style={{ borderRadius: "50%" }} src="/img/avatar.jpg" alt="Avatar" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                      </div>
+                      {provided.placeholder}
+                      <div className="card-wrapper__footer">
+                        <div className="add-task" onClick={openModal}>Add task</div>
+                        <div className="add-task-ico">
+                          <i className="iconoTarea">+</i>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Droppable>
+              );
+            })}
+          </DragDropContext>
         </div>
       </section>
+
+
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}

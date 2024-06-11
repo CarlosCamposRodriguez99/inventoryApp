@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
+    "@hello-pangea/dnd": "^16.6.0",
     "@react-pdf/renderer": "^3.4.4",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -14,6 +15,7 @@
     "moment": "^2.30.1",
     "react": "^18.2.0",
     "react-awesome-calendar": "^1.0.14",
+    "react-beautiful-dnd": "^13.1.1",
     "react-big-calendar": "^1.12.2",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
