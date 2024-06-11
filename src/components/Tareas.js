@@ -215,8 +215,13 @@ const Tareas = () => {
   const [editedComment, setEditedComment] = useState('');
   const [isAttachModalOpen, setAttachModalOpen] = useState(false);
   const [commentDates, setCommentDates] = useState({});
+  const [isDragging, setIsDragging] = useState(false);
 
   const editCommentRef = useRef(null);
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
 
   const handleDeleteAttachment = async (taskId, fileId) => {
     try {
@@ -399,9 +404,9 @@ const Tareas = () => {
 
   const handleDragEnd = async (result) => {
     if (!result.destination) return;
-
+  
     const { source, destination } = result;
-
+  
     if (source.droppableId !== destination.droppableId) {
       const updatedTasks = tasks.map(task => {
         if (task.id === result.draggableId) {
@@ -409,9 +414,10 @@ const Tareas = () => {
         }
         return task;
       });
-
+  
       setTasks(updatedTasks);
-
+      setIsDragging(false);
+      
       try {
         const firestore = getFirestore();
         const taskRef = doc(firestore, 'tareas', result.draggableId);
@@ -419,6 +425,8 @@ const Tareas = () => {
       } catch (error) {
         console.error('Error al actualizar la tarea en la base de datos:', error);
       }
+    } else {
+      setIsDragging(false); // Aquí establecemos isDragging en false
     }
   };
   
@@ -578,7 +586,7 @@ const Tareas = () => {
         <Notificaciones proximasAVencer={proximasAVencer} />
         <SearchBar />
         <div className="kanban__main-wrapper">
-          <DragDropContext onDragEnd={handleDragEnd}>
+          <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
             {['backlog', 'en-proceso', 'revision', 'hecho'].map((status, index) => {
               const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');
 
@@ -588,7 +596,7 @@ const Tareas = () => {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`${status.replace(/ /g, '-')}-color card-wrapper`}
+                      className={`${status.replace(/ /g, '-')}-color card-wrapper ${isDragging ? 'dragging' : ''}`}
                       style={{ border: snapshot.isDraggingOver ? '2px dashed #e9e9e9' : '' }}
                     >
                       <div className="card-wrapper__header">

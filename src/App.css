@@ -424,6 +424,10 @@ th {
   margin-left: auto;
 }
 
+.card-wrapper.dragging {
+  border: 2px dashed #e9e9e9;
+}
+
 
 /* */
 
