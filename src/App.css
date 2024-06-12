@@ -1125,6 +1125,8 @@ th {
   background-color: #fff;
   width: 260px;
   height: auto;
+  margin-right: 10px;
+  margin-left: 10px;
   margin-bottom: 10px;
   display: flex;
   flex-direction: column;
