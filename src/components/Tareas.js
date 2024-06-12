@@ -604,9 +604,10 @@ const Tareas = () => {
       <section className="kanban__main">
         <Notificaciones proximasAVencer={proximasAVencer} />
         <SearchBar handleSearch={handleSearch} />
-        <div className="kanban__main-wrapper">
+       
+        <div className="kanban__main-wrapper">      
           <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-            {['backlog', 'en-proceso', 'revision', 'hecho'].map((status, index) => {
+            {['en-proceso', 'revision', 'completado'].map((status, index) => {
               const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');
 
               return (
@@ -689,6 +690,18 @@ const Tareas = () => {
               );
             })}
           </DragDropContext>
+
+          <div>
+            <button style={{
+              fontFamily: "Gilroy, sans-serif",
+              border: "2px dashed #cecece",
+              borderRadius: "6px",
+              padding: "15px 50px",
+              fontSize: "16px",
+              fontWeight: "normal",
+            }}>+ Add New List</button>
+          </div>
+
         </div>
       </section>
 

@@ -1165,7 +1165,7 @@ th {
   background-image: linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, #9ea7fc, #6eb4f7);
 }
 
-.hecho-color {
+.completado-color {
   background-image: linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, #81d5ee, #7ed492);
 }
 
