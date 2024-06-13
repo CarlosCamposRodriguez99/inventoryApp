@@ -369,7 +369,7 @@ const Tareas = () => {
   };
 
   const handleAddTask = async () => {
-    const newTask = { title, date, user, priority, status: 'backlog', comments: [], attachments: [] };
+    const newTask = { title, date, user, priority, status: 'en-proceso', comments: [], attachments: [] };
     try {
       const firestore = getFirestore();
       const docRef = await addDoc(collection(firestore, 'tareas'), newTask);
