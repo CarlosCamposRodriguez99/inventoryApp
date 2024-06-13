@@ -6,7 +6,7 @@ import FileUpload from './FileUpload';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
-import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc, deleteDoc, getDoc, setDoc } from 'firebase/firestore';
 
 Modal.setAppElement('#root');
 
@@ -219,6 +219,71 @@ const Tareas = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isNewListModalOpen, setNewListModalOpen] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const [lists, setLists] = useState([]);
+
+  const openNewListModal = () => {
+    setNewListModalOpen(true);
+  };
+
+  const closeNewListModal = () => {
+    setNewListModalOpen(false);
+    setNewListName('');
+  };
+
+  const handleAddNewList = async () => {
+    if (newListName.trim() !== '') {
+      const newLists = [...lists, newListName.trim()];
+
+      try {
+        const db = getFirestore();
+        const listsDocRef = doc(db, 'config', 'lists');
+        
+        // Verifica si el documento existe
+        const docSnapshot = await getDoc(listsDocRef);
+        if (docSnapshot.exists()) {
+          // Actualiza el documento si existe
+          await updateDoc(listsDocRef, { lists: newLists });
+        } else {
+          // Crea el documento si no existe
+          await setDoc(listsDocRef, { lists: newLists });
+        }
+
+        setLists(newLists);
+        closeNewListModal();
+      } catch (error) {
+        console.error("Error al guardar la nueva lista en Firebase:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al guardar la nueva lista. Por favor, inténtalo de nuevo.',
+        });
+      }
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El nombre de la lista no puede estar vacío.',
+      });
+    }
+  };
+
+  useEffect(() => {
+    const db = getFirestore();
+    const listsDocRef = doc(db, 'config', 'lists');
+
+    const unsubscribe = onSnapshot(listsDocRef, (doc) => {
+      if (doc.exists()) {
+        setLists(doc.data().lists || []);
+      } else {
+        setLists(['en-proceso', 'revision', 'completado']);
+      }
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const filteredTasks = tasks.filter(task =>
     task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -607,7 +672,7 @@ const Tareas = () => {
        
         <div className="kanban__main-wrapper">      
           <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-            {['en-proceso', 'revision', 'completado'].map((status, index) => {
+            {lists.map((status, index) => {
               const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');
 
               return (
@@ -699,8 +764,25 @@ const Tareas = () => {
               padding: "15px 50px",
               fontSize: "16px",
               fontWeight: "normal",
-            }}>+ Add New List</button>
+            }} onClick={openNewListModal}>+ Add New List</button>
           </div>
+
+          <Modal
+            isOpen={isNewListModalOpen}
+            onRequestClose={closeNewListModal}
+            style={customStyles}
+          >
+            <h2>Crear Nueva Lista</h2>
+            <input 
+              type="text" 
+              value={newListName} 
+              onChange={(e) => setNewListName(e.target.value)} 
+              style={customStyles.input} 
+              placeholder="Nombre de la lista" 
+            />
+            <button onClick={handleAddNewList} style={customStyles.button}>Crear</button>
+            <button onClick={closeNewListModal} style={customStyles.button}>Cancelar</button>
+          </Modal>
 
         </div>
       </section>
