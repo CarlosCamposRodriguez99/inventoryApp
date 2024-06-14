@@ -289,6 +289,7 @@ const Tareas = () => {
     task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     moment(task.date).format('DD-MM-YY').includes(searchTerm.toLowerCase()) ||
     task.user.toLowerCase().includes(searchTerm.toLowerCase())
+    
   );
 
   const handleDragStart = () => {
@@ -755,8 +756,9 @@ const Tareas = () => {
               );
             })}
           </DragDropContext>
+        </div>
 
-          <div>
+        <div>
             <button style={{
               fontFamily: "Gilroy, sans-serif",
               border: "2px dashed #cecece",
@@ -783,8 +785,6 @@ const Tareas = () => {
             <button onClick={handleAddNewList} style={customStyles.button}>Crear</button>
             <button onClick={closeNewListModal} style={customStyles.button}>Cancelar</button>
           </Modal>
-
-        </div>
       </section>
 
       <Modal
