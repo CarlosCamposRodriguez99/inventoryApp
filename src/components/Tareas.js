@@ -705,7 +705,8 @@ const Tareas = () => {
                       <div className="card-wrapper__header">
                         <div className="backlog-name">{statusCapitalized}</div>
                         <div className="backlog-dots">
-                          <i className='iconoTarea'>⌵</i>
+                          <i className="bi bi-three-dots" style={{marginRight: "15px"}}></i>
+                          <i className="bi bi-chevron-down"></i>
                         </div>
                       </div>
                       {!isLoading && filteredTasks.length === 0 ? (
