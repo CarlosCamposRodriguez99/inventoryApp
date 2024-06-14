@@ -1179,13 +1179,6 @@ th {
   background-image: linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, #81d5ee, #7ed492);
 }
 
-.nuevo-color-1 {
-  background-image: linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, #ffd899, #fff3cc);
-}
-
-.nuevo-color-2 {
-  background-image: linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, #99ff99, #ccffcc);
-}
 
 .card__text {
   color: #000;
@@ -1212,6 +1205,7 @@ th {
   font-weight: 400;
   font-style: italic;
   margin: 0 10px;
+  padding-bottom: 10px;
   word-wrap: break-word;
   text-align: left;
 }

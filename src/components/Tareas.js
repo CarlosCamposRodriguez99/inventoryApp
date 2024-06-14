@@ -235,11 +235,11 @@ const Tareas = () => {
   const handleAddNewList = async () => {
     if (newListName.trim() !== '') {
       const newLists = [...lists, newListName.trim()];
-
+  
       try {
         const db = getFirestore();
         const listsDocRef = doc(db, 'config', 'lists');
-        
+  
         // Verifica si el documento existe
         const docSnapshot = await getDoc(listsDocRef);
         if (docSnapshot.exists()) {
@@ -249,7 +249,7 @@ const Tareas = () => {
           // Crea el documento si no existe
           await setDoc(listsDocRef, { lists: newLists });
         }
-
+  
         setLists(newLists);
         closeNewListModal();
       } catch (error) {
@@ -268,7 +268,7 @@ const Tareas = () => {
       });
     }
   };
-
+  
   useEffect(() => {
     const db = getFirestore();
     const listsDocRef = doc(db, 'config', 'lists');
@@ -665,6 +665,19 @@ const Tareas = () => {
     setSearchTerm(term);
   };
 
+  const getGradientColors = (status) => {
+    switch (status) {
+      case 'en-proceso':
+        return '#ff9985, #ffb74e';
+      case 'revision':
+        return '#9ea7fc, #6eb4f7';
+      case 'completado':
+        return '#81d5ee, #7ed492';
+      default:
+        return '#ee8199, #d47ec4'; // Color por defecto para nuevas listas
+    }
+  };
+
   return (
     <>
       <section className="kanban__main">
@@ -676,6 +689,10 @@ const Tareas = () => {
             {lists.map((status, index) => {
               const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');
 
+              const backgroundStyle = {
+              backgroundImage: `linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, ${getGradientColors(status)})`,
+            };
+
               return (
                 <Droppable key={index} droppableId={status}>
                   {(provided, snapshot) => (
@@ -683,7 +700,7 @@ const Tareas = () => {
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       className={`${status.replace(/ /g, '-')}-color card-wrapper ${isDragging ? 'dragging' : ''}`}
-                      style={{ border: snapshot.isDraggingOver ? '2px dashed #e9e9e9' : '' }}
+                      style={{ border: snapshot.isDraggingOver ? '2px dashed #e9e9e9' : '', ...backgroundStyle, }}
                     >
                       <div className="card-wrapper__header">
                         <div className="backlog-name">{statusCapitalized}</div>
