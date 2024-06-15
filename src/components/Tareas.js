@@ -222,6 +222,23 @@ const Tareas = () => {
   const [isNewListModalOpen, setNewListModalOpen] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [lists, setLists] = useState([]);
+  const [visibleLists, setVisibleLists] = useState({});
+
+  useEffect(() => {
+    // Initialize all lists to be visible by default
+    const initialVisibility = lists.reduce((acc, status) => {
+      acc[status] = true;
+      return acc;
+    }, {});
+    setVisibleLists(initialVisibility);
+  }, [lists]);
+
+  const toggleListVisibility = (status) => {
+    setVisibleLists(prevState => ({
+      ...prevState,
+      [status]: !prevState[status]
+    }));
+  };
 
   const openNewListModal = () => {
     setNewListModalOpen(true);
@@ -681,129 +698,134 @@ const Tareas = () => {
   return (
     <>
       <section className="kanban__main">
-        <Notificaciones proximasAVencer={proximasAVencer} />
-        <SearchBar handleSearch={handleSearch} />
-       
-        <div className="kanban__main-wrapper">      
-          <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-            {lists.map((status, index) => {
-              const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');
+      <Notificaciones proximasAVencer={proximasAVencer} />
+      <SearchBar handleSearch={handleSearch} />
 
-              const backgroundStyle = {
+      <div className="kanban__main-wrapper">
+        <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+          {lists.map((status, index) => {
+            const statusCapitalized = status === 'revision' ? 'Revisión' : status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, ' ');
+
+            const backgroundStyle = {
               backgroundImage: `linear-gradient(#f6f8fc, #f6f8fc), radial-gradient(circle at top left, ${getGradientColors(status)})`,
             };
 
-              return (
-                <Droppable key={index} droppableId={status}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className={`${status.replace(/ /g, '-')}-color card-wrapper ${isDragging ? 'dragging' : ''}`}
-                      style={{ border: snapshot.isDraggingOver ? '2px dashed #e9e9e9' : '', ...backgroundStyle, }}
-                    >
-                      <div className="card-wrapper__header">
-                        <div className="backlog-name">{statusCapitalized}</div>
-                        <div className="backlog-dots">
-                          <i className="bi bi-three-dots" style={{marginRight: "15px"}}></i>
-                          <i className="bi bi-chevron-down"></i>
-                        </div>
+            const isVisible = visibleLists[status];
+
+            return (
+              <Droppable key={index} droppableId={status}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className={`${status.replace(/ /g, '-')}-color card-wrapper ${isDragging ? 'dragging' : ''}`}
+                    style={{ border: snapshot.isDraggingOver ? '2px dashed #e9e9e9' : '', ...backgroundStyle, }}
+                  >
+                    <div className="card-wrapper__header">
+                      <div className="backlog-name">{statusCapitalized}</div>
+                      <div className="backlog-dots">
+                        <i className="bi bi-three-dots" style={{ marginRight: "15px" }}></i>
+                        <i className={`bi ${isVisible ? 'bi-chevron-down' : 'bi bi-chevron-up'}`} onClick={() => toggleListVisibility(status)}></i>
                       </div>
-                      {!isLoading && filteredTasks.length === 0 ? (
+                    </div>
+                    {isVisible && (
+                      !isLoading && filteredTasks.length === 0 ? (
                         <p>No hay búsquedas disponibles</p>
                       ) : (
                         filteredTasks
                           .filter(task => task.status === status)
                           .map((task, index) => (
-                          <Draggable key={task.id} draggableId={task.id} index={index}>
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className="card"
-                                style={{
-                                  ...provided.draggableProps.style,
-                                  backgroundColor: snapshot.isDragging ? '#f4f4f4' : '#fff'
-                                }}
-                              >
-                                <div className="card__header">
-                                  <div className="card-container-color" style={{ background: getBackgroundColor(task.priority) }}>
-                                    <div className="card__header-priority">{task.priority}</div>
+                            <Draggable key={task.id} draggableId={task.id} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className="card"
+                                  style={{
+                                    ...provided.draggableProps.style,
+                                    backgroundColor: snapshot.isDragging ? '#f4f4f4' : '#fff'
+                                  }}
+                                >
+                                  <div className="card__header">
+                                    <div className="card-container-color" style={{ background: getBackgroundColor(task.priority) }}>
+                                      <div className="card__header-priority">{task.priority}</div>
+                                    </div>
+                                    <div className="card__header-clear">
+                                      <i className="bi bi-three-dots" style={{ marginRight: "10px" }}></i>
+                                      <i className="bi bi-x" onClick={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}></i>
+                                    </div>
                                   </div>
-                                  <div className="card__header-clear" onClick={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}>
-                                    <i className="iconoTarea">x</i>
+                                  <div className="card__fecha">{moment(task.date).format('DD-MM-YY')}</div>
+                                  <br />
+                                  <div className="card__text">{task.title}</div>
+                                  <div className="card__menu">
+                                    <div className="card__menu-left">
+                                      <div className="comments-wrapper" onClick={() => openDetailModal(task)}>
+                                        <div className="comments-ico"><img src='/img/comentario.png' style={{ width: "20px", height: "20px" }} alt='comentario' /></div>
+                                        <div className="comments-num">{task.comments.length}</div>
+                                      </div>
+                                      <div className="attach-wrapper" onClick={() => openAttachModal(task)}>
+                                        <div className="attach-ico"><img src='/img/adjuntar.png' style={{ width: "20px", height: "20px" }} alt='adjuntar' /></div>
+                                        <div className="attach-num">{task.attachments.length}</div>
+                                      </div>
+                                    </div>
+                                    <div className="card__menu-right">
+                                      <div className="usuario">{task.user}</div>
+                                      <div className="img-avatar">
+                                        <img style={{ borderRadius: "50%" }} src="/img/avatar.jpg" alt="Avatar" />
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="card__fecha">{moment(task.date).format('DD-MM-YY')}</div>
-                                <br />
-                                <div className="card__text">{task.title}</div>
-                                <div className="card__menu">
-                                  <div className="card__menu-left">
-                                    <div className="comments-wrapper" onClick={() => openDetailModal(task)}>
-                                      <div className="comments-ico"><img src='/img/comentario.png' style={{ width: "20px", height: "20px" }} alt='comentario' /></div>
-                                      <div className="comments-num">{task.comments.length}</div>
-                                    </div>
-                                    <div className="attach-wrapper" onClick={() => openAttachModal(task)}>
-                                      <div className="attach-ico"><img src='/img/adjuntar.png' style={{ width: "20px", height: "20px" }} alt='adjuntar' /></div>
-                                      <div className="attach-num">{task.attachments.length}</div>
-                                    </div>
-                                  </div>
-                                  <div className="card__menu-right">
-                                    <div className="usuario">{task.user}</div>
-                                    <div className="img-avatar">
-                                      <img style={{ borderRadius: "50%" }} src="/img/avatar.jpg" alt="Avatar" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))
-                      )}
-                      {provided.placeholder}
-                      <div className="card-wrapper__footer">
-                        <div className="add-task" onClick={openModal}>Add task</div>
-                        <div className="add-task-ico">
-                          <i className="iconoTarea">+</i>
-                        </div>
+                              )}
+                            </Draggable>
+                          ))
+                      )
+                    )}
+                    {provided.placeholder}
+                    <div className="card-wrapper__footer">
+                      <div className="add-task" onClick={openModal}>Add task</div>
+                      <div className="add-task-ico">
+                        <i className="iconoTarea">+</i>
                       </div>
                     </div>
-                  )}
-                </Droppable>
-              );
-            })}
-          </DragDropContext>
-        </div>
+                  </div>
+                )}
+              </Droppable>
+            );
+          })}
+        </DragDropContext>
+      </div>
 
-        <div>
-            <button style={{
-              fontFamily: "Gilroy, sans-serif",
-              border: "2px dashed #cecece",
-              borderRadius: "6px",
-              padding: "15px 50px",
-              fontSize: "16px",
-              fontWeight: "normal",
-            }} onClick={openNewListModal}>+ Add New List</button>
-          </div>
+      <div>
+        <button style={{
+          fontFamily: "Gilroy, sans-serif",
+          border: "2px dashed #cecece",
+          borderRadius: "6px",
+          padding: "15px 50px",
+          fontSize: "16px",
+          fontWeight: "normal",
+        }} onClick={openNewListModal}>+ Add New List</button>
+      </div>
 
-          <Modal
-            isOpen={isNewListModalOpen}
-            onRequestClose={closeNewListModal}
-            style={customStyles}
-          >
-            <h2>Crear Nueva Lista</h2>
-            <input 
-              type="text" 
-              value={newListName} 
-              onChange={(e) => setNewListName(e.target.value)} 
-              style={customStyles.input} 
-              placeholder="Nombre de la lista" 
-            />
-            <button onClick={handleAddNewList} style={customStyles.button}>Crear</button>
-            <button onClick={closeNewListModal} style={customStyles.button}>Cancelar</button>
-          </Modal>
-      </section>
+      <Modal
+        isOpen={isNewListModalOpen}
+        onRequestClose={closeNewListModal}
+        style={customStyles}
+      >
+        <h2>Crear Nueva Lista</h2>
+        <input
+          type="text"
+          value={newListName}
+          onChange={(e) => setNewListName(e.target.value)}
+          style={customStyles.input}
+          placeholder="Nombre de la lista"
+        />
+        <button onClick={handleAddNewList} style={customStyles.button}>Crear</button>
+        <button onClick={closeNewListModal} style={customStyles.button}>Cancelar</button>
+      </Modal>
+    </section>
 
       <Modal
         isOpen={isModalOpen}

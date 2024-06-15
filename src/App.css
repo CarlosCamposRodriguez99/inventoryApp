@@ -1133,7 +1133,7 @@ th {
 
 .card {
   border-radius: 5px;
-  border: 1px dashed #ccc;
+  border: 1px solid #cecece;
   background-color: #fff;
   width: calc(90% - 10px);
   margin: 0 auto;
