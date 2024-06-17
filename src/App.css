@@ -81,11 +81,11 @@ th {
 
 .search-input-wrapper {
   position: relative;
-  width: 15%;
+  width: 30%;
 }
 
 .search-input {
-  width: 85%;
+  width: 90%;
   padding: 8px 8px 8px 35px; /* Espacio para el ícono */
   font-size: 16px;
   border: 1px solid #ccc;
@@ -970,11 +970,6 @@ th {
 }
 
 /**/
-
-.search-bar {
-  position: relative;
-  right: 25%;
-}
 
 .encabezado {
   display: flex;
