@@ -3,11 +3,13 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useAuth } from './AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -20,8 +22,9 @@ const Login = () => {
       return;
     }
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/tareas');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      setUser(userCredential.user);
+      navigate('/');
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -29,10 +32,6 @@ const Login = () => {
         text: "Las credenciales son incorrectas",
       });
     }
-  };
-
-  const handleRegister = () => {
-    navigate('/registro'); // Redirige al usuario al componente de registro
   };
 
   return (
@@ -76,7 +75,7 @@ const Login = () => {
             </div>
           </form>
           <div className='containerLoginBottom'>
-            <p>¿No tienes una cuenta? <button onClick={handleRegister} className="loginBoton">Regístrate</button></p>
+            <p>¿No tienes una cuenta? <button onClick={() => navigate('/registro')} className="loginBoton">Regístrate</button></p>
           </div>
         </div>
         <div className="login-background"></div>

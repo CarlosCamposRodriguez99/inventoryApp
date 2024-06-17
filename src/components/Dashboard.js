@@ -6,6 +6,7 @@ import 'moment/locale/es'; // Importamos el idioma español
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import Notificaciones from './Notificaciones';
 import SearchBar from './SearchBar';
+import { useAuth } from './AuthContext';
 
 // Configura el localizador de fechas usando moment.js
 moment.locale('es');
@@ -16,6 +17,7 @@ const Dashboard = () => {
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(moment());
   const [proximasAVencer, setProximasAVencer] = useState([]);
+  const { user } = useAuth();
 
   const toggleExpand = () => {
     setExpanded(!expanded);
@@ -52,6 +54,10 @@ const Dashboard = () => {
   
     fetchCotizaciones();
   }, []);
+
+  const displayNameParts = user?.displayName?.split(' ') || [];
+  const firstName = displayNameParts[0] || '';
+  const lastName = displayNameParts.length > 1 ? displayNameParts[1] : '';
 
   const CustomToolbar = ({ expanded, onNavigate, onView, views, view }) => (
     <div className="rbc-toolbar">
@@ -96,81 +102,90 @@ const Dashboard = () => {
   );
 
   return (
-  <>
-    <div style={{marginTop: "30px"}}>
-      <SearchBar />
-      <Notificaciones proximasAVencer={proximasAVencer} />
-    </div>
-
-
-    <div style={{ position: 'fixed', top: 80, right: 20 }}>
-      <div
-        style={{
-          width: expanded ? '400px' : '200px',
-          minWidth: '250px',
-          height: expanded ? '300px' : '250px',
-          backgroundColor: '#fff',
-          borderRadius: '10px',
-          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-          padding: '20px',
-          transition: 'width 0.3s ease',
-          overflow: 'hidden',
-        }}
-      >
+    <>
+      <div style={{ position: 'fixed', top: 0, left: 80 }}>
+        <h3 style={{ fontWeight: "normal", marginTop: "40px"}}>
+          Bienvenido, <span style={{ fontWeight: 'bold' }}>{firstName} {lastName}</span>
+        </h3>
+      </div>
+      <div style={{marginTop: "40px"}}>
+        <div>
+          <SearchBar />
+        </div>
+      </div>
+      <div style={{ position: 'fixed', top: 80, right: 20, zIndex: 999 }}>
+        <Notificaciones proximasAVencer={proximasAVencer} />
+      </div>
+  
+      <div style={{ position: 'fixed', top: 160, right: 20 }}>
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '10px',
+            width: expanded ? '400px' : '200px',
+            minWidth: '250px',
+            height: expanded ? '300px' : '250px',
+            backgroundColor: '#fff',
+            borderRadius: '10px',
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+            padding: '20px',
+            transition: 'width 0.3s ease',
+            overflow: 'hidden',
           }}
         >
-          <button
+          <div
             style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: '#007bff',
-              fontSize: '1.5rem',
-              padding: '5px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '10px',
             }}
-            onClick={toggleExpand}
           >
-            {expanded ? '_' : '+'}
-          </button>
+            <button
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#007bff',
+                fontSize: '1.5rem',
+                padding: '5px',
+              }}
+              onClick={toggleExpand}
+            >
+              {expanded ? '_' : '+'}
+            </button>
+          </div>
+          <div style={{ height: 'calc(100% - 50px)', overflow: 'auto' }}>
+            <Calendar
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ width: '100%', height: '100%' }}
+              selectable={true}
+              components={{
+                toolbar: props => <CustomToolbar {...props} expanded={expanded} />,
+              }}
+              // Manejo de la navegación
+              onNavigate={(newDate, view) => {
+                setCurrentDate(moment(newDate)); // Actualiza la fecha actual
+              }}
+            />
+          </div>
         </div>
-        <div style={{ height: 'calc(100% - 50px)', overflow: 'auto' }}>
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ width: '100%', height: '100%' }}
-            selectable={true}
-            components={{
-              toolbar: props => <CustomToolbar {...props} expanded={expanded} />,
-            }}
-            // Manejo de la navegación
-            onNavigate={(newDate, view) => {
-              setCurrentDate(moment(newDate)); // Actualiza la fecha actual
-            }}
-          />
+  
+        <div style={{ position: 'fixed', bottom: 25, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
+          <h3>Tareas Pendientes:</h3>
+          <ul>
+            {proximasAVencer.map(cotizacion => (
+              <li key={cotizacion.id}>
+                Cotización #{cotizacion.numeroCotizacion} - {moment(cotizacion.fechaVencimiento).format('DD/MM/YYYY')}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-
-      <div style={{ position: 'fixed', bottom: 25, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
-        <h3>Tareas Pendientes:</h3>
-        <ul>
-          {proximasAVencer.map(cotizacion => (
-            <li key={cotizacion.id}>
-              Cotización #{cotizacion.numeroCotizacion} - {moment(cotizacion.fechaVencimiento).format('DD/MM/YYYY')}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  </>
+    </>
   );
+  
 };
 
 export default Dashboard;
