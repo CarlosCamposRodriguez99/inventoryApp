@@ -10,7 +10,7 @@ import Notificaciones from './Notificaciones';
 moment.locale('es');
 const localizer = momentLocalizer(moment);
 
-const Calendario = () => {
+const Dashboard = () => {
   const [expanded, setExpanded] = useState(false);
   const [events, setEvents] = useState([]);
   const [currentDate, setCurrentDate] = useState(moment());
@@ -167,4 +167,4 @@ const Calendario = () => {
   );
 };
 
-export default Calendario;
+export default Dashboard;

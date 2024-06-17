@@ -315,14 +315,15 @@ const Sidebar = () => {
 
             <li>
               <Link className={location.pathname === '#' ? 'active' : ''} to="#">
-                <span className="icon"><i className="bi bi-question-circle"></i></span><span className="text">Ayuda</span>
+                <span className="icon"><i className="bi bi-question-circle"></i></span>
+                <span className="text">Ayuda</span>
               </Link>
             </li>
           </ul>
         </nav>
-
         <Outlet />
       </div>
+      
       <div className="sidebar-footer">
         <div className="sidebar-copyright">&copy; {getYear()} ICIAMEX</div>
       </div>

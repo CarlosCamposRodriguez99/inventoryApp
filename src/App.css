@@ -387,7 +387,6 @@ th {
 
 .sub-menu li {
   text-align: left; 
-
 }
 
 .sub-menu li a {
@@ -398,7 +397,7 @@ th {
 }
 
 .sub-menu li a:hover {
-  background-color: #004080;
+  background-color: #424242;
 }
 
 .sidebar-content,
@@ -1000,7 +999,7 @@ th {
   background-color: #0056b3;
 }
 
-/* Calendario */
+/* Dashboard */
 
 .rbc-toolbar {
   display: flex;
