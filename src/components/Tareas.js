@@ -752,8 +752,8 @@ const Tareas = () => {
                                       <div className="card__header-priority">{task.priority}</div>
                                     </div>
                                     <div className="card__header-clear">
-                                      <i className="bi bi-three-dots" style={{ marginRight: "10px" }}></i>
-                                      <i className="bi bi-x" onClick={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}></i>
+                                      <i className="bi bi-pencil" style={{ marginRight: "10px" }}></i>
+                                      <i className="bi bi-x-lg" onClick={(e) => { e.stopPropagation(); handleDeleteTask(task.id); }}></i>
                                     </div>
                                   </div>
                                   <div className="card__fecha">{moment(task.date).format('DD-MM-YY')}</div>

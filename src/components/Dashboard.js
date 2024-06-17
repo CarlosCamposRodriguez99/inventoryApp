@@ -5,6 +5,7 @@ import moment from 'moment';
 import 'moment/locale/es'; // Importamos el idioma español
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
 import Notificaciones from './Notificaciones';
+import SearchBar from './SearchBar';
 
 // Configura el localizador de fechas usando moment.js
 moment.locale('es');
@@ -96,7 +97,12 @@ const Dashboard = () => {
 
   return (
   <>
-    <Notificaciones proximasAVencer={proximasAVencer} />
+    <div style={{marginTop: "30px"}}>
+      <SearchBar />
+      <Notificaciones proximasAVencer={proximasAVencer} />
+    </div>
+
+
     <div style={{ position: 'fixed', top: 80, right: 20 }}>
       <div
         style={{

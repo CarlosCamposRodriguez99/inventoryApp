@@ -74,33 +74,37 @@ th {
 /* SearchBar.css */
 
 .search-form {
+  display: flex;
   margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 20%;
 }
 
 .search-input {
-  flex: 1;
-  width: 25%;
-  padding: 8px;
+  width: 100%;
+  padding: 8px 8px 8px 40px; /* Espacio para el ícono */
   font-size: 16px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-right: 20px;
+  border-radius: 5px;
+  font-family: 'Inter', sans-serif !important; /* Aplicar la fuente Inter */
 }
 
-.search-button {
-  padding: 8px 16px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.search-input::placeholder {
+  color: #aaa;
 }
 
-.search-button:hover {
-  background-color: #0056b3;
+.search-input-wrapper .bi-search {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #aaa;
+  font-size: 16px;
 }
-
 
 /* boton de agregar productos */
 
