@@ -1495,7 +1495,7 @@ progress {
 
 progress::-webkit-progress-value {
   background: rgb(34,193,195);
-  background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(0,123,255,1) 100%);
+  background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(0,255,4,1) 100%);
   border-radius: 10px;
 }
 
