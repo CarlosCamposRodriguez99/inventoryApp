@@ -201,10 +201,10 @@ const Dashboard = () => {
         </div>
       </div>
       <div style={{ position: 'fixed', top: 80, right: 20, zIndex: 999 }}>
-        <Notificaciones proximasAVencer={proximasAVencer} />
+        <Notificaciones proximasAVencer={proximasAVencer} proximosEventos={proximosEventos} />
       </div>
   
-      <div style={{ position: 'fixed', top: 160, right: 20 }}>
+      <div style={{ position: 'fixed', top: 120, right: 20 }}>
         <div
           style={{
             width: expanded ? '400px' : '200px',
@@ -262,7 +262,7 @@ const Dashboard = () => {
           </div>
         </div>
   
-        <div style={{ position: 'fixed', bottom: 25, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
+        <div style={{ position: 'fixed', bottom: 80, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
           <h3>Próximos Eventos:</h3>
           <ul>
             {proximosEventos.map(evento => (

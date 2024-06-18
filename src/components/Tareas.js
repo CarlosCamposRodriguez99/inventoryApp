@@ -209,6 +209,7 @@ const Tareas = () => {
   const [user, setUser] = useState('');
   const [priority, setPriority] = useState('Baja');
   const [proximasAVencer, setProximasAVencer] = useState([]);
+  const [proximosEventos, setProximosEventos] = useState([]);
   const [comment, setComment] = useState('');
   const [newAttachment, setNewAttachment] = useState(null);
   const [editCommentIndex, setEditCommentIndex] = useState(-1);
@@ -419,23 +420,45 @@ const Tareas = () => {
       try {
         const firestore = getFirestore();
         const cotizacionesRef = collection(firestore, 'cotizaciones');
-
-        const unsubscribe = onSnapshot(cotizacionesRef, (snapshot) => {
+  
+        const unsubscribeCotizaciones = onSnapshot(cotizacionesRef, (snapshot) => {
           const cotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-
-          const today = moment();
-          const upcomingCotizaciones = cotizaciones.filter(cotizacion => moment(cotizacion.fechaVencimiento).isBefore(today.clone().add(7, 'days')));
+  
+          const today = moment().startOf('day');
+          const upcomingCotizaciones = cotizaciones.filter(cotizacion => moment(cotizacion.fechaVencimiento).isSameOrAfter(today));
           setProximasAVencer(upcomingCotizaciones);
         });
-
-        return () => unsubscribe();
+  
+        return () => unsubscribeCotizaciones();
       } catch (error) {
         console.error('Error al cargar cotizaciones:', error);
       }
     };
-
+  
+    const fetchEventos = async () => {
+      try {
+        const firestore = getFirestore();
+        const eventosRef = collection(firestore, 'eventos');
+  
+        const unsubscribeEventos = onSnapshot(eventosRef, (snapshot) => {
+          const eventos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  
+          const today = moment().startOf('day');
+          const upcomingEventos = eventos.filter(evento => moment(evento.to).isSameOrAfter(today));
+          setProximosEventos(upcomingEventos);
+        });
+  
+        return () => unsubscribeEventos();
+      } catch (error) {
+        console.error('Error al cargar eventos:', error);
+      }
+    };
+  
     fetchCotizaciones();
+    fetchEventos();
   }, []);
+  
+  
 
   const closeModal = () => {
     setModalOpen(false);
@@ -699,7 +722,7 @@ const Tareas = () => {
   return (
     <>
       <section className="kanban__main">
-      <Notificaciones proximasAVencer={proximasAVencer} />
+      <Notificaciones proximasAVencer={proximasAVencer} proximosEventos={proximosEventos} />
       <SearchBar handleSearch={handleSearch} />
 
       <div className="kanban__main-wrapper">

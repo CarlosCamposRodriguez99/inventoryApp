@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 
-const Notificaciones = ({ proximasAVencer }) => {
+const Notificaciones = ({ proximasAVencer, proximosEventos }) => {
   const [showNotifications, setShowNotifications] = useState(false);
 
   const handleNotificationClick = () => {
@@ -17,7 +17,7 @@ const Notificaciones = ({ proximasAVencer }) => {
           style={{ width: '40px', height: 'auto', cursor: 'pointer' }}
           onClick={handleNotificationClick}
         />
-        {proximasAVencer.length > 0 && (
+        {(proximasAVencer.length > 0 || proximosEventos.length > 0) && (
           <div
             style={{
               position: 'absolute',
@@ -34,7 +34,7 @@ const Notificaciones = ({ proximasAVencer }) => {
               fontSize: '0.8rem',
             }}
           >
-            {proximasAVencer.length}
+            {proximasAVencer.length + proximosEventos.length}
           </div>
         )}
       </div>
@@ -54,28 +54,54 @@ const Notificaciones = ({ proximasAVencer }) => {
           }}
         >
           <ul style={{ listStyleType: 'none', margin: 0, padding: '10px' }}>
-            {proximasAVencer.map((item, index) => (
-              <li
-                key={index}
-                style={{
-                  borderBottom: '1px solid #eaeaea',
-                  padding: '10px 0',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <strong style={{ color: '#333', marginBottom: '5px' }}>
-                  Próxima fecha a vencer:
-                </strong>
-                <span style={{ fontSize: '0.9rem', color: '#555' }}>
-                  {item.title}
-                </span>
-                <span style={{ fontSize: '0.8rem', color: '#777', fontWeight: "600" }}>
-                  {moment(item.fechaVencimiento).format('DD/MM/YYYY')}
-                </span>
-              </li>
-            ))}
+            {proximasAVencer.length > 0 && (
+              <>
+                <h3 style={{ marginBottom: '10px', color: '#333', textAlign: "left" }}>Próximas a Vencer:</h3>
+                {proximasAVencer.map((item, index) => (
+                  <li
+                    key={index}
+                    style={{
+                      borderBottom: '1px solid #eaeaea',
+                      padding: '10px 0',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                    }}
+                  >
+                    <strong style={{ color: '#333', marginBottom: '5px' }}>
+                      Cotización #{item.numeroCotizacion?.toString().padStart(4, '0')}
+                    </strong>
+                    <span style={{ fontSize: '0.9rem', color: '#555' }}>
+                      Vence el {moment(item.fechaVencimiento).format('DD/MM/YYYY')}
+                    </span>
+                  </li>
+                ))}
+              </>
+            )}
+            {proximosEventos.length > 0 && (
+              <>
+                <h3 style={{ marginBottom: '10px', color: '#333', textAlign: "left" }}>Próximos Eventos:</h3>
+                {proximosEventos.map((evento, index) => (
+                  <li
+                    key={index}
+                    style={{
+                      borderBottom: '1px solid #eaeaea',
+                      padding: '10px 0',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                    }}
+                  >
+                    <strong style={{ color: '#333', marginBottom: '5px' }}>
+                      {evento.title}
+                    </strong>
+                    <span style={{ fontSize: '0.9rem', color: '#555' }}>
+                      Vence el {moment(evento.to).format('DD/MM/YYYY')}
+                    </span>
+                  </li>
+                ))}
+              </>
+            )}
           </ul>
         </div>
       )}
