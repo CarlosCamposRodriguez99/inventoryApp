@@ -342,6 +342,7 @@ const Tareas = () => {
     setSelectedTask(task);
     setAttachModalOpen(true);
   };
+  
   // Función para cerrar el modal de adjuntos
   const closeAttachModal = () => {
     setAttachModalOpen(false);

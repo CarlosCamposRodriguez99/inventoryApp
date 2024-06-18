@@ -14,9 +14,10 @@ const localizer = momentLocalizer(moment);
 
 const Dashboard = () => {
   const [expanded, setExpanded] = useState(false);
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([]); // Array para los eventos del calendario
   const [currentDate, setCurrentDate] = useState(moment());
   const [proximasAVencer, setProximasAVencer] = useState([]);
+  const [proximosEventos, setProximosEventos] = useState([]);
   const { user } = useAuth();
 
   const toggleExpand = () => {
@@ -25,39 +26,125 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchCotizaciones = async () => {
-      const firestore = getFirestore();
-      const cotizacionesRef = collection(firestore, 'cotizaciones');
-      const unsubscribe = onSnapshot(cotizacionesRef, (snapshot) => {
-        const cotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  
-        // Filtrar las cotizaciones que tienen fecha de vencimiento a partir de hoy y ordenarlas
-        const proximas = cotizaciones
-          .filter(cotizacion => moment(cotizacion.fechaVencimiento) >= moment().startOf('day'))
-          .sort((a, b) => moment(a.fechaVencimiento) - moment(b.fechaVencimiento));
-          
-        setProximasAVencer(proximas.slice(0, 6)); // Limitar la lista a 6 fechas próximas
-  
-        // Crear los eventos solo para las cotizaciones próximas a vencer
-        const cotizacionesEvents = proximas.map((cotizacion) => ({
-          id: cotizacion.id,
-          title: `Cotización #${cotizacion.numeroCotizacion}`,
-          start: moment(cotizacion.fechaVencimiento).startOf('day').toDate(), // Ajustar a la hora 0 del día
-          end: moment(cotizacion.fechaVencimiento).startOf('day').toDate(), // Ajustar a la hora 0 del día
-          allDay: true,
-          resource: 'cotizacion',
-        }));
-        setEvents(cotizacionesEvents);
-      });
-  
-      return () => unsubscribe();
+        const firestore = getFirestore();
+        const cotizacionesRef = collection(firestore, 'cotizaciones');
+        const unsubscribeCotizaciones = onSnapshot(cotizacionesRef, (snapshot) => {
+            const cotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+            // Filtrar las cotizaciones que tienen fecha de vencimiento a partir de hoy y ordenarlas
+            const proximas = cotizaciones
+                .filter(cotizacion => moment(cotizacion.fechaVencimiento) >= moment().startOf('day'))
+                .sort((a, b) => moment(a.fechaVencimiento) - moment(b.fechaVencimiento));
+
+            setProximasAVencer(proximas.slice(0, 6)); // Limitar la lista a 6 fechas próximas
+
+            // Crear los eventos solo para las cotizaciones próximas a vencer
+            const cotizacionesEvents = proximas.map((cotizacion) => ({
+                id: `cotizacion-${cotizacion.id}`, // Prefijo para distinguir cotizaciones
+                title: `Cotización #${cotizacion.numeroCotizacion}`,
+                start: moment(cotizacion.fechaVencimiento).startOf('day').toDate(), // Ajustar a la hora 0 del día
+                end: moment(cotizacion.fechaVencimiento).startOf('day').toDate(), // Ajustar a la hora 0 del día
+                allDay: true,
+                resource: 'cotizacion',
+                style: { backgroundColor: 'blue' } // Color para cotizaciones (azul)
+            }));
+
+            // Actualizar el estado eliminando duplicados
+            setEvents(prevEvents => {
+                const eventMap = new Map(prevEvents.map(event => [event.id, event]));
+                cotizacionesEvents.forEach(event => eventMap.set(event.id, event));
+                return Array.from(eventMap.values());
+            });
+        });
+
+        return () => unsubscribeCotizaciones();
     };
-  
+
+    const fetchEventos = async () => {
+        const firestore = getFirestore();
+        const eventosRef = collection(firestore, 'eventos');
+        const unsubscribeEventos = onSnapshot(eventosRef, (snapshot) => {
+            const eventos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+            // Filtrar eventos que ocurren a partir de hoy y ordenarlos
+            const proximos = eventos
+                .filter(evento => moment(evento.to) >= moment().startOf('day'))
+                .sort((a, b) => moment(a.to) - moment(b.to));
+
+            setProximosEventos(proximos.slice(0, 6)); // Limitar la lista a 6 eventos próximos
+
+            // Crear los eventos solo para los próximos eventos
+            const eventosCalendario = proximos.map((evento) => ({
+                id: `evento-${evento.id}`, // Prefijo para distinguir eventos
+                title: evento.title,
+                start: moment(evento.to).startOf('day').toDate(), // Ajustar a la hora 0 del día
+                end: moment(evento.to).startOf('day').toDate(), // Ajustar a la hora 0 del día
+                allDay: true,
+                resource: 'evento',
+                style: { backgroundColor: '#229954' } // Color para eventos (verde)
+            }));
+
+            // Actualizar el estado eliminando duplicados
+            setEvents(prevEvents => {
+                const eventMap = new Map(prevEvents.map(event => [event.id, event]));
+                eventosCalendario.forEach(event => eventMap.set(event.id, event));
+                return Array.from(eventMap.values());
+            });
+        });
+
+        return () => unsubscribeEventos();
+    };
+
+    // Función para obtener las fechas festivas con un color rojo
+    const getFechasFestivas = () => {
+        const fechasFestivasBase = [
+            { title: 'Año Nuevo', month: '01', day: '01', color: '#de2e03' },
+            { title: 'Día de la Constitución', month: '02', day: '05', color: '#de2e03' },
+            { title: 'Natalicio de Benito Juárez', month: '03', day: '21', color: '#de2e03' },
+            { title: 'Día del Trabajo', month: '05', day: '01', color: '#de2e03' },
+            { title: 'Independencia de México', month: '09', day: '16', color: '#de2e03' },
+            { title: 'Transición del Poder Ejecutivo', month: '10', day: '01', color: '#de2e03' },
+            { title: 'Revolución Mexicana', month: '11', day: '20', color: '#de2e03' },
+            { title: 'Navidad', month: '12', day: '25', color: '#de2e03' },
+        ];
+
+        const generarFechasFestivas = (años) => {
+            const fechasFestivas = [];
+
+            años.forEach(año => {
+                fechasFestivasBase.forEach(festivo => {
+                    fechasFestivas.push({
+                        id: `festivo-${festivo.title}-${año}`, // Prefijo para distinguir festivos
+                        title: festivo.title,
+                        start: new Date(`${año}-${festivo.month}-${festivo.day}`),
+                        end: new Date(`${año}-${festivo.month}-${festivo.day}`),
+                        allDay: true,
+                        resource: 'festivo',
+                        style: { backgroundColor: '#de2e03' } // Color para festivos (rojo)
+                    });
+                });
+            });
+
+            return fechasFestivas;
+        };
+
+        const años = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() + i);
+        return generarFechasFestivas(años);
+    };
+
+    // Obtener fechas festivas y fusionarlas con los eventos existentes
+    const fechasFestivas = getFechasFestivas();
+    setEvents(prevEvents => [...prevEvents, ...fechasFestivas]);
+
+    // Ejecutar las funciones de carga de cotizaciones y eventos
     fetchCotizaciones();
-  }, []);
+    fetchEventos();
+}, []);
 
   const displayNameParts = user?.displayName?.split(' ') || [];
   const firstName = displayNameParts[0] || '';
   const lastName = displayNameParts.length > 1 ? displayNameParts[1] : '';
+
 
   const CustomToolbar = ({ expanded, onNavigate, onView, views, view }) => (
     <div className="rbc-toolbar">
@@ -164,6 +251,9 @@ const Dashboard = () => {
               components={{
                 toolbar: props => <CustomToolbar {...props} expanded={expanded} />,
               }}
+              eventPropGetter={(event) => ({
+                style: event.style || {},
+              })}
               // Manejo de la navegación
               onNavigate={(newDate, view) => {
                 setCurrentDate(moment(newDate)); // Actualiza la fecha actual
@@ -173,11 +263,11 @@ const Dashboard = () => {
         </div>
   
         <div style={{ position: 'fixed', bottom: 25, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
-          <h3>Tareas Pendientes:</h3>
+          <h3>Próximos Eventos:</h3>
           <ul>
-            {proximasAVencer.map(cotizacion => (
-              <li key={cotizacion.id}>
-                Cotización #{cotizacion.numeroCotizacion} - {moment(cotizacion.fechaVencimiento).format('DD/MM/YYYY')}
+            {proximosEventos.map(evento => (
+              <li key={evento.id}>
+                {evento.title} - {moment(evento.to).format('DD/MM/YYYY')}
               </li>
             ))}
           </ul>
@@ -185,7 +275,6 @@ const Dashboard = () => {
       </div>
     </>
   );
-  
 };
 
 export default Dashboard;

@@ -168,12 +168,13 @@ const CalendarioGd = () => {
             const eventWithId = { ...newEvent, id: docRef.id, key: `evento_${docRef.id}`, from: newEvent.to };
             setEvents(prevEvents => [...prevEvents, eventWithId]);
 
-            // Mostrar alerta de éxito
+             // Mostrar alerta de éxito
             Swal.fire({
                 title: 'Evento Registrado',
                 text: 'El evento ha sido registrado exitosamente.',
                 icon: 'success',
-                confirmButtonText: 'OK'
+                showConfirmButton: false, // No mostrar el botón de confirmación
+                timer: 2000 // Cerrar automáticamente después de 2 segundos
             });
 
             // Cerrar el modal
@@ -196,9 +197,11 @@ const CalendarioGd = () => {
             border: '1px solid #ccc',
             boxShadow: '0 5px 15px rgba(0, 0, 0, 0.3)',
             fontFamily: 'Montserrat, sans-serif',
+            zIndex: 9999,
         },
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 9999,
         },
         input: {
             width: '100%',
