@@ -20,6 +20,7 @@ const CalendarioGd = () => {
     });
 
     const [proximasAVencer, setProximasAVencer] = useState([]);
+    const [proximosEventos, setProximosEventos] = useState([]);
 
     useEffect(() => {
         const fetchCotizaciones = async () => {
@@ -66,6 +67,53 @@ const CalendarioGd = () => {
         };
 
         fetchCotizaciones();
+    }, []);
+
+
+    useEffect(() => {
+        const fetchEventos = async () => {
+            try {
+                const firestore = getFirestore();
+                const eventosRef = collection(firestore, 'eventos');
+    
+                const unsubscribeEventos = onSnapshot(eventosRef, (snapshot) => {
+                    const eventos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    
+                    // Filtrar eventos que ocurren a partir de hoy
+                    const today = moment().startOf('day');
+                    const proximos = eventos
+                        .filter(evento => moment(evento.to).isSameOrAfter(today))
+                        .sort((a, b) => moment(a.to) - moment(b.to));
+    
+                    // Establecer los eventos próximos en el estado
+                    setProximosEventos(proximos);
+    
+                    // Crear eventos para el calendario
+                    const eventosCalendario = proximos.map(evento => ({
+                        id: `evento-${evento.id}`,
+                        title: evento.title,
+                        start: moment(evento.to).startOf('day').toDate(),
+                        end: moment(evento.to).startOf('day').toDate(),
+                        allDay: true,
+                        resource: 'evento',
+                        style: { backgroundColor: '#229954' },
+                    }));
+    
+                    // Fusionar los eventos de eventos con los eventos ya existentes
+                    setEvents(prevEvents => {
+                        const existingEventIds = prevEvents.map(event => event.id);
+                        const newEventosCalendario = eventosCalendario.filter(event => !existingEventIds.includes(event.id));
+                        return [...prevEvents, ...newEventosCalendario];
+                    });
+                });
+    
+                return () => unsubscribeEventos();
+            } catch (error) {
+                console.error('Error al cargar eventos:', error);
+            }
+        };
+    
+        fetchEventos();
     }, []);
 
     function getCurrentDateTime() {
@@ -291,7 +339,7 @@ const CalendarioGd = () => {
                 </form>
             </Modal>
 
-            <Notificaciones proximasAVencer={proximasAVencer} />
+            <Notificaciones proximasAVencer={proximasAVencer} proximosEventos={proximosEventos} />
         </div>
     );
 };
