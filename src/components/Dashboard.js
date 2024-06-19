@@ -97,40 +97,42 @@ const Dashboard = () => {
 
     // Función para obtener las fechas festivas con un color rojo
     const getFechasFestivas = () => {
-        const fechasFestivasBase = [
-            { title: 'Año Nuevo', month: '01', day: '01', color: '#de2e03' },
-            { title: 'Día de la Constitución', month: '02', day: '05', color: '#de2e03' },
-            { title: 'Natalicio de Benito Juárez', month: '03', day: '21', color: '#de2e03' },
-            { title: 'Día del Trabajo', month: '05', day: '01', color: '#de2e03' },
-            { title: 'Independencia de México', month: '09', day: '16', color: '#de2e03' },
-            { title: 'Transición del Poder Ejecutivo', month: '10', day: '01', color: '#de2e03' },
-            { title: 'Revolución Mexicana', month: '11', day: '20', color: '#de2e03' },
-            { title: 'Navidad', month: '12', day: '25', color: '#de2e03' },
-        ];
-
-        const generarFechasFestivas = (años) => {
-            const fechasFestivas = [];
-
-            años.forEach(año => {
-                fechasFestivasBase.forEach(festivo => {
-                    fechasFestivas.push({
-                        id: `festivo-${festivo.title}-${año}`, // Prefijo para distinguir festivos
-                        title: festivo.title,
-                        start: new Date(`${año}-${festivo.month}-${festivo.day}`),
-                        end: new Date(`${año}-${festivo.month}-${festivo.day}`),
-                        allDay: true,
-                        resource: 'festivo',
-                        style: { backgroundColor: '#de2e03' } // Color para festivos (rojo)
-                    });
-                });
-            });
-
-            return fechasFestivas;
-        };
-
-        const años = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() + i);
-        return generarFechasFestivas(años);
-    };
+      const fechasFestivasBase = [
+          { title: 'Año Nuevo', month: '01', day: '01', color: '#de2e03' },
+          { title: 'Día de la Constitución', month: '02', day: '05', color: '#de2e03' },
+          { title: 'Natalicio de Benito Juárez', month: '03', day: '21', color: '#de2e03' },
+          { title: 'Día del Trabajo', month: '05', day: '01', color: '#de2e03' },
+          { title: 'Independencia de México', month: '09', day: '16', color: '#de2e03' },
+          { title: 'Transición del Poder Ejecutivo', month: '10', day: '01', color: '#de2e03' },
+          { title: 'Revolución Mexicana', month: '11', day: '20', color: '#de2e03' },
+          { title: 'Navidad', month: '12', day: '25', color: '#de2e03' },
+      ];
+  
+      const generarFechasFestivas = (años) => {
+          const fechasFestivas = [];
+  
+          años.forEach(año => {
+              fechasFestivasBase.forEach(festivo => {
+                  // Construir la fecha usando moment.js para evitar problemas de zona horaria
+                  const fecha = moment(`${año}-${festivo.month}-${festivo.day}`, 'YYYY-MM-DD').toDate();
+                  fechasFestivas.push({
+                      id: `festivo-${festivo.title}-${año}`,
+                      title: festivo.title,
+                      start: fecha,
+                      end: fecha,
+                      allDay: true,
+                      resource: 'festivo',
+                      style: { backgroundColor: '#de2e03' }
+                  });
+              });
+          });
+  
+          return fechasFestivas;
+      };
+  
+      const años = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() + i);
+      return generarFechasFestivas(años);
+  };
 
     // Obtener fechas festivas y fusionarlas con los eventos existentes
     const fechasFestivas = getFechasFestivas();
@@ -150,21 +152,21 @@ const Dashboard = () => {
     <div className="rbc-toolbar">
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
         <div style={{ marginRight: 'auto' }}>
-          <span onClick={() => onNavigate('PREV')} style={{ fontSize: '1rem', padding: '5px', cursor: "pointer", color: '#007bff' }}>
-            {'❮'}
+          <span onClick={() => onNavigate('PREV')} style={{ fontSize: '20px', padding: '5px', cursor: "pointer", fontWeight: "bold"}}>
+            {<i className="bi bi-arrow-left-circle"></i>}
           </span>
         </div>
         <div className="month-year-container">
           <h2 style={{ margin: '0', display: 'inline-block', fontSize: '1rem' }}>
-            {currentDate.format('MMMM')}
+            {currentDate.format('MMMM').charAt(0).toUpperCase() + currentDate.format('MMMM').slice(1)}
           </h2>
           <h2 style={{ margin: '0', display: 'inline-block', fontSize: '1rem', marginLeft: '0.5rem' }}>
             {currentDate.format('YYYY')} {/* Formato de fecha para mostrar el año */}
           </h2>
         </div>
         <div style={{ marginLeft: 'auto' }}>
-          <span type="button" onClick={() => onNavigate('NEXT')} style={{ fontSize: '1rem', padding: '5px', cursor: "pointer", color: '#007bff' }}>
-            {'❯'}
+          <span type="button" onClick={() => onNavigate('NEXT')} style={{ fontSize: '20px', padding: '5px', cursor: "pointer", fontWeight: "bold" }}>
+            {<i className="bi bi-arrow-right-circle"></i>}
           </span>
         </div>
       </div>
@@ -204,75 +206,55 @@ const Dashboard = () => {
         <Notificaciones proximasAVencer={proximasAVencer} proximosEventos={proximosEventos} />
       </div>
   
-      <div style={{ position: 'fixed', top: 120, right: 20 }}>
-        <div
-          style={{
-            width: expanded ? '400px' : '200px',
-            minWidth: '250px',
-            height: expanded ? '300px' : '250px',
-            backgroundColor: '#fff',
-            borderRadius: '10px',
-            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-            padding: '20px',
-            transition: 'width 0.3s ease',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '10px',
-            }}
-          >
-            <button
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#007bff',
-                fontSize: '1.5rem',
-                padding: '5px',
-              }}
-              onClick={toggleExpand}
-            >
-              {expanded ? '_' : '+'}
-            </button>
-          </div>
-          <div style={{ height: 'calc(100% - 50px)', overflow: 'auto' }}>
-            <Calendar
-              localizer={localizer}
-              events={events}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ width: '100%', height: '100%' }}
-              selectable={true}
-              components={{
-                toolbar: props => <CustomToolbar {...props} expanded={expanded} />,
-              }}
-              eventPropGetter={(event) => ({
-                style: event.style || {},
-              })}
-              // Manejo de la navegación
-              onNavigate={(newDate, view) => {
-                setCurrentDate(moment(newDate)); // Actualiza la fecha actual
-              }}
-            />
-          </div>
+      <div className="dashboard-container">
+      {/* Contenedor del calendario */}
+      <div className={`calendar-container ${expanded ? 'expanded' : ''}`}>
+        <div className="calendar-header">
+          <button className="expand-button" onClick={toggleExpand}>
+            {expanded ? '-' : '+'}
+          </button>
         </div>
-  
-        <div style={{ position: 'fixed', bottom: 80, right: 20, backgroundColor: '#fff', borderRadius: '10px', padding: '20px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
-          <h3>Próximos Eventos:</h3>
-          <ul>
-            {proximosEventos.map(evento => (
-              <li key={evento.id}>
-                {evento.title} - {moment(evento.to).format('DD/MM/YYYY')}
-              </li>
-            ))}
-          </ul>
+        <div className="calendar-content">
+          <Calendar
+            localizer={localizer} // Asumiendo que localizer es una variable definida
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ width: '100%', height: '100%' }}
+            selectable={true}
+            components={{
+              toolbar: (props) => <CustomToolbar {...props} expanded={expanded} />,
+            }}
+            eventPropGetter={(event) => ({
+              style: event.style || {},
+            })}
+            onNavigate={(newDate, view) => {
+              setCurrentDate(moment(newDate));
+            }}
+          />
         </div>
       </div>
+      
+      {/* Panel de próximos eventos */}
+      <div className="upcoming-events">
+      <div className="events-container">
+        <h3 className="events-title">Próximos Eventos</h3>
+        <ul className="events-list">
+          {proximosEventos.map((evento) => (
+            <li key={evento.id} className="event-item">
+              <div className="event-time">{moment(evento.to).format('HH:mm a')}</div>
+              <div className="event-details">
+                <span className="event-title">{evento.title}</span>
+                <span className="event-date">{moment(evento.to).format('DD/MM/YYYY')}</span>
+                <span className="event-description">{evento.description}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    </div>
     </>
   );
 };
