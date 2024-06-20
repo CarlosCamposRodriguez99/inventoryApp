@@ -20,6 +20,8 @@ const Dashboard = () => {
   const [proximosEventos, setProximosEventos] = useState([]);
   const { user } = useAuth();
 
+  const showScroll = proximosEventos.length > 3;
+
   const toggleExpand = () => {
     setExpanded(!expanded);
   };
@@ -239,10 +241,23 @@ const Dashboard = () => {
     <div className="upcoming-events">
       <div className="events-container">
         <h3 className="events-title">Próximos Eventos</h3>
-        <ul className="events-list">
-          {proximosEventos.map((evento) => (
+        <ul className={`events-list ${showScroll ? 'scrollable' : ''}`}>
+          {/* Mostrar solo los primeros 3 eventos */}
+          {proximosEventos.slice(0, 3).map((evento) => (
             <li key={evento.id} className="event-item">
-            <div className="event-time">{moment(evento.to).format('hh:mm a')}</div>
+              <div className="event-time">{moment(evento.to).format('hh:mm a')}</div>
+              <div className="event-details">
+                <span className="event-title">{evento.title}</span>
+                <span className="event-date">{moment(evento.to).format('DD/MM/YYYY')}</span>
+                <span className="event-description">{evento.description}</span>
+              </div>
+            </li>
+          ))}
+          
+          {/* Mostrar eventos adicionales que ocurren en los próximos 5 días */}
+          {proximosEventos.slice(3).filter(evento => moment(evento.to).diff(moment(), 'days') < 15).map((evento) => (
+            <li key={evento.id} className="event-item">
+              <div className="event-time">{moment(evento.to).format('hh:mm a')}</div>
               <div className="event-details">
                 <span className="event-title">{evento.title}</span>
                 <span className="event-date">{moment(evento.to).format('DD/MM/YYYY')}</span>
@@ -253,6 +268,7 @@ const Dashboard = () => {
         </ul>
       </div>
     </div>
+    
 
     </div>
     </>

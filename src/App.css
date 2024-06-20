@@ -1790,6 +1790,7 @@ html, body, #root, .App {
   width: 250px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
   transition: margin-top 0.3s ease;
+  overflow: hidden; /* Oculta el desbordamiento de contenido */
 }
 
 /* Contenedor interno de eventos */
@@ -1813,6 +1814,13 @@ html, body, #root, .App {
   list-style: none;
   padding: 0;
   margin: 0;
+  max-height: 180px; /* Altura máxima antes de aplicar el scroll */
+  overflow-y: hidden; /* Oculta la barra de scroll */
+}
+
+/* Aplica scroll cuando hay más de 3 eventos */
+.events-list.scrollable {
+  overflow-y: auto; /* Habilita el scroll si se excede la altura máxima */
 }
 
 /* Elemento individual de evento */
@@ -1867,5 +1875,10 @@ html, body, #root, .App {
   font-size: 0.95em;
 }
 
+/* Estilo personalizado para la barra de scroll de WebKit */
+.events-list::-webkit-scrollbar {
+  width: 0; /* Ancho de la barra de scroll (0 para hacerla invisible) */
+  background: transparent; /* Color de fondo de la barra de scroll (transparente) */
+}
 
 
