@@ -1735,7 +1735,7 @@ html, body, #root, .App {
 /**/
 
 .dashboard-container {
-  position: fixed;
+  position: absolute;
   top: 120px;
   right: 20px;
   display: flex;
@@ -1783,6 +1783,7 @@ html, body, #root, .App {
 
 .upcoming-events {
   margin-top: 20px;
+  margin-bottom: 40px;
   background-color: #fff;
   border-radius: 10px;
   padding: 20px;
