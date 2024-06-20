@@ -224,7 +224,7 @@ const Tareas = () => {
   const [newListName, setNewListName] = useState('');
   const [lists, setLists] = useState([]);
   const [visibleLists, setVisibleLists] = useState({});
-
+  
   useEffect(() => {
     // Initialize all lists to be visible by default
     const initialVisibility = lists.reduce((acc, status) => {
@@ -425,8 +425,11 @@ const Tareas = () => {
           const cotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   
           const today = moment().startOf('day');
-          const upcomingCotizaciones = cotizaciones.filter(cotizacion => moment(cotizacion.fechaVencimiento).isSameOrAfter(today));
-          setProximasAVencer(upcomingCotizaciones);
+          const upcomingCotizaciones = cotizaciones
+            .filter(cotizacion => moment(cotizacion.fechaVencimiento).isSameOrAfter(today))
+            .sort((a, b) => moment(a.fechaVencimiento).diff(moment(b.fechaVencimiento)));
+  
+          setProximasAVencer(upcomingCotizaciones.slice(0, 6));
         });
   
         return () => unsubscribeCotizaciones();
@@ -444,8 +447,11 @@ const Tareas = () => {
           const eventos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   
           const today = moment().startOf('day');
-          const upcomingEventos = eventos.filter(evento => moment(evento.to).isSameOrAfter(today));
-          setProximosEventos(upcomingEventos);
+          const upcomingEventos = eventos
+            .filter(evento => moment(evento.to).isSameOrAfter(today))
+            .sort((a, b) => moment(a.to).diff(moment(b.to)));
+  
+          setProximosEventos(upcomingEventos.slice(0, 6));
         });
   
         return () => unsubscribeEventos();
@@ -459,7 +465,6 @@ const Tareas = () => {
   }, []);
   
   
-
   const closeModal = () => {
     setModalOpen(false);
     setTitle('');
