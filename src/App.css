@@ -1749,7 +1749,7 @@ html, body, #root, .App {
   height: 280px;
   background-color: #fff;
   border-radius: 10px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
   padding: 20px;
   transition: width 0.3s ease;
   overflow: hidden;
@@ -1784,51 +1784,59 @@ html, body, #root, .App {
 .upcoming-events {
   margin-top: 20px;
   margin-bottom: 40px;
-  background-color: #fff;
-  border-radius: 10px;
+  background-color: #ffffff;
+  border-radius: 12px;
   padding: 20px;
   width: 250px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
   transition: margin-top 0.3s ease;
 }
 
 /* Contenedor interno de eventos */
 .events-container {
-  background-color: #f5f5f5; /* Fondo gris claro */
-  padding: 10px;
-  border-radius: 8px;
+  background-color: #fafafa; /* Fondo gris muy claro */
+  padding: 15px;
+  border-radius: 12px;
 }
 
 /* Título de la lista de eventos */
 .events-title {
   text-align: left;
-  margin-bottom: 10px;
-  font-size: 1.2em;
+  margin-bottom: 15px;
+  font-size: 18px;
   font-weight: bold;
+  color: #333;
 }
 
 /* Lista de eventos */
 .events-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 /* Elemento individual de evento */
 .event-item {
-  display: flex; /* Para alinear el tiempo y detalles */
-  align-items: center; /* Alinea verticalmente */
+  display: flex;
+  align-items: center;
   margin-bottom: 15px;
-  padding: 10px;
+  padding: 12px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.event-item:hover {
+  transform: translateY(-2px);
 }
 
 /* Hora del evento */
 .event-time {
   font-weight: bold;
-  margin-right: 20px;
-  font-size: 1.1em;
+  margin-right: 15px;
+  font-size: 1.2em;
+  color: #007bff; /* Color azul para resaltar */
 }
 
 /* Detalles del evento */
@@ -1841,18 +1849,23 @@ html, body, #root, .App {
   font-weight: bold;
   display: block;
   margin-bottom: 5px;
+  font-size: 1.1em;
+  color: #333;
 }
 
 /* Fecha del evento */
 .event-date {
   display: block;
   margin-bottom: 5px;
-  color: #888; /* Gris claro para la fecha */
+  color: #666; /* Gris para la fecha */
+  font-size: 0.9em;
 }
 
 /* Descripción del evento */
 .event-description {
-  color: #666; /* Gris más oscuro para la descripción */
+  color: #555; /* Gris más oscuro para la descripción */
+  font-size: 0.95em;
 }
+
 
 

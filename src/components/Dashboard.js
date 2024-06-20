@@ -192,7 +192,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div style={{ position: 'fixed', top: 0, left: 80 }}>
+      <div style={{ position: 'absolute', top: 0, left: 80 }}>
         <h3 style={{ fontWeight: "normal", marginTop: "40px"}}>
           Bienvenido, <span style={{ fontWeight: 'bold' }}>{firstName} {lastName}</span>
         </h3>
@@ -235,14 +235,14 @@ const Dashboard = () => {
         </div>
       </div>
       
-      {/* Panel de próximos eventos */}
-      <div className="upcoming-events">
+    {/* Panel de próximos eventos */}
+    <div className="upcoming-events">
       <div className="events-container">
         <h3 className="events-title">Próximos Eventos</h3>
         <ul className="events-list">
           {proximosEventos.map((evento) => (
             <li key={evento.id} className="event-item">
-              <div className="event-time">{moment(evento.to).format('HH:mm a')}</div>
+            <div className="event-time">{moment(evento.to).format('hh:mm a')}</div>
               <div className="event-details">
                 <span className="event-title">{evento.title}</span>
                 <span className="event-date">{moment(evento.to).format('DD/MM/YYYY')}</span>
