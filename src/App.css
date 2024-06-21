@@ -967,6 +967,11 @@ th {
   padding: 30px;
 }
 
+.search-bar {
+ position: relative;
+ right: 25%;
+}
+
 /**/
 
 .encabezado {
