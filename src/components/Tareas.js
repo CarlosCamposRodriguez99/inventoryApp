@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
-import SearchBar from './SearchBar';
-import Notificaciones from './Notificaciones';
+import Nav from './Nav';
 import FileUpload from './FileUpload';
 import moment from 'moment';
 import Swal from 'sweetalert2';
@@ -726,9 +725,13 @@ const Tareas = () => {
 
   return (
     <>
+      <Nav 
+        handleSearch={handleSearch}
+        proximasAVencer={proximasAVencer} 
+        proximosEventos={proximosEventos} 
+      />
+      
       <section className="kanban__main">
-      <Notificaciones proximasAVencer={proximasAVencer} proximosEventos={proximosEventos} />
-      <SearchBar handleSearch={handleSearch} />
 
       <div className="kanban__main-wrapper">
         <DragDropContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>

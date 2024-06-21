@@ -9,7 +9,7 @@ const Notificaciones = ({ proximasAVencer, proximosEventos }) => {
   };
 
   return (
-    <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 999 }}>
+    <div style={{ position: 'absolute', bottom: 10, right: 20, zIndex: 999 }}>
       <div style={{ position: 'relative' }}>
         <img
           src="/img/notification.svg"
@@ -31,32 +31,32 @@ const Notificaciones = ({ proximasAVencer, proximosEventos }) => {
               justifyContent: 'center',
               alignItems: 'center',
               color: '#fff',
-              fontSize: '0.8rem',
+              fontSize: '11px',
             }}
           >
             {proximasAVencer.length + proximosEventos.length}
           </div>
         )}
       </div>
-      {showNotifications && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50px',
-            right: '0',
-            backgroundColor: 'white',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            borderRadius: '8px',
-            width: '300px',
-            maxHeight: '400px',
-            overflowY: 'auto',
-            zIndex: 1000,
-          }}
-        >
+      <div
+        style={{
+          position: 'absolute',
+          top: 50, // Ajusta la posición vertical según tus necesidades
+          right: 1, // Ajusta la posición horizontal según tus necesidades
+          zIndex: 999,
+          backgroundColor: 'white',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          borderRadius: '8px',
+          width: '300px',
+          maxHeight: '400px',
+          overflowY: 'auto',
+        }}
+      >
+        {showNotifications && (
           <ul style={{ listStyleType: 'none', margin: 0, padding: '10px' }}>
             {proximasAVencer.length > 0 && (
               <>
-                <h3 style={{ marginBottom: '10px', color: '#333', textAlign: "left" }}>Próximas a Vencer:</h3>
+                <h3 style={{ marginBottom: '10px', color: '#333', textAlign: 'left' }}>Próximas a Vencer:</h3>
                 {proximasAVencer.map((item, index) => (
                   <li
                     key={index}
@@ -80,7 +80,7 @@ const Notificaciones = ({ proximasAVencer, proximosEventos }) => {
             )}
             {proximosEventos.length > 0 && (
               <>
-                <h3 style={{ marginBottom: '10px', color: '#333', textAlign: "left" }}>Próximos Eventos:</h3>
+                <h3 style={{ marginBottom: '10px', color: '#333', textAlign: 'left' }}>Próximos Eventos:</h3>
                 {proximosEventos.map((evento, index) => (
                   <li
                     key={index}
@@ -103,8 +103,8 @@ const Notificaciones = ({ proximasAVencer, proximosEventos }) => {
               </>
             )}
           </ul>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

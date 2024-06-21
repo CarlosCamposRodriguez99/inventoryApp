@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import moment from 'moment';
 import 'moment/locale/es'; // Importamos el idioma español
 import { getFirestore, collection, onSnapshot, addDoc, getDocs } from 'firebase/firestore';
-import Notificaciones from './Notificaciones';
+import Nav from './Nav';
 import Swal from 'sweetalert2';
 
 Modal.setAppElement('#root'); // Ajusta esto según el id del elemento root de tu aplicación
@@ -21,6 +21,7 @@ const CalendarioGd = () => {
 
     const [proximasAVencer, setProximasAVencer] = useState([]);
     const [proximosEventos, setProximosEventos] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchCotizaciones = async () => {
@@ -169,6 +170,7 @@ const CalendarioGd = () => {
                     años.forEach(año => {
                         fechasFestivasBase.forEach(festivo => {
                             fechasFestivas.push({
+                                id: `festivo-${año}-${festivo.month}-${festivo.day}`, // Añadir un id único
                                 title: festivo.title,
                                 from: `${año}-${festivo.month}-${festivo.day}`,
                                 to: `${año}-${festivo.month}-${festivo.day}`,
@@ -257,14 +259,14 @@ const CalendarioGd = () => {
         },
         buttonAgregar: {
             padding: '10px 10px',
-            margin: '10px 5px',
+            marginTop: "100px",
             borderRadius: '5px',
             border: 'none',
             backgroundColor: '#007bff',
             color: 'white',
             fontSize: '12px',
             cursor: 'pointer',
-            position: 'fixed',
+            position: 'absolute',
             top: '20px',
             left: '80px'
         },
@@ -291,52 +293,63 @@ const CalendarioGd = () => {
         }
     };
 
+    const handleSearch = (term) => {
+        setSearchTerm(term);
+    };
+
+    // Filtrar eventos por término de búsqueda
+    const filteredEvents = events.filter(event => 
+        event.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
-        <div className='calendario-gd'>
-            <button onClick={openModal} style={customStyles.buttonAgregar}>Agregar evento</button>
-            <Calendar events={events} />
+        <>
+            <Nav proximasAVencer={proximasAVencer} proximosEventos={proximosEventos} handleSearch={handleSearch}/>
+            <div className='calendario-gd'>
+                <button onClick={openModal} style={customStyles.buttonAgregar}>Agregar evento</button>
+                <Calendar events={filteredEvents} />
 
-            <Modal
-                isOpen={modalIsOpen}
-                onRequestClose={closeModal}
-                contentLabel="Agregar Evento"
-                style={customStyles}
-            >
-                <h2 style={{ fontFamily: 'Montserrat, sans-serif', textAlign: "center" }}>Agregar nuevo evento</h2>
-                <form>
-                    <label>
-                        Título:
-                        <input
-                            type="text"
-                            name="title"
-                            value={newEvent.title}
-                            onChange={handleInputChange}
-                            required
-                            style={customStyles.input}
-                        />
-                    </label>
-                    <br />
-                    <label>
-                        Fecha y hora de finalización:
-                        <input
-                            type="datetime-local"
-                            name="to"
-                            value={newEvent.to}
-                            onChange={handleInputChange}
-                            required
-                            style={customStyles.input}
-                        />
-                    </label>
-                    <br />
-                    <div style={{ textAlign: "center" }}>
-                        <button type="button" onClick={handleAddEvent} style={customStyles.button}>Agregar</button>
-                        <button type="button" onClick={closeModal} style={customStyles.buttonCancel}>Cancelar</button>
-                    </div>
-                </form>
-            </Modal>
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeModal}
+                    contentLabel="Agregar Evento"
+                    style={customStyles}
+                >
+                    <h2 style={{ fontFamily: 'Montserrat, sans-serif', textAlign: "center" }}>Agregar nuevo evento</h2>
+                    <form>
+                        <label>
+                            Título:
+                            <input
+                                type="text"
+                                name="title"
+                                value={newEvent.title}
+                                onChange={handleInputChange}
+                                required
+                                style={customStyles.input}
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            Fecha y hora de finalización:
+                            <input
+                                type="datetime-local"
+                                name="to"
+                                value={newEvent.to}
+                                onChange={handleInputChange}
+                                required
+                                style={customStyles.input}
+                            />
+                        </label>
+                        <br />
+                        <div style={{ textAlign: "center" }}>
+                            <button type="button" onClick={handleAddEvent} style={customStyles.button}>Agregar</button>
+                            <button type="button" onClick={closeModal} style={customStyles.buttonCancel}>Cancelar</button>
+                        </div>
+                    </form>
+                </Modal>
 
-            <Notificaciones proximasAVencer={proximasAVencer} proximosEventos={proximosEventos} />
-        </div>
+            </div>
+        </>
     );
 };
 

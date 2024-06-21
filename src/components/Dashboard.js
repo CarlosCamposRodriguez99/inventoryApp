@@ -4,9 +4,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
 import 'moment/locale/es'; // Importamos el idioma español
 import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
-import Notificaciones from './Notificaciones';
-import SearchBar from './SearchBar';
-import { useAuth } from './AuthContext';
+import Nav from './Nav';
+
 
 // Configura el localizador de fechas usando moment.js
 moment.locale('es');
@@ -18,7 +17,7 @@ const Dashboard = () => {
   const [currentDate, setCurrentDate] = useState(moment());
   const [proximasAVencer, setProximasAVencer] = useState([]);
   const [proximosEventos, setProximosEventos] = useState([]);
-  const { user } = useAuth();
+
 
   const showScroll = proximosEventos.length > 3;
 
@@ -145,9 +144,6 @@ const Dashboard = () => {
     fetchEventos();
 }, []);
 
-  const displayNameParts = user?.displayName?.split(' ') || [];
-  const firstName = displayNameParts[0] || '';
-  const lastName = displayNameParts.length > 1 ? displayNameParts[1] : '';
 
 
   const CustomToolbar = ({ expanded, onNavigate, onView, views, view }) => (
@@ -194,18 +190,12 @@ const Dashboard = () => {
 
   return (
     <>
-      <div style={{ position: 'absolute', top: 0, left: 80 }}>
-        <h3 style={{ fontWeight: "normal", marginTop: "40px"}}>
-          Bienvenido, <span style={{ fontWeight: 'bold' }}>{firstName} {lastName}</span>
-        </h3>
-      </div>
+    
       <div style={{marginTop: "40px"}}>
-        <div>
-          <SearchBar />
-        </div>
-      </div>
-      <div style={{ position: 'fixed', top: 80, right: 20, zIndex: 999 }}>
-        <Notificaciones proximasAVencer={proximasAVencer} proximosEventos={proximosEventos} />
+        <Nav 
+          proximasAVencer={proximasAVencer} 
+          proximosEventos={proximosEventos} 
+        />
       </div>
   
       <div className="dashboard-container">
