@@ -75,7 +75,6 @@ th {
 
 .search-form {
   display: flex;
-  margin-bottom: 2rem;
   justify-content: center;
 }
 
@@ -85,7 +84,7 @@ th {
 }
 
 .search-input {
-  width: 90%;
+  width: 130%;
   padding: 8px 8px 8px 35px; /* Espacio para el ícono */
   font-size: 16px;
   border: 1px solid #ccc;
@@ -1036,7 +1035,6 @@ th {
 
 /* Tareas */
 .kanban__main {
-  background-color: #fff;
   grid-area: main;
   position: relative;
   padding: 30px;
@@ -1885,5 +1883,83 @@ html, body, #root, .App {
   width: 0; /* Ancho de la barra de scroll (0 para hacerla invisible) */
   background: transparent; /* Color de fondo de la barra de scroll (transparente) */
 }
+
+/*notificaciones*/
+
+.notificaciones-container {
+  position: relative;
+  z-index: 999;
+}
+
+.notification-icon-container {
+  position: relative;
+}
+
+.notification-icon {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -18px;
+  right: -10px;
+  background-color: red;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 11px;
+}
+
+.notifications-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  z-index: 999;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notifications-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 10px;
+}
+
+.notification-header {
+  margin-bottom: 10px;
+  color: #333;
+  text-align: left;
+}
+
+.notification-item {
+  border-bottom: 1px solid #eaeaea;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.notification-title {
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.notification-date {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/*nav */
+
+
 
 

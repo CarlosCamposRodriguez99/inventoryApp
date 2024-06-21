@@ -191,13 +191,11 @@ const Dashboard = () => {
   return (
     <>
     
-      <div style={{marginTop: "40px"}}>
-        <Nav 
-          proximasAVencer={proximasAVencer} 
-          proximosEventos={proximosEventos} 
-        />
-      </div>
-  
+      <Nav 
+        proximasAVencer={proximasAVencer} 
+        proximosEventos={proximosEventos} 
+      />
+
       <div className="dashboard-container">
       {/* Contenedor del calendario */}
       <div className={`calendar-container ${expanded ? 'expanded' : ''}`}>

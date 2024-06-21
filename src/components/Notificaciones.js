@@ -9,69 +9,30 @@ const Notificaciones = ({ proximasAVencer, proximosEventos }) => {
   };
 
   return (
-    <div style={{ position: 'absolute', bottom: 10, right: 20, zIndex: 999 }}>
-      <div style={{ position: 'relative' }}>
-        <img
-          src="/img/notification.svg"
-          alt="Notificaciones"
-          style={{ width: '40px', height: 'auto', cursor: 'pointer' }}
+    <div className="notificaciones-container">
+      <div className="notification-icon-container">
+        <i 
+          className="bi bi-bell notification-icon" 
           onClick={handleNotificationClick}
-        />
+        ></i>
         {(proximasAVencer.length > 0 || proximosEventos.length > 0) && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '-10px',
-              right: '-10px',
-              backgroundColor: 'red',
-              borderRadius: '50%',
-              width: '20px',
-              height: '20px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: '#fff',
-              fontSize: '11px',
-            }}
-          >
+          <div className="notification-badge">
             {proximasAVencer.length + proximosEventos.length}
           </div>
         )}
       </div>
-      <div
-        style={{
-          position: 'absolute',
-          top: 50, // Ajusta la posición vertical según tus necesidades
-          right: 1, // Ajusta la posición horizontal según tus necesidades
-          zIndex: 999,
-          backgroundColor: 'white',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          borderRadius: '8px',
-          width: '300px',
-          maxHeight: '400px',
-          overflowY: 'auto',
-        }}
-      >
-        {showNotifications && (
-          <ul style={{ listStyleType: 'none', margin: 0, padding: '10px' }}>
+      {showNotifications && (
+        <div className="notifications-dropdown">
+          <ul className="notifications-list">
             {proximasAVencer.length > 0 && (
               <>
-                <h3 style={{ marginBottom: '10px', color: '#333', textAlign: 'left' }}>Próximas a Vencer:</h3>
+                <h3 className="notification-header">Próximas a Vencer:</h3>
                 {proximasAVencer.map((item, index) => (
-                  <li
-                    key={index}
-                    style={{
-                      borderBottom: '1px solid #eaeaea',
-                      padding: '10px 0',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                    }}
-                  >
-                    <strong style={{ color: '#333', marginBottom: '5px' }}>
+                  <li key={index} className="notification-item">
+                    <strong className="notification-title">
                       Cotización #{item.numeroCotizacion?.toString().padStart(4, '0')}
                     </strong>
-                    <span style={{ fontSize: '0.9rem', color: '#555' }}>
+                    <span className="notification-date">
                       Vence el {moment(item.fechaVencimiento).format('DD/MM/YYYY')}
                     </span>
                   </li>
@@ -80,22 +41,13 @@ const Notificaciones = ({ proximasAVencer, proximosEventos }) => {
             )}
             {proximosEventos.length > 0 && (
               <>
-                <h3 style={{ marginBottom: '10px', color: '#333', textAlign: 'left' }}>Próximos Eventos:</h3>
+                <h3 className="notification-header">Próximos Eventos:</h3>
                 {proximosEventos.map((evento, index) => (
-                  <li
-                    key={index}
-                    style={{
-                      borderBottom: '1px solid #eaeaea',
-                      padding: '10px 0',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                    }}
-                  >
-                    <strong style={{ color: '#333', marginBottom: '5px' }}>
+                  <li key={index} className="notification-item">
+                    <strong className="notification-title">
                       {evento.title}
                     </strong>
-                    <span style={{ fontSize: '0.9rem', color: '#555' }}>
+                    <span className="notification-date">
                       Vence el {moment(evento.to).format('DD/MM/YYYY')}
                     </span>
                   </li>
@@ -103,8 +55,8 @@ const Notificaciones = ({ proximasAVencer, proximosEventos }) => {
               </>
             )}
           </ul>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

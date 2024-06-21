@@ -725,7 +725,7 @@ const Tareas = () => {
 
   return (
     <>
-      <Nav 
+      <Nav
         handleSearch={handleSearch}
         proximasAVencer={proximasAVencer} 
         proximosEventos={proximosEventos} 
