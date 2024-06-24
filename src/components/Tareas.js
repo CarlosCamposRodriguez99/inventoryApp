@@ -794,11 +794,11 @@ const Tareas = () => {
                                   <div className="card__menu">
                                     <div className="card__menu-left">
                                       <div className="comments-wrapper" onClick={() => openDetailModal(task)}>
-                                        <div className="comments-ico"><img src='/img/comentario.png' style={{ width: "20px", height: "20px" }} alt='comentario' /></div>
+                                        <div className="comments-ico"><i className="bi bi-chat-left-text"></i></div>
                                         <div className="comments-num">{task.comments.length}</div>
                                       </div>
                                       <div className="attach-wrapper" onClick={() => openAttachModal(task)}>
-                                        <div className="attach-ico"><img src='/img/adjuntar.png' style={{ width: "20px", height: "20px" }} alt='adjuntar' /></div>
+                                        <div className="attach-ico"><i className="bi bi-paperclip"></i></div>
                                         <div className="attach-num">{task.attachments.length}</div>
                                       </div>
                                     </div>

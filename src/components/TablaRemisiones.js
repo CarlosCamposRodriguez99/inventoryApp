@@ -2,11 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import PreviaRemision from './PreviaRemision';
 import ResumenRemision from './ResumenRemision';
 import BandejaRemisiones from './BandejaRemisiones';
-import SearchBar from './SearchBar';
+import Nav from './Nav';
 import RemisionForm from './RemisionForm';
 import { collection, deleteDoc, getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 import Modal from 'react-modal';
+import moment from 'moment';
+
+moment.locale('es');
 
 const styleForm = {
   content: {
@@ -85,6 +88,83 @@ function TablaRemisiones({ remisiones, clientes, setRemisiones, guardarRemision,
   const [showBandeja, setShowBandeja] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [showNuevoButton, setShowNuevoButton] = useState(true);
+  const [proximasAVencer, setProximasAVencer] = useState([]);
+  const [proximosEventos, setProximosEventos] = useState([]);
+
+  useEffect(() => {
+    const fetchCotizaciones = async () => {
+        const firestore = getFirestore();
+        const cotizacionesRef = collection(firestore, 'cotizaciones');
+        const unsubscribeCotizaciones = onSnapshot(cotizacionesRef, (snapshot) => {
+            const cotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+            // Filtrar las cotizaciones que tienen fecha de vencimiento a partir de hoy y ordenarlas
+            const proximas = cotizaciones
+                .filter(cotizacion => moment(cotizacion.fechaVencimiento) >= moment().startOf('day'))
+                .sort((a, b) => moment(a.fechaVencimiento) - moment(b.fechaVencimiento));
+
+            setProximasAVencer(proximas.slice(0, 6)); // Limitar la lista a 6 fechas próximas
+        });
+
+        return () => unsubscribeCotizaciones();
+    };
+
+    const fetchEventos = async () => {
+        const firestore = getFirestore();
+        const eventosRef = collection(firestore, 'eventos');
+        const unsubscribeEventos = onSnapshot(eventosRef, (snapshot) => {
+            const eventos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+            // Filtrar eventos que ocurren a partir de hoy y ordenarlos
+            const proximos = eventos
+                .filter(evento => moment(evento.to) >= moment().startOf('day'))
+                .sort((a, b) => moment(a.to) - moment(b.to));
+
+            setProximosEventos(proximos.slice(0, 6)); // Limitar la lista a 6 eventos próximos
+
+            // Filtrar fechas festivas que están a menos de una semana
+            const fechasFestivasProximas = [];
+            const fechasFestivasBase = [
+                { title: 'Año Nuevo', month: '01', day: '01', color: '#de2e03' },
+                { title: 'Día de la Constitución', month: '02', day: '05', color: '#de2e03' },
+                { title: 'Natalicio de Benito Juárez', month: '03', day: '21', color: '#de2e03' },
+                { title: 'Día del Trabajo', month: '05', day: '01', color: '#de2e03' },
+                { title: 'Independencia de México', month: '09', day: '16', color: '#de2e03' },
+                { title: 'Transición del Poder Ejecutivo', month: '10', day: '01', color: '#de2e03' },
+                { title: 'Revolución Mexicana', month: '11', day: '20', color: '#de2e03' },
+                { title: 'Navidad', month: '12', day: '25', color: '#de2e03' },
+            ];
+
+            const today = moment().startOf('day');
+            const oneWeekFromNow = moment().add(7, 'days').startOf('day');
+
+            fechasFestivasBase.forEach(festivo => {
+                const festivoDate = moment(`${today.year()}-${festivo.month}-${festivo.day}`, 'YYYY-MM-DD');
+                if (festivoDate.isBetween(today, oneWeekFromNow, null, '[]')) {
+                    fechasFestivasProximas.push({
+                        title: festivo.title,
+                        start: festivoDate.toDate(),
+                        end: festivoDate.toDate(),
+                        allDay: true,
+                        resource: 'festivo',
+                        style: { backgroundColor: festivo.color }
+                    });
+                }
+            });
+
+            if (fechasFestivasProximas.length > 0) {
+                // Notificar sobre fechas festivas próximas
+                alert(`Fechas festivas próximas: ${fechasFestivasProximas.map(festivo => `${festivo.title} el ${moment(festivo.start).format('LL')}`).join(', ')}`);
+            }
+        });
+
+        return () => unsubscribeEventos();
+    };
+
+    // Ejecutar las funciones de carga de cotizaciones y eventos
+    fetchCotizaciones();
+    fetchEventos();
+  }, []);
 
   const setRemisionesRef = useRef(setRemisiones);
 
@@ -164,7 +244,7 @@ function TablaRemisiones({ remisiones, clientes, setRemisiones, guardarRemision,
     const remisionesFiltradas = remisiones && remisiones.filter(remision => {
       const searchableFields = [
         remision.fechaRemision,
-        remision.numeroRemision?.toString(),
+        remision.numeroRemision?.toString().padStart(4, '0'),
         remision.asunto?.toLowerCase(),
         remision.nombreCliente?.toLowerCase(),
         remision.total?.toString()
@@ -238,138 +318,140 @@ function TablaRemisiones({ remisiones, clientes, setRemisiones, guardarRemision,
   };
 
   return (
-    <div className="cotizaciones-table">
-      <h2>Lista de Remisiones</h2>
-      {showBandeja && (
-        <BandejaRemisiones 
-          remisiones={remisiones} 
-          onRowClick={handleRowClick}  
-          clientes={clientes}
-          guardarRemision={guardarRemision}
-          remision={remision}          
-        />
-      )}
-      {!showBandeja && (
-        <div>
-          <img
-            src="/img/checkbox.svg"
-            alt="Icono"
-            className="image-button"
-            onClick={handleToggleOptions}
-          />
-          {showOptions && (
-            <div className="filtro-options">
-              <button onClick={handleSelectAll}>Seleccionar Todos</button>
-              <button onClick={handleDeselectAll}>Deseleccionar Todos</button>
-            </div>
-          )}
-          <SearchBar handleSearch={setSearchTerm} />
-          {loadingRemisiones ? (
-            <p style={{ textAlign: 'center' }}>Cargando...</p>
-          ) : (
-            <>
-              {filterRemisiones().length > 0 ? (
-                <table>
-                  <thead>
-                    <tr>
-                      <th onClick={() => handleOrdenamientoChange('estado')}>Estado</th>
-                      <th onClick={() => handleOrdenamientoChange('fechaRemision')}>Fecha</th>
-                      <th onClick={() => handleOrdenamientoChange('numeroRemision')}>No.</th>
-                      <th onClick={() => handleOrdenamientoChange('asunto')}>Asunto</th>
-                      <th onClick={() => handleOrdenamientoChange('nombreCliente')}>Cliente</th>
-                      <th onClick={() => handleOrdenamientoChange('total')}>Importe</th>
-                      <th onClick={() => handleOrdenamientoChange('fechaVencimiento')}>Vencimiento</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ordenarRemisiones(filterRemisiones(), ordenamiento).map((remision, index) => (
-                      <tr key={index} onClick={() => handleRowClick(remision.id)}>
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={selectedRemisiones.includes(remision.id)}
-                            onChange={() => handleSelectRemision(remision.id)}
-                            style={{ marginRight: '5px' }}
-                          />{remision.estado}
-                        </td>
-                        <td>{remision.fechaRemision}</td>
-                        <td>{remision.numeroRemision?.toString().padStart(4, '0')}</td>
-                        <td>{remision.asunto}</td>
-                        <td>{remision.nombreCliente}</td>
-                        <td>${parseFloat(remision.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
-                        <td>{remision.fechaVencimiento}</td>
-                        <td>
-                          <button className='btnPrevia' onClick={() => abrirModalPrevia(remision)}>Ver</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p style={{ textAlign: 'center' }}>No hay resultados disponibles</p>
-              )}
-            </>
-          )}
-          {selectedRemisiones.length > 0 && (
-            <div className="delete-button-container">
-              <img className="delete-button" onClick={handleDeleteSelected} src="/img/eliminar.svg" alt="Eliminar seleccionados" />
-            </div>
-          )}
-          <Modal
-            isOpen={mostrarFormulario}
-            onRequestClose={closeModal}
-            contentLabel="Nuevo Cotización"
-            style={styleForm}
-          >
-            <button onClick={closeModal} className="cerrar-button">X</button>
-            <RemisionForm
-              clientes={clientes}
-              guardarRemision={guardarRemision}
-              modoEdicion={modoEdicion}
-              remision={remision}
-            />
-          </Modal>
-
-          {showNuevoButton && (
-            <button className="action-button2" onClick={openFormulario}>
-              + Nuevo
-            </button>
-          )}
-
-        </div>
-      )}
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={cerrarModalPrevia}
-        contentLabel="Vista Previa"
-        style={customStyles}
-      >
-        {remisionSeleccionada && (
-          <PreviaRemision
-            remision={remisionSeleccionada}
-            numeroRemision={remisionSeleccionada.numeroRemision}
+    <>
+      <Nav 
+        handleSearch={setSearchTerm} 
+        proximasAVencer={proximasAVencer} 
+        proximosEventos={proximosEventos} 
+      />
+      <div className="cotizaciones-table">
+        <h2>Lista de Remisiones</h2>
+        {showBandeja && (
+          <BandejaRemisiones 
+            remisiones={remisiones} 
+            onRowClick={handleRowClick}  
             clientes={clientes}
-            cerrarPrevia={cerrarModalPrevia}
+            guardarRemision={guardarRemision}
+            remision={remision}          
           />
         )}
-      </Modal>
+        {!showBandeja && (
+          <div>
+          <i className="bi bi-arrow-down-up image-button" onClick={handleToggleOptions}></i>
+            {showOptions && (
+              <div className="filtro-options">
+                <button onClick={handleSelectAll}>Seleccionar Todos</button>
+                <button onClick={handleDeselectAll}>Deseleccionar Todos</button>
+              </div>
+            )}
+            
+            {loadingRemisiones ? (
+              <p style={{ textAlign: 'center' }}>Cargando...</p>
+            ) : (
+              <>
+                {filterRemisiones().length > 0 ? (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th onClick={() => handleOrdenamientoChange('estado')}>Estado</th>
+                        <th onClick={() => handleOrdenamientoChange('fechaRemision')}>Fecha</th>
+                        <th onClick={() => handleOrdenamientoChange('numeroRemision')}>No.</th>
+                        <th onClick={() => handleOrdenamientoChange('asunto')}>Asunto</th>
+                        <th onClick={() => handleOrdenamientoChange('nombreCliente')}>Cliente</th>
+                        <th onClick={() => handleOrdenamientoChange('total')}>Importe</th>
+                        <th onClick={() => handleOrdenamientoChange('fechaVencimiento')}>Vencimiento</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ordenarRemisiones(filterRemisiones(), ordenamiento).map((remision, index) => (
+                        <tr key={index} onClick={() => handleRowClick(remision.id)}>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selectedRemisiones.includes(remision.id)}
+                              onChange={() => handleSelectRemision(remision.id)}
+                              style={{ marginRight: '5px' }}
+                            />{remision.estado}
+                          </td>
+                          <td>{remision.fechaRemision}</td>
+                          <td>{remision.numeroRemision?.toString().padStart(4, '0')}</td>
+                          <td>{remision.asunto}</td>
+                          <td>{remision.nombreCliente}</td>
+                          <td>${parseFloat(remision.total)?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</td>
+                          <td>{remision.fechaVencimiento}</td>
+                          <td>
+                            <button className='btnPrevia' onClick={() => abrirModalPrevia(remision)}>Ver</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p style={{ textAlign: 'center' }}>No hay resultados disponibles</p>
+                )}
+              </>
+            )}
+            {selectedRemisiones.length > 0 && (
+              <div className="delete-button-container">
+                <img className="delete-button" onClick={handleDeleteSelected} src="/img/eliminar.svg" alt="Eliminar seleccionados" />
+              </div>
+            )}
+            <Modal
+              isOpen={mostrarFormulario}
+              onRequestClose={closeModal}
+              contentLabel="Nuevo Cotización"
+              style={styleForm}
+            >
+              <button onClick={closeModal} className="cerrar-button">X</button>
+              <RemisionForm
+                clientes={clientes}
+                guardarRemision={guardarRemision}
+                modoEdicion={modoEdicion}
+                remision={remision}
+              />
+            </Modal>
 
-      <div className={`resumen-container ${selectedRemisionId ? 'active' : ''}`}>
-        <ResumenRemision
-          remision={remisiones && remisiones.find(remision => remision.id === selectedRemisionId)}
-          isOpen={resumenVisible}
-          onClose={() => {
-            setResumenVisible(false);
-            setSelectedRemisionId(null);
-            setShowBandeja(false);
-          }}
-          numeroRemision={remisionSeleccionada ? remisionSeleccionada.numeroRemision : null}
-          clientes={clientes}
-          mostrarBotonNuevo={false}
-        />
+            {showNuevoButton && (
+              <button className="action-button2" onClick={openFormulario}>
+                + Nuevo
+              </button>
+            )}
+
+          </div>
+        )}
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={cerrarModalPrevia}
+          contentLabel="Vista Previa"
+          style={customStyles}
+        >
+          {remisionSeleccionada && (
+            <PreviaRemision
+              remision={remisionSeleccionada}
+              numeroRemision={remisionSeleccionada.numeroRemision}
+              clientes={clientes}
+              cerrarPrevia={cerrarModalPrevia}
+            />
+          )}
+        </Modal>
+
+        <div className={`resumen-container ${selectedRemisionId ? 'active' : ''}`}>
+          <ResumenRemision
+            remision={remisiones && remisiones.find(remision => remision.id === selectedRemisionId)}
+            isOpen={resumenVisible}
+            onClose={() => {
+              setResumenVisible(false);
+              setSelectedRemisionId(null);
+              setShowBandeja(false);
+            }}
+            numeroRemision={remisionSeleccionada ? remisionSeleccionada.numeroRemision : null}
+            clientes={clientes}
+            mostrarBotonNuevo={false}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

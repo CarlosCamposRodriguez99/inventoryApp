@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import SearchBar from './SearchBar';
+import { getDocs, addDoc, updateDoc, deleteDoc, collection, doc, getFirestore, onSnapshot } from 'firebase/firestore';
+import Nav from './Nav';
 import { db } from '../firebaseConfig';
 import Swal from 'sweetalert2';
 import Modal from 'react-modal';
+import moment from 'moment';
+
+moment.locale('es');
 
 Modal.setAppElement('#root');
 
@@ -82,6 +85,84 @@ const ListaTodos = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState('asc');
   const [sortBy, setSortBy] = useState('tipo');
+  const [proximasAVencer, setProximasAVencer] = useState([]);
+  const [proximosEventos, setProximosEventos] = useState([]);
+
+  useEffect(() => {
+    const fetchCotizaciones = async () => {
+        const firestore = getFirestore();
+        const cotizacionesRef = collection(firestore, 'cotizaciones');
+        const unsubscribeCotizaciones = onSnapshot(cotizacionesRef, (snapshot) => {
+            const cotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+            // Filtrar las cotizaciones que tienen fecha de vencimiento a partir de hoy y ordenarlas
+            const proximas = cotizaciones
+                .filter(cotizacion => moment(cotizacion.fechaVencimiento) >= moment().startOf('day'))
+                .sort((a, b) => moment(a.fechaVencimiento) - moment(b.fechaVencimiento));
+
+            setProximasAVencer(proximas.slice(0, 6)); // Limitar la lista a 6 fechas próximas
+        });
+
+        return () => unsubscribeCotizaciones();
+    };
+
+    const fetchEventos = async () => {
+        const firestore = getFirestore();
+        const eventosRef = collection(firestore, 'eventos');
+        const unsubscribeEventos = onSnapshot(eventosRef, (snapshot) => {
+            const eventos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+            // Filtrar eventos que ocurren a partir de hoy y ordenarlos
+            const proximos = eventos
+                .filter(evento => moment(evento.to) >= moment().startOf('day'))
+                .sort((a, b) => moment(a.to) - moment(b.to));
+
+            setProximosEventos(proximos.slice(0, 6)); // Limitar la lista a 6 eventos próximos
+
+            // Filtrar fechas festivas que están a menos de una semana
+            const fechasFestivasProximas = [];
+            const fechasFestivasBase = [
+                { title: 'Año Nuevo', month: '01', day: '01', color: '#de2e03' },
+                { title: 'Día de la Constitución', month: '02', day: '05', color: '#de2e03' },
+                { title: 'Natalicio de Benito Juárez', month: '03', day: '21', color: '#de2e03' },
+                { title: 'Día del Trabajo', month: '05', day: '01', color: '#de2e03' },
+                { title: 'Independencia de México', month: '09', day: '16', color: '#de2e03' },
+                { title: 'Transición del Poder Ejecutivo', month: '10', day: '01', color: '#de2e03' },
+                { title: 'Revolución Mexicana', month: '11', day: '20', color: '#de2e03' },
+                { title: 'Navidad', month: '12', day: '25', color: '#de2e03' },
+            ];
+
+            const today = moment().startOf('day');
+            const oneWeekFromNow = moment().add(7, 'days').startOf('day');
+
+            fechasFestivasBase.forEach(festivo => {
+                const festivoDate = moment(`${today.year()}-${festivo.month}-${festivo.day}`, 'YYYY-MM-DD');
+                if (festivoDate.isBetween(today, oneWeekFromNow, null, '[]')) {
+                    fechasFestivasProximas.push({
+                        title: festivo.title,
+                        start: festivoDate.toDate(),
+                        end: festivoDate.toDate(),
+                        allDay: true,
+                        resource: 'festivo',
+                        style: { backgroundColor: festivo.color }
+                    });
+                }
+            });
+
+            if (fechasFestivasProximas.length > 0) {
+                // Notificar sobre fechas festivas próximas
+                alert(`Fechas festivas próximas: ${fechasFestivasProximas.map(festivo => `${festivo.title} el ${moment(festivo.start).format('LL')}`).join(', ')}`);
+            }
+        });
+
+        return () => unsubscribeEventos();
+    };
+
+    // Ejecutar las funciones de carga de cotizaciones y eventos
+    fetchCotizaciones();
+    fetchEventos();
+  }, []);
+
 
   const handleSort = (column) => {
     if (sortBy === column) {
@@ -349,111 +430,117 @@ const ListaTodos = () => {
   };
 
   return (
-    <div className='centrar'>
-      <h1>Lista de Clientes y Proveedores</h1>
-      <SearchBar handleSearch={handleSearch} />
-      {isLoading ? ( // Mostrar mensaje de carga si isLoading es true
-        <p>Cargando...</p>
-      ) : (
-        <>
-          <button style={{ fontWeight: '700' }} className="prices-button" onClick={handleOpenModal}>
-            + Nuevo
-          </button>
-          <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={customStyles}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-              <button className="modal-close" onClick={() => setModalIsOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '20px' }}>
-                x
-              </button>
-            </div>
-            {step === 1 && (
-              <>
-                <h2 style={{ textAlign: 'center' }}>
-                  {editingClientId ? 'Editar Cliente' : editingProveedorId ? 'Editar Proveedor' : 'Agregar Cliente o Proveedor'}
-                </h2>
-                <form className="client-form">
-                  <label style={customStyles.label}>Tipo:</label>
-                  <select style={customStyles.select} name="tipo" value={formData.tipo} onChange={handleChange}>
-                    <option value="Cliente">Cliente</option>
-                    <option value="Proveedor">Proveedor</option>
-                  </select>
-                  <label style={customStyles.label}>Nombre de la Empresa:</label>
-                  <input style={customStyles.input} type="text" name="empresa" placeholder="Nombre de la Empresa" value={formData.empresa} onChange={handleChange} />
-                  <label style={customStyles.label}>RFC:</label>
-                  <input style={customStyles.input} type="text" name="rfc" placeholder="RFC" value={formData.rfc} onChange={handleChange} />
-                  <label style={customStyles.label}>Régimen Fiscal:</label>
-                  <input style={customStyles.input} type="text" name="regimenFiscal" placeholder="Régimen Fiscal" value={formData.regimenFiscal} onChange={handleChange} />
-                  <label style={customStyles.label}>Moneda:</label>
-                  <input style={customStyles.input} type="text" name="moneda" placeholder="Moneda" value={formData.moneda} onChange={handleChange} />
-                  <label style={customStyles.label}>Teléfono:</label>
-                  <input style={customStyles.input} type="text" name="telefono" placeholder="Teléfono" value={formData.telefono} onChange={handleChange} />
-                  <label style={customStyles.label}>Email:</label>
-                  <input style={customStyles.input} type="email" name="correo" placeholder="Correo Electrónico" value={formData.correo} onChange={handleChange} />
-                  <label style={customStyles.label}>Imagen:</label>
-                  <input style={customStyles.input} type="file" name="imagen" onChange={handleChange} />
-                  <button type="button" onClick={() => setStep(2)}>Siguiente</button>
-                </form>
-              </>
-            )}
-            {step === 2 && (
-              <>
-                <h2 style={{ textAlign: 'center' }}>Agrega los últimos datos</h2>
-                <form className="client-form">
-                  <label style={customStyles.label}>Domicilio:</label>
-                  <input type="text" name="domicilio" placeholder="Domicilio" value={formData.domicilio} onChange={handleChange} />
-                  <label style={customStyles.label}>No. Exterior:</label>
-                  <input type="text" name="numeroExt" placeholder="No. Ext" value={formData.numeroExt} onChange={handleChange} />
-                  <label style={customStyles.label}>No. Interior:</label>
-                  <input type="text" name="numeroInt" placeholder="No. Int" value={formData.numeroInt} onChange={handleChange} />
-                  <label style={customStyles.label}>Colonia:</label>
-                  <input type="text" name="colonia" placeholder="Colonia" value={formData.colonia} onChange={handleChange} />
-                  <label style={customStyles.label}>Código Postal:</label>
-                  <input type="text" name="codigoPostal" placeholder="C.P." value={formData.codigoPostal} onChange={handleChange} />
-                  <label style={customStyles.label}>Ciudad:</label>
-                  <input type="text" name="ciudad" placeholder="Ciudad" value={formData.ciudad} onChange={handleChange} />
-                  <label style={customStyles.label}>Estado:</label>
-                  <input type="text" name="estado" placeholder="Estado" value={formData.estado} onChange={handleChange} />
-                  <button type="button" onClick={() => setStep(1)}>Anterior</button>
-                  <br/>
-                  <button type="button" onClick={handleSubmit}>Finalizar</button>
-                </form>
-              </>
-            )}
-          </Modal>
-          {(filteredClientes.length > 0 || filteredProveedores.length > 0) ? (
-            <table>
-              <thead>
-                <tr>
-                  <th onClick={() => handleSort('tipo')}>Tipo</th>
-                  <th onClick={() => handleSort('empresa')}>Nombre</th>
-                  <th onClick={() => handleSort('rfc')}>RFC</th>
-                  <th onClick={() => handleSort('telefono')}>Telefono</th>
-                  <th onClick={() => handleSort('correo')}>Correo</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-              {sortData([...filteredClientes, ...filteredProveedores]).map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.tipo}</td>
-                    <td>{item.empresa}</td>
-                    <td>{item.rfc}</td>
-                    <td>{item.telefono}</td>
-                    <td>{item.correo}</td>
-                    <td>
-                    <button className='btnEditar' onClick={() => item.tipo === 'Cliente' ? handleEditClient(item.id) : handleEditProveedor(item.id)}>Editar</button>
-                    <button className='btnEliminar' onClick={() => item.tipo === 'Cliente' ? handleDeleteClient(item.id) : handleDeleteProveedor(item.id)}>Eliminar</button>
-                    </td>
+    <>
+      <Nav 
+        handleSearch={handleSearch}
+        proximasAVencer={proximasAVencer} 
+        proximosEventos={proximosEventos} 
+      />
+      <div className='centrar'>
+        <h1>Lista de Clientes y Proveedores</h1>
+        {isLoading ? ( // Mostrar mensaje de carga si isLoading es true
+          <p>Cargando...</p>
+        ) : (
+          <>
+            <button style={{ fontWeight: '700' }} className="prices-button2" onClick={handleOpenModal}>
+              + Nuevo
+            </button>
+            <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={customStyles}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+                <button className="modal-close" onClick={() => setModalIsOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '20px' }}>
+                  x
+                </button>
+              </div>
+              {step === 1 && (
+                <>
+                  <h2 style={{ textAlign: 'center' }}>
+                    {editingClientId ? 'Editar Cliente' : editingProveedorId ? 'Editar Proveedor' : 'Agregar Cliente o Proveedor'}
+                  </h2>
+                  <form className="client-form">
+                    <label style={customStyles.label}>Tipo:</label>
+                    <select style={customStyles.select} name="tipo" value={formData.tipo} onChange={handleChange}>
+                      <option value="Cliente">Cliente</option>
+                      <option value="Proveedor">Proveedor</option>
+                    </select>
+                    <label style={customStyles.label}>Nombre de la Empresa:</label>
+                    <input style={customStyles.input} type="text" name="empresa" placeholder="Nombre de la Empresa" value={formData.empresa} onChange={handleChange} />
+                    <label style={customStyles.label}>RFC:</label>
+                    <input style={customStyles.input} type="text" name="rfc" placeholder="RFC" value={formData.rfc} onChange={handleChange} />
+                    <label style={customStyles.label}>Régimen Fiscal:</label>
+                    <input style={customStyles.input} type="text" name="regimenFiscal" placeholder="Régimen Fiscal" value={formData.regimenFiscal} onChange={handleChange} />
+                    <label style={customStyles.label}>Moneda:</label>
+                    <input style={customStyles.input} type="text" name="moneda" placeholder="Moneda" value={formData.moneda} onChange={handleChange} />
+                    <label style={customStyles.label}>Teléfono:</label>
+                    <input style={customStyles.input} type="text" name="telefono" placeholder="Teléfono" value={formData.telefono} onChange={handleChange} />
+                    <label style={customStyles.label}>Email:</label>
+                    <input style={customStyles.input} type="email" name="correo" placeholder="Correo Electrónico" value={formData.correo} onChange={handleChange} />
+                    <label style={customStyles.label}>Imagen:</label>
+                    <input style={customStyles.input} type="file" name="imagen" onChange={handleChange} />
+                    <button type="button" onClick={() => setStep(2)}>Siguiente</button>
+                  </form>
+                </>
+              )}
+              {step === 2 && (
+                <>
+                  <h2 style={{ textAlign: 'center' }}>Agrega los últimos datos</h2>
+                  <form className="client-form">
+                    <label style={customStyles.label}>Domicilio:</label>
+                    <input type="text" name="domicilio" placeholder="Domicilio" value={formData.domicilio} onChange={handleChange} />
+                    <label style={customStyles.label}>No. Exterior:</label>
+                    <input type="text" name="numeroExt" placeholder="No. Ext" value={formData.numeroExt} onChange={handleChange} />
+                    <label style={customStyles.label}>No. Interior:</label>
+                    <input type="text" name="numeroInt" placeholder="No. Int" value={formData.numeroInt} onChange={handleChange} />
+                    <label style={customStyles.label}>Colonia:</label>
+                    <input type="text" name="colonia" placeholder="Colonia" value={formData.colonia} onChange={handleChange} />
+                    <label style={customStyles.label}>Código Postal:</label>
+                    <input type="text" name="codigoPostal" placeholder="C.P." value={formData.codigoPostal} onChange={handleChange} />
+                    <label style={customStyles.label}>Ciudad:</label>
+                    <input type="text" name="ciudad" placeholder="Ciudad" value={formData.ciudad} onChange={handleChange} />
+                    <label style={customStyles.label}>Estado:</label>
+                    <input type="text" name="estado" placeholder="Estado" value={formData.estado} onChange={handleChange} />
+                    <button type="button" onClick={() => setStep(1)}>Anterior</button>
+                    <br/>
+                    <button type="button" onClick={handleSubmit}>Finalizar</button>
+                  </form>
+                </>
+              )}
+            </Modal>
+            {(filteredClientes.length > 0 || filteredProveedores.length > 0) ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th onClick={() => handleSort('tipo')}>Tipo</th>
+                    <th onClick={() => handleSort('empresa')}>Nombre</th>
+                    <th onClick={() => handleSort('rfc')}>RFC</th>
+                    <th onClick={() => handleSort('telefono')}>Telefono</th>
+                    <th onClick={() => handleSort('correo')}>Correo</th>
+                    <th>Acciones</th>
                   </tr>
-                ))}
-            
-              </tbody>
-            </table>
-          ) : (
-            <p>No hay búsquedas disponibles</p>
-          )}
-        </>
-      )}
-    </div>
+                </thead>
+                <tbody>
+                {sortData([...filteredClientes, ...filteredProveedores]).map((item) => (
+                    <tr key={item.id}>
+                      <td>{item.tipo}</td>
+                      <td>{item.empresa}</td>
+                      <td>{item.rfc}</td>
+                      <td>{item.telefono}</td>
+                      <td>{item.correo}</td>
+                      <td>
+                      <button className='btnEditar' onClick={() => item.tipo === 'Cliente' ? handleEditClient(item.id) : handleEditProveedor(item.id)}>Editar</button>
+                      <button className='btnEliminar' onClick={() => item.tipo === 'Cliente' ? handleDeleteClient(item.id) : handleDeleteProveedor(item.id)}>Eliminar</button>
+                      </td>
+                    </tr>
+                  ))}
+              
+                </tbody>
+              </table>
+            ) : (
+              <p>No hay búsquedas disponibles</p>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
   
 };

@@ -109,10 +109,9 @@ th {
 
 .action-button {
   position: fixed;
-  top: 20px;
+  top: 120px;
   left: 100px;
   font-weight: 600;
-  z-index: 9999;
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -129,7 +128,7 @@ th {
 
 .action-button2 {
   position: absolute;
-  top: 20px;
+  top: 130px;
   left: 10%; /* Posiciona el botón en el centro horizontal */
   transform: translateX(-50%); /* Lo desplaza hacia la izquierda la mitad de su propio ancho */
   font-weight: 600;
@@ -138,7 +137,6 @@ th {
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
-  z-index: 9999;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
@@ -150,8 +148,7 @@ th {
 
 .prices-button {
   position: fixed;
-  z-index: 9999;
-  top: 20px;
+  top: 120px;
   left: 280px;
   font-weight: 600;
   background-color: #007bff;
@@ -167,6 +164,27 @@ th {
 .prices-button:hover {
   background-color: #0056b3; /* Color de fondo al pasar el mouse */
 }
+
+.prices-button2 {
+  position: fixed;
+  top: 120px;
+  left: 130px;
+  font-weight: 600;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.prices-button2:hover {
+  background-color: #0056b3; /* Color de fondo al pasar el mouse */
+}
+
+
 
 /* botones */
 
@@ -718,10 +736,10 @@ th {
 .image-button {
   cursor: pointer;
   position: absolute;
-  top: 130px;
-  left: -10px;
-  margin-left: 85px;
-  width: 30px;
+  top: 203px;
+  left: -20px;
+  margin-left: 70px;
+  width: 60px;
 }
 
 .filtro-options {
@@ -735,6 +753,7 @@ th {
   border-radius: 5px;
   padding: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 999;
 }
 
 .filtro-options button {
@@ -747,6 +766,7 @@ th {
   padding: 8px 14px;
   margin-bottom: 5px;
   cursor: pointer;
+  z-index: 999;
 }
 
 .filtro-options button:hover {
@@ -857,7 +877,8 @@ th {
 }
 
 .iconResumen {
-  margin-right: 6px; /* Espacio entre el ícono y el texto */
+  margin-right: 5px; /* Espacio entre el ícono y el texto */
+  margin-top: 5px;
   width: 20px; /* Ancho del ícono */
   height: 20px; /* Altura del ícono */
 }
@@ -938,6 +959,10 @@ th {
   
 }
 
+.resumen-cotizacion-actions .dropdown .dropbtn {
+  margin-right: 10px;
+}
+
 .dropdown:hover .dropbtn {
   background-color: #0056b3;
 }
@@ -968,7 +993,9 @@ th {
 
 .search-bar {
   position: relative;
-  right: 25%;
+  right: 5%;
+  width: 50%;
+  margin-bottom: 10px;
 }
 
 /**/
@@ -1888,7 +1915,6 @@ html, body, #root, .App {
 
 .notificaciones-container {
   position: relative;
-  z-index: 999;
 }
 
 .notification-icon-container {
@@ -1913,6 +1939,7 @@ html, body, #root, .App {
   align-items: center;
   color: #fff;
   font-size: 11px;
+  font-weight: 600;
 }
 
 .notifications-dropdown {

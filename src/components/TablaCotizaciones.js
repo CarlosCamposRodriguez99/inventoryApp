@@ -2,11 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import PreviaCotizacion from './PreviaCotizacion';
 import ResumenCotizacion from './ResumenCotizacion';
 import BandejaCotizaciones from './BandejaCotizaciones';
-import SearchBar from './SearchBar';
+import Nav from './Nav';
 import CotizacionForm from './CotizacionForm'; // Importa el componente CotizacionForm
 import { collection, deleteDoc, getFirestore, doc, onSnapshot } from 'firebase/firestore';
 import Swal from 'sweetalert2';
 import Modal from 'react-modal';
+import moment from 'moment';
+
+
+// Configura el localizador de fechas usando moment.js
+moment.locale('es');
 
 const styleForm = {
   content: {
@@ -85,8 +90,84 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones, guardarCot
   const [showBandeja, setShowBandeja] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [showNuevoButton, setShowNuevoButton] = useState(true);
-
   const setCotizacionesRef = useRef(setCotizaciones);
+  const [proximasAVencer, setProximasAVencer] = useState([]);
+  const [proximosEventos, setProximosEventos] = useState([]);
+
+  useEffect(() => {
+    const fetchCotizaciones = async () => {
+        const firestore = getFirestore();
+        const cotizacionesRef = collection(firestore, 'cotizaciones');
+        const unsubscribeCotizaciones = onSnapshot(cotizacionesRef, (snapshot) => {
+            const cotizaciones = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+            // Filtrar las cotizaciones que tienen fecha de vencimiento a partir de hoy y ordenarlas
+            const proximas = cotizaciones
+                .filter(cotizacion => moment(cotizacion.fechaVencimiento) >= moment().startOf('day'))
+                .sort((a, b) => moment(a.fechaVencimiento) - moment(b.fechaVencimiento));
+
+            setProximasAVencer(proximas.slice(0, 6)); // Limitar la lista a 6 fechas próximas
+        });
+
+        return () => unsubscribeCotizaciones();
+    };
+
+    const fetchEventos = async () => {
+        const firestore = getFirestore();
+        const eventosRef = collection(firestore, 'eventos');
+        const unsubscribeEventos = onSnapshot(eventosRef, (snapshot) => {
+            const eventos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+            // Filtrar eventos que ocurren a partir de hoy y ordenarlos
+            const proximos = eventos
+                .filter(evento => moment(evento.to) >= moment().startOf('day'))
+                .sort((a, b) => moment(a.to) - moment(b.to));
+
+            setProximosEventos(proximos.slice(0, 6)); // Limitar la lista a 6 eventos próximos
+
+            // Filtrar fechas festivas que están a menos de una semana
+            const fechasFestivasProximas = [];
+            const fechasFestivasBase = [
+                { title: 'Año Nuevo', month: '01', day: '01', color: '#de2e03' },
+                { title: 'Día de la Constitución', month: '02', day: '05', color: '#de2e03' },
+                { title: 'Natalicio de Benito Juárez', month: '03', day: '21', color: '#de2e03' },
+                { title: 'Día del Trabajo', month: '05', day: '01', color: '#de2e03' },
+                { title: 'Independencia de México', month: '09', day: '16', color: '#de2e03' },
+                { title: 'Transición del Poder Ejecutivo', month: '10', day: '01', color: '#de2e03' },
+                { title: 'Revolución Mexicana', month: '11', day: '20', color: '#de2e03' },
+                { title: 'Navidad', month: '12', day: '25', color: '#de2e03' },
+            ];
+
+            const today = moment().startOf('day');
+            const oneWeekFromNow = moment().add(7, 'days').startOf('day');
+
+            fechasFestivasBase.forEach(festivo => {
+                const festivoDate = moment(`${today.year()}-${festivo.month}-${festivo.day}`, 'YYYY-MM-DD');
+                if (festivoDate.isBetween(today, oneWeekFromNow, null, '[]')) {
+                    fechasFestivasProximas.push({
+                        title: festivo.title,
+                        start: festivoDate.toDate(),
+                        end: festivoDate.toDate(),
+                        allDay: true,
+                        resource: 'festivo',
+                        style: { backgroundColor: festivo.color }
+                    });
+                }
+            });
+
+            if (fechasFestivasProximas.length > 0) {
+                // Notificar sobre fechas festivas próximas
+                alert(`Fechas festivas próximas: ${fechasFestivasProximas.map(festivo => `${festivo.title} el ${moment(festivo.start).format('LL')}`).join(', ')}`);
+            }
+        });
+
+        return () => unsubscribeEventos();
+    };
+
+    // Ejecutar las funciones de carga de cotizaciones y eventos
+    fetchCotizaciones();
+    fetchEventos();
+  }, []);
 
   const openFormulario = () => {
     setMostrarFormulario(true);
@@ -164,7 +245,7 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones, guardarCot
     const cotizacionesFiltradas = cotizaciones && cotizaciones.filter(cotizacion => {
       const searchableFields = [
         cotizacion.fechaCotizacion,
-        cotizacion.numeroCotizacion?.toString(),
+        cotizacion.numeroCotizacion?.toString().padStart(4, '0'),
         cotizacion.asunto?.toLowerCase(),
         cotizacion.nombreCliente?.toLowerCase(),
         cotizacion.total?.toString()
@@ -238,6 +319,12 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones, guardarCot
   };
 
   return (
+   <>
+    <Nav
+      handleSearch={setSearchTerm} 
+      proximasAVencer={proximasAVencer} 
+      proximosEventos={proximosEventos}
+    />
     <div className="cotizaciones-table">
       <h2>Lista de Cotizaciones</h2>
       {showBandeja && (
@@ -246,24 +333,18 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones, guardarCot
           onRowClick={handleRowClick}  
           clientes={clientes}
           guardarCotizacion={guardarCotizacion}
-          cotizacion={cotizacion}          
+          cotizacion={cotizacion}
         />
       )}
       {!showBandeja && (
         <div>
-          <img
-            src="/img/checkbox.svg"
-            alt="Icono"
-            className="image-button"
-            onClick={handleToggleOptions}
-          />
+        <i className="bi bi-arrow-down-up image-button" onClick={handleToggleOptions}></i>
           {showOptions && (
             <div className="filtro-options">
               <button onClick={handleSelectAll}>Seleccionar Todos</button>
               <button onClick={handleDeselectAll}>Deseleccionar Todos</button>
             </div>
           )}
-          <SearchBar handleSearch={setSearchTerm} />
           {loadingCotizaciones ? (
             <p style={{ textAlign: 'center' }}>Cargando...</p>
           ) : (
@@ -370,6 +451,7 @@ function TablaCotizaciones({ cotizaciones, clientes, setCotizaciones, guardarCot
         />
       </div>
     </div>
+   </>
   );
 }
 

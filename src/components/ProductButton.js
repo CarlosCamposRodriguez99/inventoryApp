@@ -111,7 +111,7 @@ const ProductButton = ({ products, setProducts }) => {
   };
 
   return (
-    <div style={{ position: 'fixed', top: '20px', right: '100px', zIndex: '9999' }}>
+    <div style={{ position: 'absolute', top: '10px', right: '100px' }}>
       <button className="prices-button" onClick={() => setModalIsOpen(true)}>Ajustar precios</button>
       <Modal
         isOpen={modalIsOpen}

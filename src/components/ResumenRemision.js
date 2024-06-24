@@ -277,7 +277,7 @@ const ResumenRemision = ({
         <div className="resumen-cotizacion-actions">
           <div className="dropdown" onMouseEnter={() => setShowOptions(true)} onMouseLeave={() => setShowOptions(false)}>
             <button className="dropbtn">
-              <img src="/img/impresion.svg" alt="Imprimir" className="iconResumen" /> Imprimir / PDF
+              <i className="bi bi-printer iconResumen"></i> Imprimir / PDF
             </button>
             {showOptions && (
               <div className="dropdown-content">
@@ -288,9 +288,9 @@ const ResumenRemision = ({
               </div>
             )}
           </div>
-          <button><img src="/img/correo.svg" alt="Correo" className="iconResumen" /> Correo</button>
-          <button onClick={handleEdit}><img src="/img/edit.svg" alt="Editar" className="iconResumen" /> Editar</button>
-          <button><img src="/img/factura.svg" alt="Convertir" className="iconResumen" /> Convertir en Factura</button>
+          <button><i className="bi bi-envelope-fill iconResumen"></i> Correo</button>
+          <button onClick={handleEdit}><i className="bi bi-pencil-fill iconResumen"></i> Editar</button>
+          <button><i className="bi bi-receipt iconResumen"></i> Convertir en Factura</button>
         </div>
         <div className="cotizacion-header">
           <img src="/img/logo-iciamex.png" alt="ICIAMEX" className="logoCotizacion" />
