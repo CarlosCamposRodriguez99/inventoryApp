@@ -1985,7 +1985,72 @@ html, body, #root, .App {
   color: #555;
 }
 
-/*nav */
+/* Permisos Usuarios */
+
+.permisos-usuarios-container {
+  padding: 80px;
+  height: 600px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.permisos-usuarios-container h2 {
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.invite-form {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.invite-form input[type="email"] {
+  flex: 1;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-right: 10px;
+}
+
+.invite-form button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.invite-form button:hover {
+  background-color: #0056b3;
+}
+
+.usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.usuarios-table th, .usuarios-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.usuarios-table th {
+  background-color: #007bff;
+  color: white;
+}
+
+
+
+
 
 
 

@@ -305,8 +305,8 @@ const Sidebar = () => {
               {isMenuOpen('Configuracion') && (
                 <ul className={`sub-menu ${isMenuOpen('Configuracion') ? 'open' : 'closed'}`}>
                   <li>
-                    <Link className="text" to="/login">
-                      <span className="icon"><i className="bi bi-box-arrow-right"></i></span>Logout
+                    <Link className="text" to="/usuarios">
+                      <span className="icon"><i className="bi bi-people-fill"></i></span>Usuarios
                     </Link>
                   </li>
                 </ul>

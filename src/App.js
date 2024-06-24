@@ -12,6 +12,7 @@ import OrdenDeCompra from "./pages/orden";
 import CalendarioGd from "./pages/calendario";
 import Tareas from "./pages/tareas";
 import Remisiones from "./pages/remisiones";
+import Usuarios from "./pages/usuarios";
 import Login from './components/Login';
 import Register from './components/Register';
 import PrivateRoute from './components/PrivateRoute';
@@ -38,6 +39,7 @@ function App() {
           <Route path='/calendario' element={<PrivateRoute><CalendarioGd /></PrivateRoute>} />
           <Route path='/tareas' element={<PrivateRoute><Tareas /></PrivateRoute>} />
           <Route path='/remisiones' element={<PrivateRoute><Remisiones /></PrivateRoute>} />
+          <Route path='/usuarios' element={<PrivateRoute><Usuarios /></PrivateRoute>} />
         </Routes>
         {location.pathname !== '/login' && location.pathname !== '/registro' && <Sidebar />}
       </div>
