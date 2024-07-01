@@ -81,6 +81,7 @@ const Register = () => {
         icon: 'success',
         title: '¡Usuario registrado!',
         text: 'Se ha enviado un correo de verificación.',
+        timer: 1000,
       });
 
       // Setear el usuario en el contexto de autenticación
