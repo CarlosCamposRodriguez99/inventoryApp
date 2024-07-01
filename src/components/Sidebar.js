@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import React, { useState, useEffect, useCallback } from "react";
+import { Outlet, Link, useLocation } from "react-router-dom";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const getYear = () => new Date().getFullYear();
 
@@ -10,13 +10,17 @@ const Sidebar = () => {
   const location = useLocation();
 
   const toggleSidebar = () => {
-    setIsOpen(prev => !prev);
+    setIsOpen((prev) => !prev);
   };
 
   const toggleMenu = useCallback((menu) => {
     setIsOpen(true);
-    setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
+    setOpenMenus((prev) => ({ ...prev, [menu]: !prev[menu] }));
   }, []);
+
+  const closeSidebar = () => {
+    setIsOpen(false);
+  };
 
   useEffect(() => {
     if (!isOpen) {
@@ -43,25 +47,25 @@ const Sidebar = () => {
               <span className="main-text">Principal</span>
             )}
             <li>
-              <Link className={location.pathname === '/' ? 'active' : ''} to="/">
+              <Link className={location.pathname === '/' ? 'active' : ''} to="/" onClick={closeSidebar}>
                 <span className="icon"><i className="bi bi-house"></i></span>
                 <span className="text">Inicio</span>
               </Link>
-            </li>
+            </li> 
             <li>
-              <Link className={location.pathname === '/tareas' ? 'active' : ''} to="/tareas">
+              <Link className={location.pathname === '/tareas' ? 'active' : ''} to="/tareas" onClick={closeSidebar}>
                 <span className="icon"><i className="bi bi-check2-square"></i></span>
                 <span className="text">Tareas</span>
               </Link>
             </li>
             <li>
-              <Link className={location.pathname === '/calendario' ? 'active' : ''} to="/calendario">
+              <Link className={location.pathname === '/calendario' ? 'active' : ''} to="/calendario" onClick={closeSidebar}>
                 <span className="icon"><i className="bi bi-calendar2-day"></i></span>
                 <span className="text">Calendario</span>
               </Link>
             </li>
             <li>
-              <Link className={location.pathname === '/factura-electronica' ? 'active' : ''} to="/factura-electronica">
+              <Link className={location.pathname === '/factura-electronica' ? 'active' : ''} to="/factura-electronica" onClick={closeSidebar}>
                 <span className="icon"><i className="bi bi-file-earmark-text"></i></span>
                 <span className="text">Factura Electrónica</span>
               </Link>
@@ -90,27 +94,27 @@ const Sidebar = () => {
               {isMenuOpen('Ingresos') && (
                 <ul className={`sub-menu ${isMenuOpen('Ingresos') ? 'open' : 'closed'}`}>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-file-earmark-text"></i></span>Facturación
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-credit-card-2-back"></i></span>Pagos Recibidos
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="/cotizacion">
+                    <Link className="text" to="/cotizacion" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-cash-coin"></i></span>Cotizaciones
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="/remisiones">
+                    <Link className="text" to="/remisiones" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-receipt"></i></span>Remisiones
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-cart4"></i></span>Pedidos
                     </Link>
                   </li>
@@ -136,22 +140,22 @@ const Sidebar = () => {
               {isMenuOpen('Gastos') && (
                 <ul className={`sub-menu ${isMenuOpen('Gastos') ? 'open' : 'closed'}`}>
                   <li>
-                    <Link className="text" to="/orden">
+                    <Link className="text" to="/orden" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-receipt-cutoff"></i></span>Órdenes de Compra
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-file-earmark"></i></span>Facturas de Proveedores
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-cash-stack"></i></span>Pagos
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-credit-card"></i></span>Notas de Débito
                     </Link>
                   </li>
@@ -177,32 +181,32 @@ const Sidebar = () => {
               {isMenuOpen('Inventario') && (
                 <ul className={`sub-menu ${isMenuOpen('Inventario') ? 'open' : 'closed'}`}>
                   <li>
-                    <Link className="text" to="/articulos-venta">
+                    <Link className="text" to="/articulos-venta" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-bag"></i></span>Productos de Venta
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="/articulos-compra">
+                    <Link className="text" to="/articulos-compra" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-cart"></i></span>Productos de Compra
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-gear"></i></span>Ajustes de Inventario
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-clipboard2-check"></i></span>Gestión de Productos
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-folder"></i></span>Categorías
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="#">
+                    <Link className="text" to="#" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-archive"></i></span>Almacenes
                     </Link>
                   </li>
@@ -228,12 +232,12 @@ const Sidebar = () => {
               {isMenuOpen('Reportes') && (
                 <ul className={`sub-menu ${isMenuOpen('Reportes') ? 'open' : 'closed'}`}>
                 <li>
-                  <Link className="text" to="#">
+                  <Link className="text" to="#" onClick={closeSidebar}>
                     <span className="icon"><i className="bi bi-question-diamond"></i></span>Opción 1
                   </Link>
                 </li>
                 <li>
-                  <Link className="text" to="#">
+                  <Link className="text" to="#" onClick={closeSidebar}>
                     <span className="icon"><i className="bi bi-question-diamond"></i></span>Opción 2
                   </Link>
                 </li>
@@ -264,17 +268,17 @@ const Sidebar = () => {
               {isMenuOpen('Contactos') && (
                 <ul className={`sub-menu ${isMenuOpen('Contactos') ? 'open' : 'closed'}`}>
                   <li>
-                    <Link className="text" to="/todos">
+                    <Link className="text" to="/todos" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-people"></i></span>Todos
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="/clientes">
+                    <Link className="text" to="/clientes" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-person-check"></i></span>Clientes
                     </Link>
                   </li>
                   <li>
-                    <Link className="text" to="/proveedores">
+                    <Link className="text" to="/proveedores" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-truck"></i></span>Proveedores
                     </Link>
                   </li>
@@ -305,7 +309,7 @@ const Sidebar = () => {
               {isMenuOpen('Configuracion') && (
                 <ul className={`sub-menu ${isMenuOpen('Configuracion') ? 'open' : 'closed'}`}>
                   <li>
-                    <Link className="text" to="/usuarios">
+                    <Link className="text" to="/usuarios" onClick={closeSidebar}>
                       <span className="icon"><i className="bi bi-people-fill"></i></span>Usuarios
                     </Link>
                   </li>
@@ -314,7 +318,7 @@ const Sidebar = () => {
             </li>
 
             <li>
-              <Link className={location.pathname === '#' ? 'active' : ''} to="#">
+              <Link className={location.pathname === '#' ? 'active' : ''} to="#" onClick={closeSidebar}>
                 <span className="icon"><i className="bi bi-question-circle"></i></span>
                 <span className="text">Ayuda</span>
               </Link>

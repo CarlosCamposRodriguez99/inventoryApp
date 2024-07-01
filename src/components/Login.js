@@ -74,9 +74,9 @@ const Login = () => {
               <button type="submit" className="login-button">Iniciar Sesión</button>
             </div>
           </form>
-          <div className='containerLoginBottom'>
+          {/*<div className='containerLoginBottom'>
             <p>¿No tienes una cuenta? <button onClick={() => navigate('/registro')} className="loginBoton">Regístrate</button></p>
-          </div>
+          </div>*/}
         </div>
         <div className="login-background"></div>
       </div>
